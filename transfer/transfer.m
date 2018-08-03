@@ -2,7 +2,7 @@ cd('0704');
 all_file = dir('*.mcd') ; % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ; 
 
-for m = 9:12
+for m = 1:n_file
     clearvars -except all_file n_file m
     file = all_file(m).name ;
     [pathstr, name, ext] = fileparts(file);
