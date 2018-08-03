@@ -1,5 +1,5 @@
 function[Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data(filename,save_data,comment,experimenter,analog_type,r_interval)
-% experimenter is default as the first folder in the directory, if not,
+% Experimenter is default as the first folder in the directory, if not,
 % Please type in manually
 
 %main
