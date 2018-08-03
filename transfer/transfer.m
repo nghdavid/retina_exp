@@ -8,5 +8,11 @@ for m = 9:12
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
     filename = [name,ext];
-    [Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all',210000);
+    [Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all',210000);%If your ram is not enough, run this line
+    %[Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all');%%If your ram is enough, run this line
+    
+    %%analyze_MEA_data(filename,save_data,comment,experimenter,analog_type,r_interval)
+    %save_data = 1 means save data
+    %analog_type sets to 'all'
+    %r_interval is the interval that calculates std,if none,it calculate total interval
 end
