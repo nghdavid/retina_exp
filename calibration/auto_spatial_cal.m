@@ -1,33 +1,41 @@
+%% Setup video input
+vid = videoinput('gige',1,'Mono8') %Open video
+vid.SelectedSourceName = 'input1';
+scr_obj = getselectedsource(vid);
 
+set(vid, 'Exposureabs', 100);
+
+frame = getsnapshot(vid);
+image(frame);
+%% Open phychotoolbox
 Screen('Preference', 'SkipSyncTests', 1)
 global rect w
 [w, rect] = Screen('OpenWindow',2, [0 0 0]); %black background 
 
+
+%% Set mea parameter
 mea_size=433; %use odd number!
 cal_size = 511;%number of channels for one side, should be an odd number
-N = 7;
+N = 7;%
 baseRect = [0 0 mea_size mea_size];  %use odd number!
 meaCenter_x=631; %%%%%%%%%%%%Check
 meaCenter_y=605; %%%%%%%%%%%%Check 
 
 
 x_array=[]; y_array=[];
-  
-
-dotPositionMatrix=zeros(2,cal_size^2);
+dotPositionMatrix=zeros(2,cal_size^2);%Matrix that stores the position of every dot
 
 
-%start calculating the coordination of each dots
+%start calculating the x,y coordination of each dots
 for i=0:cal_size-1
     x_array(1,i+1)= meaCenter_x - (cal_size-1)/2 + i;  %start from the lefttest x position
 end
-
 for i=0:cal_size-1
     y_array(1,i+1)=meaCenter_y - (cal_size-1)/2 + i;
 end
 
 
-%put into the matrix "dotPositionMatrix"
+%put x,y coordination into the matrix "dotPositionMatrix"
  for q=0:cal_size-1
     for a=1:cal_size
         dotPositionMatrix(1,a+q*cal_size)=x_array(q+1);
@@ -37,20 +45,21 @@ end
 
  
 
-%draw dots and show the image
+
 
 dotColors=[255];
-for i = 1:cal_size
-    for j = 1:cal_size/N
-        for z = 0:N-1
+%Show seven dots at one time and keep moving
+for i = 1:cal_size%x coordination 
+    for j = 1:cal_size/N%y coordination
+        for z = 0:N-1%Seven points
             baseRect = [0 0 1 1];  % one pixel
-            xCenter = x_array(i);
-            yCenter = y_array(z*cal_size/N+j);
-            centeredRect = CenterRectOnPointd(baseRect, xCenter, yCenter);
+            centeredRect = CenterRectOnPointd(baseRect, x_array(i), y_array(z*cal_size/N+j));
             Screen('FillRect', w, dotColors, centeredRect);
         end
         Screen('Flip', w);
-        for num_move = 1:10
+        % Run ten times of calibration
+        % Move seven points on monitor to let detect point to match ideal point
+        for num_calibration = 1:10
             img = getsnapshot(vid);
             CI0=mat2gray(img);
             CI=CI0;
@@ -71,13 +80,13 @@ for i = 1:cal_size
             dump = [];
             dump=Bcell(1:N,:);
             for w=1:N
-                detect_pt{w}=dump{N-w+1};
+                detect_pt{w}=dump{w};
             end
             
             %Change position on the monitor 
             for k = 0:N-1
-                ideal_x = ideal_pt{i,k*cal_size/N+j}(1);
-                ideal_y = ideal_pt{i,k*cal_size/N+j}(2);
+                ideal_x = ideal_pt{cal_size-k*cal_size/N+j,i}(1);
+                ideal_y = ideal_pt{cal_size-k*cal_size/N+j,i}(2);
                 detect_x =  detect_pt{k+1}(1);
                 detect_y =  detect_pt{k+1}(2);
                 if ideal_x > detect_x
@@ -85,8 +94,7 @@ for i = 1:cal_size
    
                 elseif ideal_x < detect_x
                     dotPositionMatrix(1,i+(k*cal_size/N+j)*(cal_size-1)) = dotPositionMatrix(1,i+z*cal_size/N+k) -1 ;
-                else
-                    
+                else     
                 end
                 
                 if ideal_y > detect_y
@@ -103,20 +111,9 @@ for i = 1:cal_size
                 
             end
             Screen('Flip', w);
-            end
         end
-        
     end
-
-% for i=1:size(dotPositionMatrix,2)  
-%         baseRect = [0 0 1 1];  % one pixel
-%         xCenter=dotPositionMatrix(1,i); %determine the x coordination on monitor for this point
-%         yCenter=dotPositionMatrix(2,i);
-%         centeredRect = CenterRectOnPointd(baseRect, xCenter, yCenter);
-%         Screen('FillRect', w, dotColors, centeredRect);
-%         Screen('Flip', w);
-% end
-
+end
 
 %Screen('DrawDots', w, dotPositionMatrix,dotSize, dotColors,[],2); %2 is to specify dot type(> circle)
 %Screen('DrawDots', w, dotPositionMatrix,6, [0],[],2); %2 is to specify dot type(> circle)
