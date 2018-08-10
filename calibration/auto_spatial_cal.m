@@ -7,14 +7,14 @@ mea_size=433; %use odd number!
 cal_size = 511;%number of channels for one side, should be an odd number
 N = 7;
 baseRect = [0 0 mea_size mea_size];  %use odd number!
-meaCenter_x=633; %%%%%%%%%%%%Check
+meaCenter_x=631; %%%%%%%%%%%%Check
 meaCenter_y=605; %%%%%%%%%%%%Check 
 
 
 x_array=[]; y_array=[];
   
 
-dotPositionMatrix=zeros(2,cal_size^2);
+dotPositionMatrix=zeros(2,225);
 
 
 %start calculating the coordination of each dots
@@ -27,6 +27,14 @@ for i=0:cal_size-1
 end
 
 
+%put into the matrix "dotPositionMatrix"
+ for q=1:cal_size
+    for a=1:cal_size
+        dotPositionMatrix(1,a+q*(cal_size-1))=x_array(q+1);
+        dotPositionMatrix(2,a+q*(cal_size-1))=y_array(a);
+    end
+ end
+
  
 
 %draw dots and show the image
@@ -34,7 +42,7 @@ end
 dotColors=[255];
 for i = 1:cal_size
     for j = 1:cal_size/N
-        for z = 0:6
+        for z = 0:N-1
             baseRect = [0 0 1 1];  % one pixel
             xCenter = x_array(i);
             yCenter = y_array(z*cal_size/N+j);
@@ -42,7 +50,7 @@ for i = 1:cal_size
             Screen('FillRect', w, dotColors, centeredRect);
         end
         Screen('Flip', w);
-        for k = 1:10
+        for num_move = 1:10
             img = getsnapshot(vid);
             CI0=mat2gray(img);
             CI=CI0;
@@ -62,17 +70,44 @@ for i = 1:cal_size
             detect_pt=cell(1,N); %the reconstructed points
             dump = [];
             dump=Bcell(1:N,:);
-            for i=1:N
-                detect_pt{i}=dump{N-i+1};
+            for w=1:N
+                detect_pt{w}=dump{N-w+1};
             end
             
             %Change position on the monitor 
-            
-            
+            for k = 0:N-1
+                ideal_x = ideal_pt{i,k*cal_size/N+j}(1);
+                ideal_y = ideal_pt{i,k*cal_size/N+j}(2);
+                detect_x =  detect_pt{k+1}(1);
+                detect_y =  detect_pt{k+1}(2);
+                if ideal_x > detect_x
+                    dotPositionMatrix(1,i+(k*cal_size/N+j)*(cal_size-1)) = dotPositionMatrix(1,i+z*cal_size/N+k) +1 ;
+   
+                elseif ideal_x < detect_x
+                    dotPositionMatrix(1,i+(k*cal_size/N+j)*(cal_size-1)) = dotPositionMatrix(1,i+z*cal_size/N+k) -1 ;
+                else
+                    
+                end
+                
+                if ideal_y > detect_y
+                    dotPositionMatrix(2,i+(k*cal_size/N+j)*(cal_size-1)) = dotPositionMatrix(2,i+z*cal_size/N+k) -1 ;
+                elseif ideal_y < detect_y
+                    dotPositionMatrix(2,i+(k*cal_size/N+j)*(cal_size-1)) = dotPositionMatrix(2,i+z*cal_size/N+k) +1 ;
+                else 
+                end
+                
+                baseRect = [0 0 1 1];  % one pixel
+
+                centeredRect = CenterRectOnPointd(baseRect, dotPositionMatrix(1,i+(k*cal_size/N+j)*(cal_size-1)), dotPositionMatrix(2,i+(k*cal_size/N+j)*(cal_size-1)));
+                Screen('FillRect', w, dotColors, centeredRect);
+                
+            end
+            Screen('Flip', w);
+            end
         end
         
     end
-end
+
 % for i=1:size(dotPositionMatrix,2)  
 %         baseRect = [0 0 1 1];  % one pixel
 %         xCenter=dotPositionMatrix(1,i); %determine the x coordination on monitor for this point
@@ -101,6 +136,3 @@ CI=CI0;
 centersStrong5 = centers(1:N^2,:);
 radiiStrong5 = radii(1:N^2);
 viscircles(centersStrong5, radiiStrong5,'EdgeColor','b'); %plot the detected dots image on the same picture
-
-
-
