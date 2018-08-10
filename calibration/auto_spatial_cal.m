@@ -14,7 +14,7 @@ meaCenter_y=605; %%%%%%%%%%%%Check
 x_array=[]; y_array=[];
   
 
-dotPositionMatrix=zeros(2,225);
+dotPositionMatrix=zeros(2,cal_size^2);
 
 
 %start calculating the coordination of each dots
@@ -28,10 +28,10 @@ end
 
 
 %put into the matrix "dotPositionMatrix"
- for q=1:cal_size
+ for q=0:cal_size-1
     for a=1:cal_size
-        dotPositionMatrix(1,a+q*(cal_size-1))=x_array(q+1);
-        dotPositionMatrix(2,a+q*(cal_size-1))=y_array(a);
+        dotPositionMatrix(1,a+q*cal_size)=x_array(q+1);
+        dotPositionMatrix(2,a+q*cal_size)=y_array(a);
     end
  end
 
