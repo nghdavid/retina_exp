@@ -1,7 +1,7 @@
 %% initiate the PTB
 Screen('Preference', 'SkipSyncTests', 1)
 global rect w
-[w, rect] = Screen('OpenWindow',2, [0 0 0]); %black background
+[w, rect] = Screen('OpenWindow',1, [0 0 0]); %black background
 
 
 %% test focus plane: see the edge of the black square is clear or not
@@ -20,7 +20,7 @@ Screen('Flip', w);
 
 %% decide mea region on LED screen
 mea_size=433; %use odd number!
-cal_size = 469;%number of channels for one side, should be an odd number
+cal_size = 465;%number of channels for one side, should be an odd number
 N = 7;%
 baseRect = [0 0 mea_size mea_size];  %use odd number!
 
@@ -35,7 +35,7 @@ Screen('Flip', w);
 vid = videoinput('gige',1) %Open video
 vid.SelectedSourceName = 'input1';
 scr_obj = getselectedsource(vid);
-set(scr_obj,'GainRaw',5)
+set(scr_obj,'GainRaw',0)
 set(scr_obj,'ExposureTimeAbs',9000000)
 
 
@@ -77,6 +77,9 @@ for i=1:size(dotPositionMatrix,2)
 end
 Screen('Flip', w);
 
+frame = getsnapshot(vid);
 
-[ideal_pt,ideal_distance_pt] = find_i_pt(input_N,cal_size);
+imshow(frame);
+
+[ideal_pt,ideal_distance_pt] = find_i_pt(frame,7,cal_size,sdi);
 save('ideal_pt.mat','ideal_pt','ideal_distance_pt')
