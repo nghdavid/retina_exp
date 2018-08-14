@@ -101,9 +101,9 @@ for i = 1%:cal_size%x coordination
                else
                end
                %Change y(Remember to change upside down)
-               if ideal_y > detect_y%if detect_point is too down
+               if ideal_y > detect_y%if detect_point is too up
                    new_point(2,v) = new_point(2,k) + round((ideal_y - detect_y)/ideal_distance_pt) ;%then move down on monitor
-               elseif ideal_y < detect_y%if detect_point is too up
+               elseif ideal_y < detect_y%if detect_point is too down
                    new_point(2,v) = new_point(2,k) + round((ideal_y - detect_y)/ideal_distance_pt) ;%then move up on monitor
                else
                end
