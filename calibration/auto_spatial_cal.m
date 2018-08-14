@@ -9,22 +9,27 @@ global rect w
 vid = videoinput('gige',1) %Open video
 vid.SelectedSourceName = 'input1';
 scr_obj = getselectedsource(vid);
-set(scr_obj,'GainRaw',5)
+set(scr_obj,'GainRaw',10)
 set(scr_obj,'ExposureTimeAbs',9000000)
 
-frame = getsnapshot(vid);
-imshow(frame);
+Screen('Flip', w);
+black_frame = getsnapshot(vid);%Take a photo on black background
+% figure()
+% imshow(black_frame);
+
+
 
 
 
 %% Set mea parameter
 mea_size=433; %use odd number!
-cal_size = 529;%number of channels for one side, should be an odd number
-N = 23;%
+cal_size = 465;%number of channels for one side, should be an odd number
+N = 31;%
 baseRect = [0 0 mea_size mea_size];  %use odd number!
-centeredRect = CenterRectOnPointd(baseRect, meaCenter_x, meaCenter_y);
 meaCenter_x=631; 
 meaCenter_y=572; 
+centeredRect = CenterRectOnPointd(baseRect, meaCenter_x, meaCenter_y);
+
 
 %% start calculating the x,y coordination of each dots
 x_array=[]; y_array=[];
@@ -37,7 +42,7 @@ for i=0:cal_size-1
 end
 
 %% Load ideal_pt
-load('ideal_pt.mat')
+load('ideal_pt.mat')%It load ideal_pt and ideal_distance_pt
 
 %% Axis of each variable 
 %point0 (1 is x,2 is y) same x together
@@ -47,14 +52,14 @@ load('ideal_pt.mat')
 %min_point (1 is x,2 is y) same x together
 %dotPositionMatrix (Cell array 1 is y, 2 is x) but stores (1 is x,2 is y)
 %ideal_pt (Cell array 1 is y, 2 is x) but stores (1 is x,2 is y)
-tic
-%Show N dots at one time and keep moving
+
+%Show N^2 dots at one time and keep moving
 for i = 1:cal_size/N%x coordination 
     for j = 1:cal_size/N%y coordination
         
         
         min = ones(N,N)*10000000;% Store mininum distance between ideal_point and detect_point
-        min_point = cell(N,N);% Store mininum coordinate on monitor
+        min_point = zeros(2,N^2);% Store mininum coordinate on monitor
         
         point0=zeros(2,N^2);%Store initial points on monitor
         for q = 0:N-1%x
@@ -70,13 +75,13 @@ for i = 1:cal_size/N%x coordination
         ideal_point = zeros(2,N^2);%Store the ideal position of each points on monitor
         for q = 0:N-1%x
             for a = 1:N%y
-                ideal_point(1,a+q*N) = ideal_pt{cal_size-((a-1)*cal_size/N+j-1),cal_size-(q*cal_size/N+i-1)}(1);
-                ideal_point(2,a+q*N) = ideal_pt{cal_size-((a-1)*cal_size/N+j-1),cal_size-(q*cal_size/N+i-1)}(2);  
+                ideal_point(1,a+q*N) = ideal_pt{(a-1)*cal_size/N+j,(q*cal_size/N+i)}(1);
+                ideal_point(2,a+q*N) = ideal_pt{(a-1)*cal_size/N+j,(q*cal_size/N+i)}(2);  
             end
         end
         
         
-        for num_calibration = 1:10%Run many times of calibration and choose best one
+        for num_calibration = 1:3%Run many times of calibration and choose best one
             
             
             for k = 1:N^2%Show N^2 points on monitor
@@ -87,10 +92,10 @@ for i = 1:cal_size/N%x coordination
             Screen('Flip', w);
     
             img = getsnapshot(vid);
-            sensitivity = 0.95;%Sensitivity of detecting coordinate of each dot
-            radius_range = [2 4];%Range that detect circle(dot in ccd)
-            detect_pt = find_detect_pt(img,N,sensitivity,radius_range,'off',ideal_point);%'on' means show figure 'off' means don't show
-            
+            sensitivity = 0.92;%Sensitivity of detecting coordinate of each dot
+            radius_range = [1 4];%Range that detect circle(dot in ccd)
+            detect_pt = find_detect_pt(img-black_frame,N,sensitivity,radius_range,'off',ideal_point);%'on' means show figure 'off' means don't show
+            %img-black_frame is for clearing noise in ccd
             %Change N point coordinate
             for k = 1:N^2
                ideal_x = ideal_point(1,k);
@@ -98,20 +103,9 @@ for i = 1:cal_size/N%x coordination
                detect_x = detect_pt(1,k);
                detect_y = detect_pt(2,k);
                %Change x
-               if ideal_x > detect_x%if detect_point is too left 
-                   new_point(1,v) = new_point(1,k) +1 ;%then move right on monitor
-                   %new_point(1,v)= new_point(1,k) + round((ideal_x -detect_x)/ideal_distance_pt);
-               elseif ideal_x < detect_x%if detect_point is too right
-                   new_point(1,v) = new_point(1,k) -1 ;%round((ideal_x - detect_x)/ideal_distance_pt) ;%then move left on monitor
-               else
-               end
+               new_point(1,k)= new_point(1,k) + round((ideal_x -detect_x)/ideal_distance_pt);
                %Change y(Remember to change upside down)
-               if ideal_y > detect_y%if detect_point is too up
-                   new_point(2,v) = new_point(2,k) -1;%+ round((ideal_y - detect_y)/ideal_distance_pt) ;%then move down on monitor
-               elseif ideal_y < detect_y%if detect_point is too up
-                   new_point(2,v) = new_point(2,k) + 1;%round((ideal_y - detect_y)/ideal_distance_pt) ;%then move up on monitor
-               else
-               end
+               new_point(2,k) = new_point(2,k) + round((ideal_y - detect_y)/ideal_distance_pt) ;
             end
         
             %Calculate distance between ideal_point and detect_point
@@ -123,7 +117,7 @@ for i = 1:cal_size/N%x coordination
             for k = 1:N^2
                 if distances(k) < min(k)
                     min(k) = distances(k);
-                    min_point{:,k} = new_point(:,k);
+                    min_point(:,k) = new_point(:,k);
                 end
 
             end
@@ -143,5 +137,5 @@ for i = 1:cal_size/N%x coordination
     end
 end
 
-toc
+
 save('calibirate_pt.mat','dotPositionMatrix')
