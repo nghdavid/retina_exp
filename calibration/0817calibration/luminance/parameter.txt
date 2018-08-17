@@ -1,0 +1,13 @@
+width = 465
+meaCenter_x=631
+meaCenter_y=580
+LED_based_color=180;
+
+
+lum25
+set(scr_obj,'GainRaw',0)
+set(scr_obj,'ExposureTimeAbs',900000)
+
+lum50
+set(scr_obj,'GainRaw',0)
+set(scr_obj,'ExposureTimeAbs',800000)
