@@ -2,7 +2,7 @@ width = 465
 meaCenter_x=631
 meaCenter_y=580
 LED_based_color=180;
-
+center_color = 93;
 
 lum25
 set(scr_obj,'GainRaw',0)
