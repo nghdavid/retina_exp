@@ -1,0 +1,1 @@
+arduino --board arduino:avr:leonardo --port COM14 --upload C:\Users\Dev\Documents\Arduino\sketch_jun06a\sketch_jun06a.ino
