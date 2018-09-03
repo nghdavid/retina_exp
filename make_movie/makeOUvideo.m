@@ -16,8 +16,8 @@ rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
 
 G_list=[1.55 2.45 3.2 4 5.7 7.6 10.5 5.03];  %list of Gamma valau
 countt=1;
-load('E:\retina\makemovie\calibrate_pt.mat')%Load dotPositionMatrix
-load('E:\retina\makemovie\screen_brightness.mat')%Load screen_brightness
+load('D:\retina\makemovie\calibrate_pt.mat')%Load dotPositionMatrix
+load('D:\retina\makemovie\screen_brightness.mat')%Load screen_brightness
 
 all_file = dir('*.mat');
 
@@ -30,8 +30,9 @@ screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due 
 screen_brightness(screen_brightness>1)=1;
 
 %%rotation theta = 0 for RL
+%theta must between [0,pi)
 theta = 0;
-R_matrix = [cos(theta) sin(theta) ; -sin(theta) cos(theta)];
+R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
 
 for Gvalue=G_list
       
@@ -54,9 +55,9 @@ for Gvalue=G_list
     new_x=round(x3); 
     Y =meaCenter_y;
 
-    cd ('E:\retina\videos\0903_OU_video_Br_50')
+    cd ('D:\retina\videos\0903_OU_video_Br_50')
     %video frame file
-    name=['0819 OU RL G',num2str(G_OU) ,' 5min Br50 Q100'];
+    name=['0903 OU RL G',num2str(G_OU) ,' 5min Br50 Q100'];
     name
 
 
@@ -83,31 +84,77 @@ for Gvalue=G_list
 
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
-        for y = barY-bar_le: barY+bar_le
-            for x = barX-bar_wid:barX+bar_wid
-               R_cor = ceil(R_matrix*[x-(mea_size_bm+1)/2  y-(mea_size_bm+1)/2]'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]'); %ratation
-               %R_cor = [x y];
-               if R_cor(2) < 1
-                   R_cor(2)
-                   R_cor(2) = 1;
-               elseif R_cor(2) > mea_size_bm
-                   R_cor(2)
-                   R_cor(2) = mea_size_bm;
-               else                   
-               end
-               if R_cor(1) < 1
-                   R_cor(1)
-                   R_cor(1) = 1;
-               elseif R_cor(1) > mea_size_bm
-                   R_cor(1)
-                   R_cor(1) = mea_size_bm;
-               else
-               end
-               
-               cal_x = dotPositionMatrix{R_cor(2),R_cor(1)}(1);
-               cal_y = dotPositionMatrix{R_cor(2),R_cor(1)}(2);
-               cal_lum = screen_brightness(R_cor(2),R_cor(1));
-               a(cal_y,cal_x) = cal_lum;
+        
+        
+        Vertex = cell(4);
+        Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
+        Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
+        Vertex{3} = [barX+bar_wid  barY+bar_le];
+        Vertex{4} = [barX+bar_wid  barY-bar_le];
+        %ratation
+        for i = 1:4
+            Vertex{i} = R_matrix*(Vertex{i}-[(mea_size_bm+1)/2  (mea_size_bm+1)/2])'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]';
+        end
+        
+        if theta == 0 || theta == pi/2  % vertical case
+            for y = Vertex{1}(2) : Vertex{3}(2)
+                for x = Vertex{2}(1):Vertex{4}(1)
+                    cal_x = dotPositionMatrix{y,x}(1);
+                    cal_y = dotPositionMatrix{y,x}(2);
+                    cal_lum = screen_brightness(y,x);
+                    a(cal_y,cal_x) = cal_lum;
+                end
+            end
+            
+        else 
+            if theta > pi/2
+                newVertex = Vertex{1};
+                for i = 1:3
+                    Vertex{i} = Vertex{i+1};
+                end
+                Vertex{4} = newVertex;
+            end
+            
+            %better way
+                %pervent out of rnage
+            if Vertex{2}(1) < 1
+                min_x = 1;
+            else
+                min_x = Vertex{2}(1);
+            end
+            if Vertex{4}(1) > mea_size_bm
+                max_x = mea_size_bm;
+            else
+                max_x = Vertex{4}(1);
+            end
+            
+            for x = floor(min_x) : ceil(max_x)
+                % find bar region
+                if x < Vertex{1}(1)
+                    lower_y = Vertex{1}(2) + (Vertex{1}(2)-Vertex{2}(2))/(Vertex{1}(1)-Vertex{2}(1)) * (x-Vertex{1}(1));
+                else
+                    lower_y = Vertex{1}(2) + (Vertex{1}(2)-Vertex{4}(2))/(Vertex{1}(1)-Vertex{4}(1)) * (x-Vertex{1}(1));
+                end
+                if x < Vertex{3}(1)
+                    upper_y = Vertex{3}(2) + (Vertex{3}(2)-Vertex{2}(2))/(Vertex{3}(1)-Vertex{2}(1)) * (x-Vertex{3}(1));
+                else
+                    upper_y = Vertex{3}(2) + (Vertex{3}(2)-Vertex{4}(2))/(Vertex{3}(1)-Vertex{4}(1)) * (x-Vertex{3}(1));
+                end
+                
+                    %pervent out of rnage
+                if lower_y < 1
+                    lower_y = 1;
+                end
+                if upper_y > mea_size_bm
+                    upper_y = mea_size_bm;
+                end
+                
+                for y = floor(lower_y) : ceil(upper_y)
+                    cal_x = dotPositionMatrix{y,x}(1);
+                    cal_y = dotPositionMatrix{y,x}(2);
+                    cal_lum = screen_brightness(y,x);
+                    a(cal_y,cal_x) = cal_lum;
+                end
             end
         end
         
@@ -131,9 +178,9 @@ for Gvalue=G_list
         writeVideo(writerObj,img);
     end
     close(writerObj);
-    cd('E:\retina\makemovie\OU_0903_video_Br_50_workspace')
+    cd('D:\retina\videos\0903_OU_video_Br_50')
     %save parameters needed 
     save(['0903 OU RL G',num2str(G_OU) ,' 5min Br50 Q100','.mat'],'new_x')
     
 end
-cd('E:\retina\makemovie')
+cd('D:\retina\makemovie')
