@@ -39,12 +39,13 @@ for kk =0:length(T)-1
     a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
     
     %square_flicker
-    if mod(kk,10)<5 %odd number
+    on_time = 0.5; %s
+    off_time = 5; %s
+    if mod(kk,fps*(on_time+off_time))<on_time*fps %odd number
         a=ones(1024,1280); % white square
-    elseif mod(kk,10)>=5
+    elseif mod(kk,fps*(on_time+off_time))>on_time*fps
         a=zeros(1024,1280); % dark
     else
-        
     end
     
     
