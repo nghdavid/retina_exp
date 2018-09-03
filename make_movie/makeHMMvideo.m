@@ -1,6 +1,6 @@
 %% HMM RL
 clear all;
-cd('/Users/nghdavid/Desktop/make_movie');
+cd('E:\retina\makemovie');
 
 mea_size=433;
 mea_size_bm=465; %bigger mea size , from luminance calibrated region
@@ -16,7 +16,7 @@ leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
 rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
 
 G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
-G_list=[9 12 20]; 
+%G_list=[9]; 
 countt=1;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
@@ -31,8 +31,12 @@ T=dt:dt:T;
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
 
+%%rotation theta = 0 for RL
+theta = 0;
+R_matrix = [cos(theta) sin(theta) ; sin(theta) cos(theta)];
+
 for Gvalue=G_list
-    cd('/Users/nghdavid/Desktop/make_movie/0421 new video Br25/rn_workspace');
+    cd('E:\retina\makemovie\0421 new video Br25\rn_workspace');
     G_HMM =Gvalue; % damping / only G will influence correlation time
     D_HMM = 2700000; %dynamical range
     omega =G_HMM/2.12;   % omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
@@ -57,14 +61,14 @@ for Gvalue=G_list
             Vx(t+1) = (1-G_HMM*dt)*Vx(t) - omega^2*Xarray(t)*dt + sqrt(dt*D_HMM)*rntest(t); 
     end
     % Normalize to proper moving range
-    nrx=abs(floor((rightx_bar-leftx_bar)/(max(Xarray)-min(Xarray))));
+    nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(Xarray)-min(Xarray)));
     Xarray2=Xarray*nrx;
-    Xarray3=Xarray2+leftx_bar-min(Xarray2);%rearrange the boundary values
+    Xarray3=Xarray2+leftx_bar+bar_wid-min(Xarray2);%rearrange the boundary values
     newXarray=round(Xarray3); 
     Y =meaCenter_y; 
-    cd ('/Users/nghdavid/Desktop/make_movie/0819_video_Br_50')
+    cd ('E:\retina\videos\0903_HMM_video_Br_50')
     %video frame file
-    name=['0819 HMM RL G',num2str(G_HMM) ,' 7min Br50 Q100'];
+    name=['0903 HMM RL G',num2str(G_HMM) ,' 7min Br50 Q100'];
     name
 
 
@@ -76,14 +80,12 @@ for Gvalue=G_list
     writerObj.Quality = 100;
     open(writerObj);
     %start part: dark adaptation
-    for mm=1:60
+    for mm=1:fps*20
         img=zeros(1024,1280);   
         writeVideo(writerObj,img);
     end
 
-    %%rotation theta = 0 for RL
-    theta = pi/4;
-    R_matrix = [cos(theta) sin(theta) ; sin(theta) cos(theta)];
+    
     
     %%draw moving bar
     for kk =1:length(T)
@@ -95,7 +97,27 @@ for Gvalue=G_list
         barY=round(Y)-round(lefty_bd);
         for y = barY-bar_le: barY+bar_le
             for x = barX-bar_wid:barX+bar_wid
-               R_cor =round( R_matrix*[x-(mea_size_bm+1)/2  y-(mea_size_bm+1)/2]'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]'); %ratation
+               %y = mea_size_bm+1 - y;
+               R_cor = ceil(R_matrix*[x-(mea_size_bm+1)/2  y-(mea_size_bm+1)/2]'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]'); %ratation
+               %R_cor = [x y];
+               if R_cor(2) < 1
+                   R_cor(2)
+                   R_cor(2) = 1;
+               elseif R_cor(2) > mea_size_bm
+                   R_cor(2)
+                   R_cor(2) = mea_size_bm;
+               else
+                   
+               end
+               if R_cor(1) < 1
+                   R_cor(1)
+                   R_cor(1) = 1;
+               elseif R_cor(1) > mea_size_bm
+                   R_cor(1)
+                   R_cor(1) = mea_size_bm;
+               else
+               end
+               
                cal_x = dotPositionMatrix{R_cor(2),R_cor(1)}(1);
                cal_y = dotPositionMatrix{R_cor(2),R_cor(1)}(2);
                cal_lum = screen_brightness(R_cor(2),R_cor(1));
@@ -111,8 +133,6 @@ for Gvalue=G_list
         else
         a(500-35:500+35,1230:1280)=0; % dark
         end
-        
-        
         writeVideo(writerObj,a);
     end
 
@@ -123,9 +143,9 @@ for Gvalue=G_list
         writeVideo(writerObj,img);
     end
     close(writerObj);
-    cd('/Users/nghdavid/Desktop/make_movie/0819_video_Br_50_workspace')
+    cd('E:\retina\videos\0903_HMM_video_Br_50')
     %save parameters needed 
-    save(['0819 HMM RL G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
+    save(['0903 HMM RL G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
     
 end
-cd('/Users/nghdavid/Desktop/make_movie')
+cd('E:\retina\makemovie')
