@@ -14,9 +14,9 @@ T=dt:dt:T;
 
       
     
-cd ('/Users/nghdavid/Desktop/make_movie/OU_0819_video_Br_50')
+cd ('E:\retina\videos\0903_ONOFF_video_Br_50')
 %video frame file
-name=['0819 OU RL G',num2str(G_OU) ,' 5min Br50 Q100'];
+name=['0903 ONOFF 5min Br50 Q100'];
 name
 
 
@@ -46,6 +46,7 @@ for kk =0:length(T)-1
     elseif mod(kk,fps*(on_time+off_time))>on_time*fps
         a=zeros(1024,1280); % dark
     else
+        
     end
     
     
@@ -59,9 +60,8 @@ for mm=1:10
     writeVideo(writerObj,img);
 end
 close(writerObj);
-cd('/Users/nghdavid/Desktop/make_movie/OU_0819_video_Br_50_workspace')
-%save parameters needed
-save(['0819 OU RL G',num2str(G_OU) ,' 5min Br50 Q100','.mat'],'new_x')
 
 
-cd('/Users/nghdavid/Desktop/make_movie')
+
+
+cd('E:\retina\videos\0903_ONOFF_video_Br_50')
