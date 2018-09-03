@@ -1,6 +1,6 @@
-%% HMM RL
+%% HMM base from RL motion
 clear all;
-cd('E:\retina\makemovie');
+cd('D:\retina\makemovie');
 
 mea_size=433;
 mea_size_bm=465; %bigger mea size , from luminance calibrated region
@@ -16,7 +16,6 @@ leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
 rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
 
 G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
-%G_list=[9]; 
 countt=1;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
@@ -31,12 +30,13 @@ T=dt:dt:T;
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
 
-%%rotation theta = 0 for RL
-theta = 0;
-R_matrix = [cos(theta) sin(theta) ; sin(theta) cos(theta)];
+%%rotation theta = 0 for RL theta
+%theta must between [0,pi)
+theta =pi/4;
+R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
 
 for Gvalue=G_list
-    cd('E:\retina\makemovie\0421 new video Br25\rn_workspace');
+    cd('D:\retina\makemovie\0421 new video Br25\rn_workspace');
     G_HMM =Gvalue; % damping / only G will influence correlation time
     D_HMM = 2700000; %dynamical range
     omega =G_HMM/2.12;   % omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
@@ -66,9 +66,9 @@ for Gvalue=G_list
     Xarray3=Xarray2+leftx_bar+bar_wid-min(Xarray2);%rearrange the boundary values
     newXarray=round(Xarray3); 
     Y =meaCenter_y; 
-    cd ('E:\retina\videos\0903_HMM_video_Br_50')
+    cd ('D:\retina\videos\0903_HMM_video_Br_50')
     %video frame file
-    name=['0903 HMM RL G',num2str(G_HMM) ,' 7min Br50 Q100'];
+    name=['0903 HMM pi/4 G',num2str(G_HMM) ,' 7min Br50 Q100'];
     name
 
 
@@ -95,36 +95,104 @@ for Gvalue=G_list
         X=newXarray(kk);
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
-        for y = barY-bar_le: barY+bar_le
-            for x = barX-bar_wid:barX+bar_wid
-               %y = mea_size_bm+1 - y;
-               R_cor = ceil(R_matrix*[x-(mea_size_bm+1)/2  y-(mea_size_bm+1)/2]'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]'); %ratation
-               %R_cor = [x y];
-               if R_cor(2) < 1
-                   R_cor(2)
-                   R_cor(2) = 1;
-               elseif R_cor(2) > mea_size_bm
-                   R_cor(2)
-                   R_cor(2) = mea_size_bm;
-               else
-                   
-               end
-               if R_cor(1) < 1
-                   R_cor(1)
-                   R_cor(1) = 1;
-               elseif R_cor(1) > mea_size_bm
-                   R_cor(1)
-                   R_cor(1) = mea_size_bm;
-               else
-               end
-               
-               cal_x = dotPositionMatrix{R_cor(2),R_cor(1)}(1);
-               cal_y = dotPositionMatrix{R_cor(2),R_cor(1)}(2);
-               cal_lum = screen_brightness(R_cor(2),R_cor(1));
-               a(cal_y,cal_x) = cal_lum;
-            end
+        
+        %define vertexes to set bar region
+        Vertex = cell(4);
+        Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
+        Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
+        Vertex{3} = [barX+bar_wid  barY+bar_le];
+        Vertex{4} = [barX+bar_wid  barY-bar_le];
+        %ratation
+        for i = 1:4
+            Vertex{i} = R_matrix*(Vertex{i}-[(mea_size_bm+1)/2  (mea_size_bm+1)/2])'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]';
         end
         
+        if theta == 0 || theta == pi/2  % vertical case
+            for y = Vertex{1}(2) : Vertex{3}(2)
+                for x = Vertex{2}(1):Vertex{4}(1)
+                    cal_x = dotPositionMatrix{y,x}(1);
+                    cal_y = dotPositionMatrix{y,x}(2);
+                    cal_lum = screen_brightness(y,x);
+                    a(cal_y,cal_x) = cal_lum;
+                end
+            end
+            
+        else 
+            if theta > pi/2
+                newVertex = Vertex{1};
+                for i = 1:3
+                    Vertex{i} = Vertex{i+1};
+                end
+                Vertex{4} = newVertex;
+            end
+            %stupid way
+            %         for y = 1:mea_size_bm %floor(Vertex{1}(2)) : ceil(Vertex{3}(2))
+            %             for x = 1:mea_size_bm %floor(Vertex{2}(2)) : ceil(Vertex{4}(2))
+            %                 if (y-Vertex{1}(2)) - (Vertex{1}(1)-Vertex{2}(1))/(Vertex{1}(2)-Vertex{2}(2)) * (x-Vertex{1}(2)) >= 0 && (y-Vertex{4}(2)) - (Vertex{4}(1)-Vertex{3}(1))/(Vertex{4}(2)-Vertex{3}(2)) * (x-Vertex{4}(2)) <= 0
+            %                     if (y-Vertex{1}(2)) - (Vertex{1}(1)-Vertex{4}(1))/(Vertex{1}(2)-Vertex{4}(2)) * (x-Vertex{1}(2)) >= 0 && (y-Vertex{2}(2)) - (Vertex{2}(1)-Vertex{3}(1))/(Vertex{2}(2)-Vertex{3}(2)) * (x-Vertex{2}(2)) <= 0
+            %                         cal_x = dotPositionMatrix{y,x}(1);
+            %                         cal_y = dotPositionMatrix{y,x}(2);
+            %                         cal_lum = screen_brightness(y,x);
+            %                         a(cal_y,cal_x) = cal_lum;
+            %                     end
+            %                 end
+            %             end
+            %         end
+            
+            %better way
+                %pervent out of rnage
+            if Vertex{2}(1) < 1
+                min_x = 1;
+            else
+                min_x = Vertex{2}(1);
+            end
+            if Vertex{4}(1) > mea_size_bm
+                max_x = mea_size_bm;
+            else
+                max_x = Vertex{4}(1);
+            end
+            
+            for x = floor(min_x) : ceil(max_x)
+                % find bar region
+                if x < Vertex{1}(1)
+                    lower_y = Vertex{1}(2) + (Vertex{1}(2)-Vertex{2}(2))/(Vertex{1}(1)-Vertex{2}(1)) * (x-Vertex{1}(1));
+                else
+                    lower_y = Vertex{1}(2) + (Vertex{1}(2)-Vertex{4}(2))/(Vertex{1}(1)-Vertex{4}(1)) * (x-Vertex{1}(1));
+                end
+                if x < Vertex{3}(1)
+                    upper_y = Vertex{3}(2) + (Vertex{3}(2)-Vertex{2}(2))/(Vertex{3}(1)-Vertex{2}(1)) * (x-Vertex{3}(1));
+                else
+                    upper_y = Vertex{3}(2) + (Vertex{3}(2)-Vertex{4}(2))/(Vertex{3}(1)-Vertex{4}(1)) * (x-Vertex{3}(1));
+                end
+                
+                    %pervent out of rnage
+                if lower_y < 1
+                    lower_y = 1;
+                end
+                if upper_y > mea_size_bm
+                    upper_y = mea_size_bm;
+                end
+                
+                for y = floor(lower_y) : ceil(upper_y)
+                    cal_x = dotPositionMatrix{y,x}(1);
+                    cal_y = dotPositionMatrix{y,x}(2);
+                    cal_lum = screen_brightness(y,x);
+                    a(cal_y,cal_x) = cal_lum;
+                end
+            end
+        end
+        %expandind theta
+        
+%         if Vertex{1}(2) < 1
+%             min_y = 1;
+%         else
+%             min_y = Vertex{1}(2);
+%         end
+%         if Vertex{3}(2) > mea_size_bm
+%             max_y = 1;
+%         else
+%             max_y = Vertex{3}(2);
+%         end
         %square_flicker
         if mod(kk,3)==1 %odd number
         a(500-35:500+35,1230:1280)=1; % white square
@@ -143,9 +211,10 @@ for Gvalue=G_list
         writeVideo(writerObj,img);
     end
     close(writerObj);
-    cd('E:\retina\videos\0903_HMM_video_Br_50')
+    cd('D:\retina\videos\0903_HMM_video_Br_50')
     %save parameters needed 
-    save(['0903 HMM RL G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
+    save(['0903 HMM pi/4 G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
     
 end
-cd('E:\retina\makemovie')
+cd('D:\retina\makemovie')
+
