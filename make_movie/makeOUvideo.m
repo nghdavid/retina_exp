@@ -31,7 +31,7 @@ screen_brightness(screen_brightness>1)=1;
 
 %%rotation theta = 0 for RL
 theta = 0;
-R_matrix = [cos(theta) sin(theta) ; sin(theta) cos(theta)];
+R_matrix = [cos(theta) sin(theta) ; -sin(theta) cos(theta)];
 
 for Gvalue=G_list
       
@@ -68,7 +68,7 @@ for Gvalue=G_list
     writerObj.Quality = 100;
     open(writerObj);
     %start part: dark adaptation
-    for mm=1:60
+    for mm=1:fps*20
         img=zeros(1024,1280);   
         writeVideo(writerObj,img);
     end
@@ -85,7 +85,25 @@ for Gvalue=G_list
         barY=round(Y)-round(lefty_bd);
         for y = barY-bar_le: barY+bar_le
             for x = barX-bar_wid:barX+bar_wid
-               R_cor =round( R_matrix*[x-(mea_size_bm+1)/2  y-(mea_size_bm+1)/2]'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]'); %ratation
+               R_cor = ceil(R_matrix*[x-(mea_size_bm+1)/2  y-(mea_size_bm+1)/2]'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]'); %ratation
+               %R_cor = [x y];
+               if R_cor(2) < 1
+                   R_cor(2)
+                   R_cor(2) = 1;
+               elseif R_cor(2) > mea_size_bm
+                   R_cor(2)
+                   R_cor(2) = mea_size_bm;
+               else                   
+               end
+               if R_cor(1) < 1
+                   R_cor(1)
+                   R_cor(1) = 1;
+               elseif R_cor(1) > mea_size_bm
+                   R_cor(1)
+                   R_cor(1) = mea_size_bm;
+               else
+               end
+               
                cal_x = dotPositionMatrix{R_cor(2),R_cor(1)}(1);
                cal_y = dotPositionMatrix{R_cor(2),R_cor(1)}(2);
                cal_lum = screen_brightness(R_cor(2),R_cor(1));
