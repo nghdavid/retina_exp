@@ -16,8 +16,8 @@ rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
 
 G_list=[1.55 2.45 3.2 4 5.7 7.6 10.5 5.03];  %list of Gamma valau
 countt=1;
-load('/Users/nghdavid/Desktop/make_movie/calibrate_pt.mat')%Load dotPositionMatrix
-load('/Users/nghdavid/Desktop/make_movie/screen_brightness.mat')%Load screen_brightness
+load('E:\retina\makemovie\calibrate_pt.mat')%Load dotPositionMatrix
+load('E:\retina\makemovie\screen_brightness.mat')%Load screen_brightness
 
 all_file = dir('*.mat');
 
@@ -28,6 +28,10 @@ T=dt:dt:T;
 
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
+
+%%rotation theta = 0 for RL
+theta = 0;
+R_matrix = [cos(theta) sin(theta) ; sin(theta) cos(theta)];
 
 for Gvalue=G_list
       
@@ -44,13 +48,13 @@ for Gvalue=G_list
     %%% Normalize to proper moving range
     
     
-    nrx=abs(floor((rightx_bar-leftx_bar)/(max(x)-min(x))));
+    nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(x)-min(x)));
     x2=x*nrx;
-    x3=x2-min(x2)+leftx_bar;%rearrange the boundary values
+    x3=x2-min(x2)+leftx_bar+bar_wid;%rearrange the boundary values
     new_x=round(x3); 
     Y =meaCenter_y;
 
-    cd ('/Users/nghdavid/Desktop/make_movie/OU_0819_video_Br_50')
+    cd ('E:\retina\videos\0903_OU_video_Br_50')
     %video frame file
     name=['0819 OU RL G',num2str(G_OU) ,' 5min Br50 Q100'];
     name
@@ -69,9 +73,7 @@ for Gvalue=G_list
         writeVideo(writerObj,img);
     end
     
-    %%rotation theta = 0 for RL
-    theta = pi/4;
-    R_matrix = [cos(theta) sin(theta) ; sin(theta) cos(theta)];
+    
 
     for kk =1:length(T)
         a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
@@ -111,9 +113,9 @@ for Gvalue=G_list
         writeVideo(writerObj,img);
     end
     close(writerObj);
-    cd('/Users/nghdavid/Desktop/make_movie/OU_0819_video_Br_50_workspace')
+    cd('E:\retina\makemovie\OU_0903_video_Br_50_workspace')
     %save parameters needed 
-    save(['0819 OU RL G',num2str(G_OU) ,' 5min Br50 Q100','.mat'],'new_x')
+    save(['0903 OU RL G',num2str(G_OU) ,' 5min Br50 Q100','.mat'],'new_x')
     
 end
-cd('/Users/nghdavid/Desktop/make_movie')
+cd('E:\retina\makemovie')
