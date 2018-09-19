@@ -15,9 +15,13 @@ bar_wid=11; %half of bar width / total length = 11*2+1=23 pixels = 65 um
 leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
 rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
 
+<<<<<<< HEAD
 G_list=[2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
 %G_list=[20];
 %G_list=[9]; 
+=======
+G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
+>>>>>>> f823719617d331acdd0c769116ccec9490f14d30
 countt=1;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
@@ -34,7 +38,11 @@ screen_brightness(screen_brightness>1)=1;
 
 %%rotation theta = 0 for RL theta
 %theta must between [0,pi)
+<<<<<<< HEAD
 theta =3*pi/4;
+=======
+theta =pi/4;
+>>>>>>> f823719617d331acdd0c769116ccec9490f14d30
 R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
 
 for Gvalue=G_list
@@ -70,7 +78,11 @@ for Gvalue=G_list
     Y =meaCenter_y; 
     cd ('D:\retina\videos\0903_HMM_video_Br_50')
     %video frame file
+<<<<<<< HEAD
     name=['0903 HMM UR_DL G',num2str(G_HMM) ,' 7min Br50 Q100'];
+=======
+    name=['0903 HMM pi/4 G',num2str(G_HMM) ,' 7min Br50 Q100'];
+>>>>>>> f823719617d331acdd0c769116ccec9490f14d30
     name
 
 
@@ -98,6 +110,10 @@ for Gvalue=G_list
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
         
+<<<<<<< HEAD
+=======
+        %define vertexes to set bar region
+>>>>>>> f823719617d331acdd0c769116ccec9490f14d30
         Vertex = cell(4);
         Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
         Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
@@ -109,8 +125,13 @@ for Gvalue=G_list
         end
         
         if theta == 0 || theta == pi/2  % vertical case
+<<<<<<< HEAD
             for y = round(Vertex{1}(2)) : round(Vertex{3}(2))
                 for x = round(Vertex{2}(1)):round(Vertex{4}(1))
+=======
+            for y = Vertex{1}(2) : Vertex{3}(2)
+                for x = Vertex{2}(1):Vertex{4}(1)
+>>>>>>> f823719617d331acdd0c769116ccec9490f14d30
                     cal_x = dotPositionMatrix{y,x}(1);
                     cal_y = dotPositionMatrix{y,x}(2);
                     cal_lum = screen_brightness(y,x);
@@ -214,7 +235,15 @@ for Gvalue=G_list
     close(writerObj);
     cd('D:\retina\videos\0903_HMM_video_Br_50')
     %save parameters needed 
+<<<<<<< HEAD
     save(['0903 HMM UR_DL G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
     
 end
 cd('D:\retina\makemovie')
+=======
+    save(['0903 HMM pi/4 G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
+    
+end
+cd('D:\retina\makemovie')
+
+>>>>>>> f823719617d331acdd0c769116ccec9490f14d30
