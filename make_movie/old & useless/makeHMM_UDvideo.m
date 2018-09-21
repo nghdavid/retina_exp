@@ -1,7 +1,5 @@
-%% HMM RL
 clear all;
-cd('/Users/nghdavid/Desktop/make_movie');
-
+%% HMM UD
 mea_size=433;
 mea_size_bm=465; %bigger mea size , from luminance calibrated region
 meaCenter_x=631; 
@@ -9,14 +7,13 @@ meaCenter_y=580;
 
 leftx_bd=meaCenter_x-(mea_size_bm-1)/2; %the first x position of the bigger mea region(luminance calibrated region) on LED screen
 lefty_bd=meaCenter_y-(mea_size_bm-1)/2;
-bar_le=floor((mea_size_bm-1)/2/sqrt(2)); %half of bar length / pixel number on LCD /total length = mea_size = 1919 um
+bar_le=(mea_size-1)/2; %half of bar length / pixel number on LCD /total length = mea_size = 1919 um
 bar_wid=11; %half of bar width / total length = 11*2+1=23 pixels = 65 um
-%R-L
-leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
-rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
+%U-D
+upy_bar=meaCenter_y-(mea_size-1)/2; %Left boundary of bar
+downy_bar=meaCenter_y+(mea_size-1)/2; %Right boundary of bar
 
 G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
-G_list=[9 12 20]; 
 countt=1;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
@@ -30,6 +27,7 @@ T=dt:dt:T;
 
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
+
 
 for Gvalue=G_list
     cd('/Users/nghdavid/Desktop/make_movie/0421 new video Br25/rn_workspace');
@@ -48,23 +46,29 @@ for Gvalue=G_list
     Gvalue
     countt=countt+1;
 
-    Xarray = zeros(1,length(T));
-    Xarray(1,1)=0; % since the mean value of damped eq is zero
-    Vx = zeros(1,length(T));
-    %Use rntest(t)!!!
+
+    Yarray = zeros(1,length(T));
+    Yarray(1,1)=0; % since the mean value of damped eq is zero
+    Vy = zeros(1,length(T));
     for t = 1:length(T)-1
-            Xarray(t+1) = Xarray(t) + Vx(t)*dt;
-            Vx(t+1) = (1-G_HMM*dt)*Vx(t) - omega^2*Xarray(t)*dt + sqrt(dt*D_HMM)*rntest(t); 
+            Yarray(t+1) = Yarray(t) + Vy(t)*dt;  
+            Vy(t+1) = (1-G_HMM*dt)*Vy(t) - omega^2*Yarray(t)*dt + sqrt(dt*D_HMM)*rntest(t); % rntest(t): gaussian noise with zero mean and unit variance
     end
-    % Normalize to proper moving range
-    nrx=abs(floor((rightx_bar-leftx_bar)/(max(Xarray)-min(Xarray))));
-    Xarray2=Xarray*nrx;
-    Xarray3=Xarray2+leftx_bar-min(Xarray2);%rearrange the boundary values
-    newXarray=round(Xarray3); 
-    Y =meaCenter_y; 
-    cd ('/Users/nghdavid/Desktop/make_movie/0819_video_Br_50')
+    %Normalize to proper moving range
+    nry=(downy_bar-upy_bar)/(max(Yarray)-min(Yarray));
+    Yarray2=Yarray*nry;
+    mdist=abs(min(Yarray2)-upy_bar);
+        if min(Yarray2)>upy_bar
+         mdist=-mdist;
+        end
+    Yarray3=Yarray2+mdist;
+    newYarray=round(Yarray3); 
+    X = meaCenter_x;
+
+    
+    cd ('/Users/nghdavid/Desktop/make_movie/HMM_0819_video_Br_50')
     %video frame file
-    name=['0819 HMM RL G',num2str(G_HMM) ,' 7min Br50 Q100'];
+    name=['0819 HMM UD G',num2str(G_HMM) ,' 7min Br50 Q100'];
     name
 
 
@@ -81,24 +85,20 @@ for Gvalue=G_list
         writeVideo(writerObj,img);
     end
 
-    %%rotation theta = 0 for RL
-    theta = pi/4;
-    R_matrix = [cos(theta) sin(theta) ; sin(theta) cos(theta)];
-    
-    %%draw moving bar
+
     for kk =1:length(T)
         a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
 
-        %HMM RL bar trajectory
-        X=newXarray(kk);
+        %HMM UD bar trajectory
+        Y=newYarray(kk);
+
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
-        for y = barY-bar_le: barY+bar_le
-            for x = barX-bar_wid:barX+bar_wid
-               R_cor = R_matrix*[x-(mea_size_bm+1)/2  y-(mea_size_bm+1)/2]+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]; %ratation
-               cal_x = dotPositionMatrix{R_cor(2),R_cor(1)}(1);
-               cal_y = dotPositionMatrix{R_cor(2),R_cor(1)}(2);
-               cal_lum = screen_brightness(R_cor(2),R_cor(1));
+        for x = barX-bar_le: barX+bar_le
+            for y = barY-bar_wid:barY+bar_wid
+               cal_x = dotPositionMatrix{y,x}(1);
+               cal_y = dotPositionMatrix{y,x}(2);
+               cal_lum = screen_brightness(y,x);
                a(cal_y,cal_x) = cal_lum;
             end
         end
@@ -112,7 +112,6 @@ for Gvalue=G_list
         a(500-35:500+35,1230:1280)=0; % dark
         end
         
-        
         writeVideo(writerObj,a);
     end
 
@@ -123,9 +122,10 @@ for Gvalue=G_list
         writeVideo(writerObj,img);
     end
     close(writerObj);
-    cd('/Users/nghdavid/Desktop/make_movie/0819_video_Br_50_workspace')
+    cd('/Users/nghdavid/Desktop/make_movie/HMM_0819_video_Br_50_workspace')
     %save parameters needed 
-    save(['0819 HMM RL G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
+    save(['0819 HMM UD G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newYarray')
     
 end
 cd('/Users/nghdavid/Desktop/make_movie')
+
