@@ -1,5 +1,5 @@
 This directory stores our experiment automation code.  <br />
-Automation code(exp.bat) is a batch file which consist of two parts.  <br />
+Automation code(exp.bat) is a batch file which consists of two parts.  <br />
 First, we use arduino to pull up or down the black board to control light to pass or not. <br />
 Second, we use psexec to execute exe remotely. Besides, we play movie and manipulate MC_rack and record monitor via psexec.  <br />
 

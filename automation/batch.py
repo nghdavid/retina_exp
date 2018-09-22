@@ -31,15 +31,15 @@ def play_movie(f,movie,time):
     f.write(sleep)#Force procedure to stop 40 sec
     f.write('40')#Adaptation time 
     f.write('\n')
-    f.write(matlab)#Start recording of DAQ
+    f.write(matlab)
     f.write('\n')
-    f.write(start)#Start recording of MC_rack
+    f.write(start)#Start recording
     f.write('\n')
     f.write(play)#Play movie
     f.write(movie)#Name of movie
     f.write('\n')
     f.write(sleep)
-    f.write(str(time+5))#Add 5 sec to prevent stop too early
+    f.write(str(time+5))
     f.write('\n')
     f.write(end)#End recording
     f.write('\n')
