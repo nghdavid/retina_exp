@@ -1,1 +1,0 @@
-START C:"\Program Files"\VideoLAN\VLC\vlc.exe --qt-fullscreen-screennumber=1 a.avi
