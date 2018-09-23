@@ -17,6 +17,7 @@ monitor_record store exe we use to control DAQ to check monitor  <br />
 batch.py is to make exp.bat  <br />
 exp.bat is to the batch that automate experiment  <br />
 play_list.txt is the txt file that saves name of movies and time of movies.  <br />
+rename.py is to change mcd file name <br />
 
 PS: <br />
 Tutorial of downloading pstools(psexec):  <br />
