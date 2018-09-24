@@ -1,3 +1,2 @@
-test.avi 60
-HMM.avi 300
-OU.avi 400
+1.avi 300
+2.avi 300
