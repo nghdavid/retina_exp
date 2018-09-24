@@ -5,5 +5,6 @@ daq_in = daqmx_Task('chan','Dev1/ai0' ,'rate',rate, 'SampleNum', du*rate);
 daq_in.read;
 lumin=daq_in.data;
 figure(2) ; plot(lumin);title(['lumin v.s. time']);
+cd C:\Users\MEA\Desktop\test
 saveas(gcf,strcat(name,'.jpg'))
 end
