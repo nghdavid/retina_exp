@@ -25,6 +25,7 @@ end = r'psexec -u MEA -p hydrolab \\192.168.1.174 -d -l -i C:\auto\end.exe'#End 
 sleep = 'timeout /t '#Force procedure to stop for a few second(need + 'time')
 play = 'START C:"\Program Files"\DAUM\PotPlayer\PotPlayerMini64.exe '#Play movie(need + 'movie_name')
 matlab = r'psexec -u MEA -p hydrolab \\192.168.1.174 -s "C:\auto\diode.bat" ' #Use Daq to check whether it is played normally
+dot = "'"
 def play_movie(f,movie,time):
     f.write(servo_up)#Pull up board
     f.write('\n')
@@ -32,16 +33,16 @@ def play_movie(f,movie,time):
     f.write('40')#Adaptation time 
     f.write('\n')
     f.write(matlab)
-    #f.write()
-    f.write(movie)
-    #f.write(')
+    f.write(dot)
+    f.write(movie[:-4])
+    f.write(dot)
     f.write(' ')
     f.write(str(time))
     f.write('\n')
     f.write(start)#Start recording
     f.write('\n')
     f.write(sleep)
-    f.write(10)
+    f.write(str(10))
     f.write('\n')
     f.write(play)#Play movie
     f.write(movie)#Name of movie
