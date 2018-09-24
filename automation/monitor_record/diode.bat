@@ -1,1 +1,3 @@
-"C:\<a long path here>\matlab.exe" -nodisplay -nosplash -nodesktop -r "run('C:\<a long path here>\diode_monitor.m');exit;"
+set name=%1
+set time=%2
+matlab -nodisplay -nosplash -nodesktop -r Diode_monitor(%name%,%time%);exit;"
