@@ -81,6 +81,8 @@ for mm=1:10
 end
 close(writerObj);
 
+img=zeros(1024,1280);
+writeVideo(writerObj,img);
 
 
 
