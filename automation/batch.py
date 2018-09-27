@@ -48,15 +48,11 @@ def play_movie(f,movie,time):
     f.write(str(10))
     f.write('\n')
 
-    f.write(start)#Start recording
-    f.write('\n')
-
-    f.write(sleep)
-    f.write(str(5))
-    f.write('\n')
-
     f.write(play)#Play movie
     f.write(movie)#Name of movie
+    f.write('\n')
+
+    f.write(start)#Start recording
     f.write('\n')
 
     f.write(sleep)
@@ -75,6 +71,24 @@ def play_movie(f,movie,time):
     return
     
 #Make all batches
+#Record spontaneous
+f.write(sleep)
+f.write('3000')
+f.write('\n')
+
+f.write(play)#Make screens all black
+f.write('\n')
+
+f.write(start)#Start recording
+f.write('\n')
+
+f.write(sleep)
+f.write('180')#Re
+f.write('\n')
+
+f.write(end)#End recording
+f.write('\n')
+
 for i in range(len(movie_list)):    
     play_movie(f,movie_list[i],times[i])
 
