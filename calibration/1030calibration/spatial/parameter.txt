@@ -1,0 +1,7 @@
+set(scr_obj,'GainRaw',20)
+set(scr_obj,'ExposureTimeAbs',6000000)
+mea_size=433; %Mea size
+cal_size = 465;%number of dots for one side, should be an odd number
+N = 31;%Number of dots each time of calibration
+meaCenter_x=632
+meaCenter_y=570

@@ -36,7 +36,7 @@ Screen('Flip', w);
 vid = videoinput('gige',1) %Open video
 vid.SelectedSourceName = 'input1';
 scr_obj = getselectedsource(vid);
-set(scr_obj,'GainRaw',10)
+set(scr_obj,'GainRaw',20)
 set(scr_obj,'ExposureTimeAbs',100000)
 
 

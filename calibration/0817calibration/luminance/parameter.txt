@@ -1,12 +1,10 @@
 width = 465
-meaCenter_x=631
-meaCenter_y=580
+meaCenter_x=632
+meaCenter_y=570
 LED_based_color=180;
 center_color = 93;
 
-lum25
-set(scr_obj,'GainRaw',0)
-set(scr_obj,'ExposureTimeAbs',900000)
+
 
 lum50
 set(scr_obj,'GainRaw',0)
