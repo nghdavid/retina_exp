@@ -1,13 +1,20 @@
-%% ON OFF
-clear all;
+function makeOUvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
 
+%% OU RL
+
+
+
+G_list=[1.55   5.7  10.5];  %list of Gamma valau
+countt=1;
+
+load('calibrate_pt.mat')%Load dotPositionMatrix
+load('screen_brightness.mat')%Load screen_brightness
+cd('0421 new video Br25/rn_workspace');
+all_file = dir('*.mat');
 mea_size=433;
 mea_size_bm=465; %bigger mea size , from luminance calibrated region
-meaCenter_x=631; 
-meaCenter_y=580; 
-
-%moving times.
-deltaT = 0.7; %s
+meaCenter_x=632; 
+meaCenter_y=570; 
 
 leftx_bd=meaCenter_x-(mea_size_bm-1)/2; %the first x position of the bigger mea region(luminance calibrated region) on LED screen
 lefty_bd=meaCenter_y-(mea_size_bm-1)/2;
@@ -17,77 +24,70 @@ bar_wid=11; %half of bar width / total length = 11*2+1=23 pixels = 65 um
 leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
 rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
 
-fps =60;  %freq of the screen flipping 
-T=(7+2*deltaT)*12; %second
+fps =60;  %freq of the screen flipping
+T=7*60; %second
 dt=1/fps;
 T=dt:dt:T;
 
-load('calibrate_pt.mat')%Load dotPositionMatrix
-load('screen_brightness.mat')%Load screen_brightness
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
+screen_brightness(screen_brightness<0)=0;
 
 %%rotation theta = 0 for RL theta
 %theta must between [0,pi)
-theta =0;
 R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
 
-all_file = dir('*.mat');
-
-
-Xarray = zeros(1,length(T));
-Xarray(1,1)=0; % since the mean value of damped eq is zero
-%Use rntest(t)!!!
-for tr = 0:11
-    for t0 = 1 : 1*fps 
-        Xarray(tr*(7+2*deltaT)+t0) = 0;
+for Gvalue=G_list
+      
+    G_OU = Gvalue; % damping / only G will influence correlation time
+    D_OU = 2700000; %dynamical range
+    omega =G_OU/2.12;   % omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
+    
+    Gvalue
+    x = zeros(1,length(T));
+    x(1,1)=0; % since the mean value of damped eq is zero
+    for uu = 1:length(T)-1
+          x(uu+1) = (1-dt*G_OU/(2.12)^2)*x(uu)+sqrt(dt*D_OU)*randn;
     end
-    for t1 = 1 : deltaT*fps 
-        Xarray(tr*(7+2*deltaT)+t0+t1) = t1/deltaT*fps ;
+    %%% Normalize to proper moving range
+    
+    
+    nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(x)-min(x)));
+    x2=x*nrx;
+    x3=x2-min(x2)+leftx_bar+bar_wid;%rearrange the boundary values
+    new_x=round(x3); 
+    Y =meaCenter_y;
+
+    cd (video_folder)
+    %video frame file
+    name=[date,' OU ',direction,' G',num2str(G_OU) ,' 5min Br50 Q100'];
+    name
+
+
+    %video setting
+    Time=T; %sec
+    video_fps=fps;
+    writerObj = VideoWriter([name,'.avi']);  %change video name here!
+    writerObj.FrameRate = video_fps;
+    writerObj.Quality = 100;
+    open(writerObj);
+    %start part: dark adaptation
+    for mm=1:fps*20
+        img=zeros(1024,1280);   
+        writeVideo(writerObj,img);
     end
-    for t2 = 1 : deltaT*fps 
-        Xarray(tr*(7+2*deltaT)+t0+t1+t2) = 1-t2/deltaT*fps ;
-    end
-    for t3 = 1 : 6*fps
-        Xarray(tr*(7+2*deltaT)+t0+t1+t2+t3) = 0;
-    end
-end
+    
+    
 
+    for kk =1:length(T)
+        a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
 
-% Normalize to proper moving range
-nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(Xarray)-min(Xarray)));
-Xarray2=Xarray*nrx;
-Xarray3=Xarray2+leftx_bar+bar_wid-min(Xarray2);%rearrange the boundary values
-newXarray=round(Xarray3);
-Y =meaCenter_y;
-cd ('E:\retina_v\videos\0903_Br_50\Reversal_moving')
-%video frame file
-name=['0903 Reversal_moving 5min Br50 Q100'];
-name
+        %OU RL bar trajectory
+        X=new_x(kk);
 
-%video setting
-Time=T; %sec
-video_fps=fps;
-writerObj = VideoWriter([name,'.avi']);  %change video name here!
-writerObj.FrameRate = video_fps;
-writerObj.Quality = 100;
-open(writerObj);
-%start part: dark adaptation
-for mm=1:fps*20
-    img=zeros(1024,1280);
-    writeVideo(writerObj,img);
-end
-
-
-
-%%draw moving bar
-for kk =0:length(T)-1
-    a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
-    if mod(kk,fps*(7+2*deltaT))<(2+2*deltaT)*fps 
-        
-        X=newXarray(kk+1);
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
+        
         
         Vertex = cell(4);
         Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
@@ -109,7 +109,7 @@ for kk =0:length(T)-1
                 end
             end
             
-        else
+        else 
             if theta > pi/2
                 newVertex = Vertex{1};
                 for i = 1:3
@@ -117,10 +117,9 @@ for kk =0:length(T)-1
                 end
                 Vertex{4} = newVertex;
             end
-
             
             %better way
-            %pervent out of rnage
+                %pervent out of rnage
             if Vertex{2}(1) < 1
                 min_x = 1;
             else
@@ -145,7 +144,7 @@ for kk =0:length(T)-1
                     upper_y = Vertex{3}(2) + (Vertex{3}(2)-Vertex{4}(2))/(Vertex{3}(1)-Vertex{4}(1)) * (x-Vertex{3}(1));
                 end
                 
-                %pervent out of rnage
+                    %pervent out of rnage
                 if lower_y < 1
                     lower_y = 1;
                 end
@@ -160,38 +159,37 @@ for kk =0:length(T)-1
                     a(cal_y,cal_x) = cal_lum;
                 end
             end
-            
-    else 
-        a=zeros(1024,1280); % dark
-    end
-
-    
-    end
-
-    if mod(kk,3)==1 %odd number
+        end
+        
+        %square_flicker
+        if mod(kk,3)==1 %odd number
         a(500-35:500+35,1230:1280)=1; % white square
-    elseif mod(kk,3)==2
-        a(500-35:500+35,1230:1280)=0.2; %gray
-    else
+        elseif mod(kk,3)==2
+        a(500-35:500+35,1230:1280)=0.2; %gray 
+        else
         a(500-35:500+35,1230:1280)=0; % dark
+        end
+        
+        
+        writeVideo(writerObj,a);
     end
-    writeVideo(writerObj,a);
-end
 
-%end part video
-for mm=1:10
+    %end part video
+    for mm=1:10
+        img=zeros(1024,1280);
+        img(500-35:500+35,1230:1280)=0.2; %gray
+        writeVideo(writerObj,img);
+    end
+    
     img=zeros(1024,1280);
-    img(500-35:500+35,1230:1280)=0.2; %gray
     writeVideo(writerObj,img);
+    
+    close(writerObj);
+    cd(videoworkspace_folder)
+    %save parameters needed
+    save([date,' OU ',direction,' G',num2str(G_OU) ,' 5min Br50 Q100','.mat'],'new_x')
+    
 end
-close(writerObj);
+cd(makemovie_folder)
 
-    
-    
-    
-%video setting
-
-
-
-
-cd('E:\retina\videos\0903_ONOFF_video_Br_50')
+end
