@@ -56,19 +56,16 @@ for kk =0:length(T)-1
     a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
     
     %square_flicker
-    
-    for y = upy_bar - leftx_bd : downy_bar - leftx_bd
-        for x = leftx_bar - leftx_bd : rightx_bar - leftx_bd
-            if mod(kk,fps*(on_time+off_time))<on_time*fps %odd number
+    if mod(kk,fps*(on_time+off_time))<on_time*fps %odd number
+        for y = upy_bar - leftx_bd : downy_bar - leftx_bd
+            for x = leftx_bar - leftx_bd : rightx_bar - leftx_bd
                 cal_x = dotPositionMatrix{y,x}(1);
                 cal_y = dotPositionMatrix{y,x}(2);
                 cal_lum = screen_brightness(y,x);
                 a(cal_y,cal_x) = cal_lum;
-            elseif mod(kk,fps*(on_time+off_time))>on_time*fps
-                a=zeros(1024,1280); % dark
-            else
             end
         end
+        a(500-35:500+35,1230:1280)=1;
     end
     writeVideo(writerObj,a);
 end
