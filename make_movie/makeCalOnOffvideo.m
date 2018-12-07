@@ -3,8 +3,8 @@ clear all;
 
 mea_size=433;
 mea_size_bm=465; %bigger mea size , from luminance calibrated region
-meaCenter_x=631; 
-meaCenter_y=580; 
+meaCenter_x=632; 
+meaCenter_y=570; 
 
 %ONOFF times.
 on_time = 2; %s
@@ -29,6 +29,7 @@ load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
+screen_brightness(screen_brightness<0)=0;
 
 all_file = dir('*.mat');
 cd ('E:\retina_v\videos\0903_Br_50\ONOFF')
