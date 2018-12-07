@@ -58,7 +58,7 @@ for kk =0:length(T)-1
     
     %square_flicker
     if mod(kk,fps*(on_time+off_time))<on_time*fps %odd number
-        for y = upy_bar - leftx_bd : downy_bar - leftx_bd
+        for y = upy_bar - lefty_bd : downy_bar - lefty_bd
             for x = leftx_bar - leftx_bd : rightx_bar - leftx_bd
                 cal_x = dotPositionMatrix{y,x}(1);
                 cal_y = dotPositionMatrix{y,x}(2);
