@@ -3,7 +3,7 @@ function makeHMMvideo(makemovie_folder, theta, direction, video_folder, videowor
 %% HMM base from RL motion
 
 
-G_list=[2.5 1.3 20];  %list of Gamma value
+G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
 %G_list=[20];
 %G_list=[9];
 countt=1;
@@ -71,7 +71,7 @@ for Gvalue=G_list
     Y =meaCenter_y;
     cd (video_folder)
     %video frame file
-    name=[date,' HMM ',direction,' G',num2str(G_HMM) ,' 7min Br50 Q100'];
+    name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100'];
     name
     
     

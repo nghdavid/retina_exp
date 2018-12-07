@@ -4,7 +4,7 @@ function makeOUvideo(makemovie_folder, theta, direction, video_folder, videowork
 
 
 
-G_list=[1.55   5.7  10.5];  %list of Gamma valau
+G_list=[1.55 2.45 3.2 4 5.7 7.6 10.5 5.03];  %list of Gamma valau
 countt=1;
 
 load('calibrate_pt.mat')%Load dotPositionMatrix
@@ -25,7 +25,7 @@ leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
 rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
 
 fps =60;  %freq of the screen flipping
-T=7*60; %second
+T=5*60; %second
 dt=1/fps;
 T=dt:dt:T;
 
@@ -60,7 +60,7 @@ for Gvalue=G_list
 
     cd (video_folder)
     %video frame file
-    name=[date,' OU ',direction,' G',num2str(G_OU) ,' 5min Br50 Q100'];
+    name=[date,'_OU_',direction,'_G',num2str(G_OU) ,'_5min_Br50_Q100'];
     name
 
 
@@ -80,6 +80,7 @@ for Gvalue=G_list
     
 
     for kk =1:length(T)
+        
         a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
 
         %OU RL bar trajectory

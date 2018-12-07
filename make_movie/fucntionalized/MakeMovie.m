@@ -1,6 +1,6 @@
 clear all;
 makemovie_folder = 'C:\Users\hydrolab\Desktop\Leo\1031videos\makemovie';
-date = '1109';
+date = '1207';
 cd(makemovie_folder);
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
