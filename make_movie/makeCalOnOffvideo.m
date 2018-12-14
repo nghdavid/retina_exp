@@ -32,9 +32,9 @@ screen_brightness(screen_brightness>1)=1;
 screen_brightness(screen_brightness<0)=0;
 
 all_file = dir('*.mat');
-cd ('E:\retina_v\videos\0903_Br_50\ONOFF')
+cd ('C:\Users\hydrolab\Desktop\Leo\1031videos\videos\1031_Br_50')
 %video frame file
-name=['0903 CalONOFF 5min Br50 Q100'];
+name=['1116 CalONOFF 5min Br50 Q100'];
 name
 
 
@@ -66,7 +66,6 @@ for kk =0:length(T)-1
                 a(cal_y,cal_x) = cal_lum;
             end
         end
-        a(500-35:500+35,1230:1280)=1;
     end
     writeVideo(writerObj,a);
 end
@@ -77,11 +76,10 @@ for mm=1:10
     img(500-35:500+35,1230:1280)=0.2; %gray
     writeVideo(writerObj,img);
 end
-close(writerObj);
+
 
 img=zeros(1024,1280);
 writeVideo(writerObj,img);
 
 
-
-cd('E:\retina\videos\0903_ONOFF_video_Br_50')
+close(writerObj);
