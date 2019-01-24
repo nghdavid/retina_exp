@@ -50,10 +50,10 @@ idealStimuli=newXarray;
 
 
 %setting for parameters
-start_lum=3.44*10^4; %81*10^4;
+start_lum=3.442*10^4; %81*10^4;
 plateau_n=80;  %least number of point for plateau
 thre01=3.445*10^4; %cut from low to middle state
-thre02=3.475*10^4; %cut from middle to high state
+thre02=3.47*10^4; %cut from middle to high state
 
 %if has brief pump before the video start: set a value for that
 lumin(1:200000)=3.43*10^4;

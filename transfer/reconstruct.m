@@ -1,8 +1,22 @@
 %load mat file first
-% clear all;
-% close all;
-
-
+clear all;
+close all;
+type = 'HMM';
+Dir = 'RL';
+Gamma = 3;
+data ='10003.mat';
+if strcmp(type,'HMM')
+    name =[ 'videoworkspace\',type,'\' ,Dir,'\' , '0119 ',type,' ',Dir,' G',int2str(Gamma),' 7min Br50 Q100.mat'];
+    file=['0119 ',type,' ',Dir,' G',int2str(Gamma),' 7min Br50 Q100.mat'];
+elseif strcmp(type,'OU')
+    name =[ 'videoworkspace\',type,'\' ,Dir,'\' , '0119 ',type,' ',Dir,' G',int2str(Gamma),' 5min Br50 Q100.mat'];
+    file=['0119 ',type,' ',Dir,' G',int2str(Gamma),' 5min Br50 Q100.mat'];
+else
+    disp('type error')
+    return
+end
+load(name)
+load(data)
 %%
 lumin=[];
 lumin=a_data(2,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
@@ -12,7 +26,7 @@ last_gray = max(lumin)*0.25+min(lumin)*0.75;
 thre_up = max(lumin)*0.7+min(lumin)*0.3;
 
 thre_down = max(lumin)*0.2+min(lumin)*0.8;
-% 
+
 idealStimuli=newXarray;
 %idealStimuli=new_x;
 idealTime = length(idealStimuli)/60;
@@ -75,9 +89,9 @@ title('start and end')
 lumin_state=[];
 smoothed_lumin= smooth(off_ends_lumin) ;
 for jj=1:length(off_ends_lumin)
-    if smoothed_lumin(jj) > thre_up
+    if smoothed_lumin(jj) >= thre_up
         lumin_state(jj)=3;  %highest diode value: state 3
-    elseif   smoothed_lumin(jj) > thre_down &&  smoothed_lumin(jj)  < thre_up
+    elseif   smoothed_lumin(jj) >= thre_down &&  smoothed_lumin(jj)  < thre_up
         lumin_state(jj)=2; %middle diode value: state 2
        
     else
@@ -255,5 +269,5 @@ for j = 1:length(Spikes)    %running through each channel
 end
 
 %% Saving
-% clearvars -except bin_pos diode_BT BinningInterval a_data Spikes yk_spikes TimeStamps  start_lum thre01 thre02 Samplingrate idealStimuli plateau_n name
-% save(['merge_sortch_',name])
+clearvars -except bin_pos diode_BT BinningInterval a_data Spikes yk_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
+save(['merge_',file])
