@@ -1,22 +1,28 @@
 %load mat file first
-clear all;
-close all;
-type = 'HMM';
-Dir = 'RL';
-Gamma = 3;
-data ='10003.mat';
+% clear all;
+% close all;
+function pass = reconstruct(pwd,type,Dir,Gamma)
+
+    
+data = [pwd,'\0119_', type,'_',Dir, '_G',Gamma,'.mat'];
 if strcmp(type,'HMM')
-    name =[ 'videoworkspace\',type,'\' ,Dir,'\' , '0119 ',type,' ',Dir,' G',int2str(Gamma),' 7min Br50 Q100.mat'];
-    file=['0119 ',type,' ',Dir,' G',int2str(Gamma),' 7min Br50 Q100.mat'];
+    name =[ 'G:\videoworkspace\',type,'\' ,Dir,'\' , '0119 ',type,' ',Dir,' G',Gamma,' 7min Br50 Q100.mat'];
+    file=[pwd,'\0119 ',type,' ',Dir,' G',Gamma,' 7min Br50 Q100.mat'];
+    load(name)
+    load(data)
+    idealStimuli=newXarray;
 elseif strcmp(type,'OU')
-    name =[ 'videoworkspace\',type,'\' ,Dir,'\' , '0119 ',type,' ',Dir,' G',int2str(Gamma),' 5min Br50 Q100.mat'];
-    file=['0119 ',type,' ',Dir,' G',int2str(Gamma),' 5min Br50 Q100.mat'];
+    name =[ 'G:\videoworkspace\',type,'\' ,Dir,'\' , '0119 ',type,' ',Dir,' G',Gamma,' 5min Br50 Q100.mat'];
+    file=[pwd,'\0119 ',type,' ',Dir,' G',Gamma,' 5min Br50 Q100.mat'];
+    load(name)
+    load(data)
+    idealStimuli=new_x;
 else
     disp('type error')
+    pass = 0;
     return
 end
-load(name)
-load(data)
+
 %%
 lumin=[];
 lumin=a_data(2,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
@@ -27,8 +33,8 @@ thre_up = max(lumin)*0.7+min(lumin)*0.3;
 
 thre_down = max(lumin)*0.2+min(lumin)*0.8;
 
-idealStimuli=newXarray;
-%idealStimuli=new_x;
+
+
 idealTime = length(idealStimuli)/60;
 
 % Find when it starts
@@ -53,6 +59,7 @@ for i = 1:length(lumin)
 end
 if is_complete == 0
     disp('There are no normal signal')
+    pass = 0;
     return
 end
 
@@ -74,6 +81,7 @@ off_ends_lumin(diode_end+1-(diode_start-1):end)=[]; %clear numbers after the dio
 totalTime=vpa(length(off_ends_lumin)/ Samplingrate,30);
 if abs(totalTime-idealTime)>3
     disp('The end is not normal, needed to be done again')
+    pass = 0;
     return
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -231,6 +239,7 @@ end
 
 if NumFrames-length(pt_delay)+length(pt_skip)~=Fcount %check the assignment of bar position is correct: =1:success!
     disp('The change of ideal position is incorrect')
+    pass = 0;
     return
 end
 
@@ -238,6 +247,7 @@ end
 %this is the number of points that has 3 states in one bin
 if length(find(tog3~=0)/2) >0
     disp('the number of points that has 3 states in one bin ')
+    pass = 0;
     return
 end
 
@@ -246,6 +256,7 @@ end
 if length(ratio3(find(ratio3<0.9 & ratio3>0.1))  )  > 0
     disp('ratio3/ problem points: ')
     disp('Ratio Error')
+    pass = 0;
     return
     %3 states / if not empty, need to recalculate
 end
@@ -253,6 +264,7 @@ end
 if length(find(same_len_pos~=0)) ~=  0
     disp('ratio3/ problem points: ')
     disp('2 states Error')
+    pass = 0;
     return 
 end
 
@@ -269,5 +281,10 @@ for j = 1:length(Spikes)    %running through each channel
 end
 
 %% Saving
-clearvars -except bin_pos diode_BT BinningInterval a_data Spikes yk_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
-save(['merge_',file])
+% clearvars -except bin_pos diode_BT BinningInterval a_data Spikes yk_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
+save([pwd,'\merge_0119 ',type,' ',Dir,' G',int2str(Gamma),' 7min Br50 Q100.mat'],'bin_pos','TimeStamps','yk_spikes');
+
+
+pass = 1;
+
+end
