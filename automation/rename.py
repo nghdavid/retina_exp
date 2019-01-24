@@ -6,7 +6,7 @@ Created on Sun Sep 23 07:58:45 2018
 @author: nghdavid
 """
 import os
-movie_list = []#Movies we played
+movie_list = ['spon']#Movies we played
 
 r = open('play_list.txt','r')#Today arrangement
 
