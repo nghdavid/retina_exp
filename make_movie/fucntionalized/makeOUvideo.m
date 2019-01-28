@@ -4,7 +4,9 @@ function makeOUvideo(makemovie_folder, theta, direction, video_folder, videowork
 
 
 
-G_list=[1.55 2.45 3.2 4 5.7 7.6 10.5 5.03];  %list of Gamma valau
+%G_list=[1.55 2.45 3.2 4 5.7 7.6 10.5 5.03];  %list of Gamma valau
+
+G_list=[1.55 4 7.6];
 countt=1;
 
 load('calibrate_pt.mat')%Load dotPositionMatrix
@@ -13,8 +15,8 @@ cd('0421 new video Br25/rn_workspace');
 all_file = dir('*.mat');
 mea_size=433;
 mea_size_bm=465; %bigger mea size , from luminance calibrated region
-meaCenter_x=632; 
-meaCenter_y=570; 
+meaCenter_x=640; 
+meaCenter_y=461; 
 
 leftx_bd=meaCenter_x-(mea_size_bm-1)/2; %the first x position of the bigger mea region(luminance calibrated region) on LED screen
 lefty_bd=meaCenter_y-(mea_size_bm-1)/2;
@@ -55,7 +57,7 @@ for Gvalue=G_list
     nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(x)-min(x)));
     x2=x*nrx;
     x3=x2-min(x2)+leftx_bar+bar_wid;%rearrange the boundary values
-    new_x=round(x3); 
+    pos=round(x3); 
     Y =meaCenter_y;
 
     cd (video_folder)
@@ -84,7 +86,7 @@ for Gvalue=G_list
         a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
 
         %OU RL bar trajectory
-        X=new_x(kk);
+        X=pos(kk);
 
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
@@ -188,7 +190,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,' OU ',direction,' G',num2str(G_OU) ,' 5min Br50 Q100','.mat'],'new_x')
+    save([date,'_OU_',direction,'_G',num2str(G_OU) ,'_5min_Br50_Q100','.mat'],'pos')
     
 end
 cd(makemovie_folder)
