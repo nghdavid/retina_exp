@@ -1,20 +1,20 @@
 %load mat file first
 % clear all;
 % close all;
-function pass = reconstruct(pwd,type,Dir,Gamma)
+function pass = reconstruct(pwd,type,Dir,Gamma,name)
 
     
-data = [pwd,'\0119_', type,'_',Dir, '_G',Gamma,'.mat'];
+data = [pwd,'\',name,'.mat'];
 if strcmp(type,'HMM')
-    name =[ 'G:\videoworkspace\',type,'\' ,Dir,'\' , '0119 ',type,' ',Dir,' G',Gamma,' 7min Br50 Q100.mat'];
+    complete_name =[ 'G:\videoworkspace\',type,'\' ,name,' 7min Br50 Q100.mat'];
     file=[pwd,'\0119 ',type,' ',Dir,' G',Gamma,' 7min Br50 Q100.mat'];
-    load(name)
+    load(complete_name)
     load(data)
     idealStimuli=newXarray;
 elseif strcmp(type,'OU')
-    name =[ 'G:\videoworkspace\',type,'\' ,Dir,'\' , '0119 ',type,' ',Dir,' G',Gamma,' 5min Br50 Q100.mat'];
-    file=[pwd,'\0119 ',type,' ',Dir,' G',Gamma,' 5min Br50 Q100.mat'];
-    load(name)
+    complete_name =[ 'G:\videoworkspace\',type,'\' ,name,' 5min Br50 Q100.mat'];
+    file=[pwd,name,' 5min Br50 Q100.mat'];
+    load(complete_name)
     load(data)
     idealStimuli=new_x;
 else
@@ -282,7 +282,7 @@ end
 
 %% Saving
 % clearvars -except bin_pos diode_BT BinningInterval a_data Spikes yk_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
-save([pwd,'\merge_0119 ',type,' ',Dir,' G',int2str(Gamma),' 7min Br50 Q100.mat'],'bin_pos','TimeStamps','yk_spikes');
+save([pwd,'\merge_',name,'.mat'],'bin_pos','TimeStamps','yk_spikes');
 
 
 pass = 1;

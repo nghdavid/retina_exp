@@ -5,9 +5,13 @@ n_file = length(all_file) ;
 
 
 
-for m = 1
+for m = 1:n_file
     file = all_file(m).name;
     [pathstr, name, ext] = fileparts(file);
+    if length(name) < 6
+        disp([name,' has an error or it is spontaneous'])
+        continue;
+    end
     if strcmp(name(6),'H')
         type = 'HMM';
         if strcmp(name(12),'D')
@@ -25,8 +29,8 @@ for m = 1
         end
         Gamma = name(length(name)-1:end);
     else
-        disp([name,'has an error'])
-
+        disp([name,' has an error or it is onoff'])
+        continue;
     end
     pass = reconstruct(pwd,type,Dir,Gamma,name);
 
