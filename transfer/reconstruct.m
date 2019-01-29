@@ -6,13 +6,13 @@ function pass = reconstruct(pwd,type,Dir,Gamma,name)
     
 data = [pwd,'\',name,'.mat'];
 if strcmp(type,'HMM')
-    complete_name =[ 'G:\videoworkspace\',type,'\' ,name,' 7min Br50 Q100.mat'];
+    complete_name =[ 'G:\rename_videoworkspace\',type,'\' ,name,' 7min Br50 Q100.mat'];
     file=[pwd,'\0119 ',type,' ',Dir,' G',Gamma,' 7min Br50 Q100.mat'];
     load(complete_name)
     load(data)
     idealStimuli=newXarray;
 elseif strcmp(type,'OU')
-    complete_name =[ 'G:\videoworkspace\',type,'\' ,name,' 5min Br50 Q100.mat'];
+    complete_name =[ 'G:\rename_videoworkspace\',type,'\' ,name,' 5min Br50 Q100.mat'];
     file=[pwd,name,' 5min Br50 Q100.mat'];
     load(complete_name)
     load(data)
@@ -282,7 +282,7 @@ end
 
 %% Saving
 % clearvars -except bin_pos diode_BT BinningInterval a_data Spikes yk_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
-save([pwd,'\merge_',name,'.mat'],'bin_pos','TimeStamps','yk_spikes');
+save([pwd,'\merge','\merge_',name,'.mat'],'bin_pos','TimeStamps','yk_spikes');
 
 
 pass = 1;
