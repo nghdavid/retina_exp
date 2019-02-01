@@ -18,7 +18,7 @@ i = 0
 mcd_path = 'E:/0201/rename'#The directory we save our mcd file
 
 files = os.listdir(mcd_path)#Get filename in mcd directory
-files.sorted()
+files.sort()
 os.chdir(mcd_path)#Go to mcd directory
 for filename in files:
     os.rename(filename, movie_list[i]+'.mcd') 
