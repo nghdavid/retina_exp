@@ -15,8 +15,10 @@ for line in r:
     l = line.split(' ')
     movie_list.append(l[0][:-4])#Get file name
 i = 0
-mcd_path = '/test'#The directory we save our mcd file
-files = os.listdir(os.getcwd()+mcd_path)#Get filename in mcd directory
+mcd_path = 'E:/0201/rename'#The directory we save our mcd file
+
+files = os.listdir(mcd_path)#Get filename in mcd directory
+files.sorted()
 os.chdir(mcd_path)#Go to mcd directory
 for filename in files:
     os.rename(filename, movie_list[i]+'.mcd') 
