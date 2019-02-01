@@ -122,7 +122,7 @@ lumin_state(1:dd)=3;
 
 
 figure; plot(off_ends_lumin)
-den=0.8*(max(off_ends_lumin)-min(off_ends_lumin))/(max(lumin_state)-min(lumin_state));
+den=0.9*(max(off_ends_lumin)-min(off_ends_lumin))/(max(lumin_state)-min(lumin_state));
 lumin_state02=lumin_state*den;
 hold on; plot(lumin_state02-mean(lumin_state02)+mean(off_ends_lumin)-0.2)
 

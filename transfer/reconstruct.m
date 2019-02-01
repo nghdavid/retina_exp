@@ -6,13 +6,13 @@ function pass = reconstruct(pwd,type,Dir,Gamma,name)
     
 data = [pwd,'\',name,'.mat'];
 if strcmp(type,'HMM')
-    complete_name =[ 'G:\rename_videoworkspace\',type,'\' ,name,' 7min Br50 Q100.mat'];
+    complete_name =[ 'G:\rename_videoworkspace\',type,'\' ,name,'.mat'];
     file=[pwd,'\0119 ',type,' ',Dir,' G',Gamma,' 7min Br50 Q100.mat'];
     load(complete_name)
     load(data)
     idealStimuli=newXarray;
 elseif strcmp(type,'OU')
-    complete_name =[ 'G:\rename_videoworkspace\',type,'\' ,name,' 5min Br50 Q100.mat'];
+    complete_name =[ 'G:\rename_videoworkspace\',type,'\' ,name,' .mat'];
     file=[pwd,name,' 5min Br50 Q100.mat'];
     load(complete_name)
     load(data)
@@ -25,7 +25,7 @@ end
 
 %%
 lumin=[];
-lumin=a_data(2,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
+lumin=a_data(3,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
 plateau_n=200;  %least number of point for plateau
 last_gray = max(lumin)*0.25+min(lumin)*0.75;
 
@@ -239,14 +239,6 @@ end
 
 if NumFrames-length(pt_delay)+length(pt_skip)~=Fcount %check the assignment of bar position is correct: =1:success!
     disp('The change of ideal position is incorrect')
-    pass = 0;
-    return
-end
-
-
-%this is the number of points that has 3 states in one bin
-if length(find(tog3~=0)/2) >0
-    disp('the number of points that has 3 states in one bin ')
     pass = 0;
     return
 end
