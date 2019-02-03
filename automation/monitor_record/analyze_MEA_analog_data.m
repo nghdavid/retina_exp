@@ -78,7 +78,7 @@ end
 
 if save_data==1
     n = [filename(1:end-4),'.mat'];
-    save(n,'TimeStamps','a_data','Infos')
+    save(n,'a_data','Infos')
 end
 end
 
