@@ -24,7 +24,7 @@ for m = 1:n_file
     elseif length(a_data)/20000 > 280%Remember to check OU video length
          type = 'OU';
      else
-        disp([name,' has an error or it is too short'])
+        disp([name,' is spontaneous or it is too short'])
         continue;
     end
     pass = mea_reconstruct(pwd,type,name,a_data);
