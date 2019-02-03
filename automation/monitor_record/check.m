@@ -1,4 +1,5 @@
-mkdir merge
+cd C:\Users\MEA\Desktop\test
+
 mkdir picture
 all_file = dir('*.mcd') ; % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ; 
@@ -14,7 +15,7 @@ for m = 1:n_file
     end
     
     %[Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all',210000);%If your ram is not enough, run this line
-    [a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all');%%If your ram is enough, run this line
+    [a_data,Infos] = analyze_MEA_analog_data([pwd,'\',filename],1,'','david','all');%%If your ram is enough, run this line
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
