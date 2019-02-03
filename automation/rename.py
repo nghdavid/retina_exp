@@ -15,7 +15,7 @@ for line in r:
     l = line.split(' ')
     movie_list.append(l[0][:-4])#Get file name
 i = 0
-mcd_path = 'E:/0201/rename'#The directory we save our mcd file
+mcd_path = r'C:\Users\hydro_lisa\Desktop\0201_sort'#The directory we save our mcd file
 
 files = os.listdir(mcd_path)#Get filename in mcd directory
 files.sort()

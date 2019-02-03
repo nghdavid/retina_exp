@@ -3,8 +3,9 @@ function makeHMMvideo(makemovie_folder, theta, direction, video_folder, videowor
 %% HMM base from RL motion
 
 
-G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
-%G_list=[20];
+%G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
+
+G_list=[3 9 20];
 %G_list=[9];
 countt=1;
 
@@ -14,8 +15,8 @@ cd('0421 new video Br25/rn_workspace');
 all_file = dir('*.mat');
 mea_size=433;
 mea_size_bm=465; %bigger mea size , from luminance calibrated region
-meaCenter_x=632; 
-meaCenter_y=570; 
+meaCenter_x=640; 
+meaCenter_y=461; 
 
 leftx_bd=meaCenter_x-(mea_size_bm-1)/2; %the first x position of the bigger mea region(luminance calibrated region) on LED screen
 lefty_bd=meaCenter_y-(mea_size_bm-1)/2;
@@ -67,7 +68,7 @@ for Gvalue=G_list
     nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(Xarray)-min(Xarray)));
     Xarray2=Xarray*nrx;
     Xarray3=Xarray2+leftx_bar+bar_wid-min(Xarray2);%rearrange the boundary values
-    newXarray=round(Xarray3);
+    pos=round(Xarray3);
     Y =meaCenter_y;
     cd (video_folder)
     %video frame file
@@ -95,7 +96,7 @@ for Gvalue=G_list
         a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
         
         %HMM RL bar trajectory
-        X=newXarray(kk);
+        X=pos(kk);
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
         
@@ -221,7 +222,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,' HMM ',direction,' G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
+    save([date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100','.mat'],'pos')
     
 end
 cd(makemovie_folder)
