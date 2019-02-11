@@ -90,10 +90,12 @@ f.write(end)#End recording
 f.write('\n')
 
 for i in range(len(movie_list)):
-    f.write(movie_list[i])
-    play_movie(f,movie_list[i],times[i])
     f.write('\n')
-
+    f.write('::')
+    f.write(movie_list[i])
+    f.write('\n')
+    play_movie(f,movie_list[i],times[i])
+    
     
 
 f.close()
