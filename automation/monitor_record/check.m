@@ -1,4 +1,4 @@
-cd C:\Users\MEA\Desktop\test
+cd C:\Users\MEA\Desktop\test%Go to the directory that you want to save
 
 mkdir picture
 all_file = dir('*.mcd') ; % change the type of the files which you want to select, subdir or dir.
@@ -15,7 +15,7 @@ for m = 1:n_file
     end
     
     %[Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all',210000);%If your ram is not enough, run this line
-    [a_data,Infos] = analyze_MEA_analog_data([pwd,'\',filename],1,'','david','all');%%If your ram is enough, run this line
+    [a_data,Infos] = analyze_MEA_analog_data([pwd,'\',filename],1,'','david','all');%The function that only transfer adata part of mcd file
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -24,9 +24,8 @@ for m = 1:n_file
     elseif length(a_data)/20000 > 280%Remember to check OU video length
          type = 'OU';
      else
-        disp([name,' is spontaneous or it is too short'])
+        disp([name,' has an error or it is too short'])
         continue;
     end
-    pass = mea_reconstruct(pwd,type,name,a_data);
-
+    pass = mea_reconstruct(pwd,type,name,a_data);%Test whether adata can be reconstructed
 end
