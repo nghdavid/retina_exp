@@ -274,7 +274,7 @@ end
 
 %% Saving
 % clearvars -except bin_pos diode_BT BinningInterval a_data Spikes yk_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
-save([pwd,'\merge','\merge_',name,'.mat'],'bin_pos','TimeStamps','yk_spikes');
+save([pwd,'\merge','\merge_',name,'.mat'],'bin_pos','TimeStamps','yk_spikes','diode_BT','BinningInterval');
 
 
 pass = 1;

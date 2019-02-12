@@ -30,7 +30,7 @@ for m = 1:n_file
         dv_spikes{j} = ss;
     end
     
-    save([current_path,'\sort_merge_spike','\sort_merge_',file],'bin_pos','dv_spikes');
+    save([current_path,'\sort_merge_spike','\sort_merge_',file],'dv_spikes','bin_pos','TimeStamps','yk_spikes','diode_BT','BinningInterval');
 end
 
 
