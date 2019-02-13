@@ -17,9 +17,9 @@ for line in r:
     
 f = open('exp.bat','w')
 #Pull up board
-servo_up = 'powershell "$port= new-Object System.IO.Ports.SerialPort COM10,9600,None,8,one; $port.open(); $port.WriteLine("180"); $port.Close()"'
+servo_up = 'powershell "$port= new-Object System.IO.Ports.SerialPort COM3,9600,None,8,one; $port.open(); $port.WriteLine("180"); $port.Close()"'
 #Pull down board
-serve_down = 'powershell "$port= new-Object System.IO.Ports.SerialPort COM10,9600,None,8,one; $port.open(); $port.Writeline("0"); $port.Close()"'
+serve_down = 'powershell "$port= new-Object System.IO.Ports.SerialPort COM3,9600,None,8,one; $port.open(); $port.Writeline("0"); $port.Close()"'
 start = r'psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe'#Start recording
 end = r'psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe'#End recording
 sleep = 'timeout /t '#Force procedure to stop for a few second(need + 'time')
