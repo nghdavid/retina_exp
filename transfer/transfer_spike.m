@@ -18,7 +18,7 @@ for m = 1:n_file
         Spikes{h} = adch_channel (:,2);
     end
     
-    dv_spikes=cell(1,60);
+    sorted_spikes=cell(1,60);
     for j = 1:length(Spikes)    %running through each channel
         ss = Spikes{j};
         ss(ss<TimeStamps(1,1)) = [];  %delete the spikes before TimeStamps(1)
@@ -27,10 +27,10 @@ for m = 1:n_file
         for i = 1:length(ss)
             ss(i) = ss(i)-TimeStamps(1,1);
         end
-        dv_spikes{j} = ss;
+        sorted_spikes{j} = ss;
     end
     
-    save([current_path,'\sort_merge_spike','\sort_merge_',file],'dv_spikes','bin_pos','TimeStamps','yk_spikes','diode_BT','BinningInterval');
+    save([current_path,'\sort_merge_spike','\sort_merge_',file],'sorted_spikes','bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
 end
 
 

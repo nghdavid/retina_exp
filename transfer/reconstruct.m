@@ -260,7 +260,7 @@ if length(find(same_len_pos~=0)) ~=  0
     return 
 end
 
-yk_spikes=[];
+reconstruct_spikes=[];
 for j = 1:length(Spikes)    %running through each channel
     ss = Spikes{j};
     ss(ss<TimeStamps(1,1)) = [];  %delete the spikes before TimeStamps(1)
@@ -269,12 +269,12 @@ for j = 1:length(Spikes)    %running through each channel
     for i = 1:length(ss)
         ss(i) = ss(i)-TimeStamps(1,1);
     end
-    yk_spikes{j} = ss;
+    reconstruct_spikes{j} = ss;
 end
 
 %% Saving
-% clearvars -except bin_pos diode_BT BinningInterval a_data Spikes yk_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
-save([pwd,'\merge','\merge_',name,'.mat'],'bin_pos','TimeStamps','yk_spikes','diode_BT','BinningInterval');
+% clearvars -except bin_pos diode_BT BinningInterval a_data Spikes reconstruct_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
+save([pwd,'\merge','\merge_',name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
 
 
 pass = 1;

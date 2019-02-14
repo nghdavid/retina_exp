@@ -1,5 +1,6 @@
 clear all;
 close all;
+
 all_file = dir('*.mat') ; % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ; 
 mkdir merge
