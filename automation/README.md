@@ -13,7 +13,7 @@ The way you can generate exp.bat:  <br />
 Description of this directory:  <br />
 arduino store manual_gws.ino to control arduino  <br />
 MC_rack store exe we use to start and end recording.  <br />
-monitor_record store bat we use to control DAQ to check monitor  <br />
+monitor_record store bat we use mcd file(reconstruct) to check monitor  <br />
 batch.py is to make exp.bat  <br />
 exp.bat is to the batch that automate experiment  <br />
 play_list.txt is the txt file that saves name of movies and time of movies.  <br />

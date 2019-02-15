@@ -22,6 +22,7 @@ Screen('Flip', w);
 mea_size=433; %use odd number!
 %small_mea_size= 73;
 cal_size = 465;%number of channels for one side, should be an odd number
+N = 7;%
 baseRect = [0 0 mea_size mea_size];  %use odd number!
 
 meaCenter_x=632;
@@ -35,7 +36,7 @@ Screen('Flip', w);
 vid = videoinput('gige',1) %Open video
 vid.SelectedSourceName = 'input1';
 scr_obj = getselectedsource(vid);
-set(scr_obj,'GainRaw',10)
+set(scr_obj,'GainRaw',20)
 set(scr_obj,'ExposureTimeAbs',100000)
 
 
