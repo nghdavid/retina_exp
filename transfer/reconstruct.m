@@ -12,7 +12,7 @@ if strcmp(type,'HMM')
     load(data)
     idealStimuli=newXarray;
 elseif strcmp(type,'OU')
-    complete_name =[ 'G:\rename_videoworkspace\',type,'\' ,name,'.mat'];
+    complete_name =[ 'C:\rename_videoworkspace\',type,'\' ,name,'.mat'];
     file=[pwd,name,' 5min Br50 Q100.mat'];
     load(complete_name)
     load(data)
