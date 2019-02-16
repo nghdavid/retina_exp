@@ -34,7 +34,11 @@ for m = 1:n_file
         continue;
     end
     pass = reconstruct(pwd,type,Dir,Gamma,name);
-
+    if pass
+        disp([name,'  passes'])
+    else
+        disp([name,'not passes'])
+    end
 
 end
 
