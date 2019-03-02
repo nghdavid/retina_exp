@@ -26,7 +26,7 @@ for pos = bin_pos
     is_cover = zeros(1,8);%It represent each column status(light or dark as 1,0)
     x_position = pos;
     for i = 1:8
-       if  abs(x_position-RL_points(i)) <= bar_wid-1%Check the bar lights on channel. Minus 1 because electrode size is about 3 pixels
+       if  abs(x_position-RL_points(i)) <= bar_wid+1%Check the bar lights on channel. Minus 1 because electrode size is about 3 pixels
            is_cover(i) = 1;
        end
     end
