@@ -1,3 +1,5 @@
+%% This code specially transfer only A unit spikes from offlinesorter
+%sorted_spikes stores all spikes in A unit. It is a 1*60(channel) cell
 clear all;
 close all;
 current_path =pwd;
