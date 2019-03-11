@@ -6,13 +6,13 @@ function pass = reconstruct(pwd,type,Dir,Gamma,name)
     
 data = [pwd,'\',name,'.mat'];
 if strcmp(type,'HMM')
-    complete_name =[ 'C:\rename_videoworkspace\',type,'\' ,name,'.mat'];
+    complete_name =[ 'D:\0115_videoworkspace\',type,'\' ,name,'.mat'];
     file=[pwd,'\0119 ',type,' ',Dir,' G',Gamma,' 7min Br50 Q100.mat'];
     load(complete_name)
     load(data)
     idealStimuli=newXarray;
 elseif strcmp(type,'OU')
-    complete_name =[ 'C:\rename_videoworkspace\',type,'\' ,name,'.mat'];
+    complete_name =[ 'D:\0115_videoworkspace\',type,'\' ,name,'.mat'];
     file=[pwd,name,' 5min Br50 Q100.mat'];
     load(complete_name)
     load(data)
