@@ -12,7 +12,9 @@ rr =[9,17,25,33,41,49,...
           6,14,22,30,38,46,54,62,...
           7,15,23,31,39,47,55,63,...
             16,24,32,40,48,56];
- h3=figure;
+h3=figure;
+hL = subplot(8,8,1);
+poshL = get(hL,'position');     % Getting its position
 
 for channelnumber=1:60
     
@@ -33,4 +35,6 @@ for channelnumber=1:60
     end
     
 end
-legend('G20','G3','G9','location','northeast')
+lgd = legend('G20','G3','G9')
+set(lgd,'position',poshL);      % Adjusting legend's position
+axis(hL,'off');                 % Turning its axis off
