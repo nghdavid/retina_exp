@@ -1,4 +1,5 @@
-channel_pos= [60;2];
+clear all;
+channel_pos= zeros(60, 2);
 load('boundary_set.mat')
 micro_per_pixel = 1500/mea_size;
 channel_pos(1,2) = meaCenter_y + 700/micro_per_pixel;
@@ -121,5 +122,6 @@ channel_pos(57,1) = meaCenter_x + 100/micro_per_pixel;
 channel_pos(58,1) = meaCenter_x - 100/micro_per_pixel;
 channel_pos(59,1) = meaCenter_x - 300/micro_per_pixel;
 channel_pos(59,1) = meaCenter_x - 500/micro_per_pixel;
-
-save('channel_pos.mat', channel_pos)
+channel_pos(60,1) = meaCenter_x - 500/micro_per_pixel;
+clearvars -except channel_pos
+save('channel_pos.mat')
