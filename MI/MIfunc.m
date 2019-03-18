@@ -7,7 +7,7 @@ dat=[];informationp=[];temp=backward+2;
         dat{i}=[x,y];
         norm=BinningInterval;
 
-        [N,~]=hist3(dat{i}); 
+        [N,C]=hist3(dat{i},[max(Neurons)+1,max(isi2)]); %20:dividing firing rate  6:# of stim
         px=sum(N,1)/sum(sum(N)); 
         py=sum(N,2)/sum(sum(N)); 
         pxy=N/sum(sum(N));
@@ -29,7 +29,7 @@ dat=[];informationp=[];temp=backward+2;
         dat{i}=[x,y];
         norm=BinningInterval;
 
-        [N,~]=hist3(dat{i},[max(Neurons)+1,max(isi2)]); %20:dividing firing rate  6:# of stim
+        [N,C]=hist3(dat{i},[max(Neurons)+1,max(isi2)]); %20:dividing firing rate  6:# of stim
         px=sum(N,1)/sum(sum(N)); 
         py=sum(N,2)/sum(sum(N)); 
         pxy=N/sum(sum(N));
