@@ -1,6 +1,6 @@
 %%This code analyze on off response of retina
 %load on off data first
-% load('0119_CalONOFF_5min_Br50_Q100.mat')
+load('0119_CalONOFF_5min_Br50_Q100.mat')
 lumin=[];
 lumin=a_data(3,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
 plateau_n=200;  %least number of point for plateau
