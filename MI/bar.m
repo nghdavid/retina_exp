@@ -1,13 +1,7 @@
 %% This code changes bar position to light or dark state in each channel
 
-mea_size=433;
-mea_size_bm=465; %bigger mea size , from luminance calibrated region
-meaCenter_x=640; 
-meaCenter_y=461; 
-
-bar_le=floor((mea_size_bm-1)/2); %half of bar length / pixel number on LCD /total length = mea_size = 1919 um
-bar_wid=11; %half of bar width / total length = 11*2+1=23 pixels = 65 um
-
+load('boundary_set.mat')
+load('channel_pos.mat')
 RL_points = zeros(1,8);
 UD_points = zeros(1,8);
 
@@ -49,3 +43,5 @@ for pos = bin_pos
     UD_matrix(num,:) = is_cover;
     num = num + 1;
 end
+
+matrix = 
