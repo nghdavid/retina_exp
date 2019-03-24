@@ -7,7 +7,7 @@ set(gca,'fontsize',12); hold on
 
  
 
-xlim([ -15000 15000])
+xlim([ -3000 3000])
 ylim([0 inf])
 title(['channel ',num2str(channelnumber)]) 
 
