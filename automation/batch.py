@@ -25,6 +25,8 @@ end = r'psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe'#End 
 sleep = 'timeout /t '#Force procedure to stop for a few second(need + 'time')
 play = 'START C:"\Program Files"\DAUM\PotPlayer\PotPlayerMini64.exe '#Play movie(need + 'movie_name')
 matlab = r'psexec -u MEA -p hydrolab \\192.168.1.171 -s "C:\auto\diode.bat" ' #Use Daq to check whether it is played normally
+upload = r'psexec -u MEA -p hydrolab \\192.168.1.171 -s "C:\auto\upload.bat" '
+
 dot = "'"
 
 #Function that make each movie's batch
@@ -61,9 +63,18 @@ def play_movie(f,movie,time):
     f.write(' ')#space
     f.write(str(time+25))#Add 25 sec to prevent record too short
     f.write('\n')
+
+    f.write(sleep)#Force procedure to stop 40 sec
+    f.write('200')#Time for retina to rest
+    f.write('\n')
+    
+    f.write(upload)#Diode
+    f.write(movie[:-4])#stimulation name
+    f.write('.mcd')
+    f.write('\n')
     
     f.write(sleep)#Force procedure to stop 40 sec
-    f.write('300')#Time for retina to rest
+    f.write('70')#Time for retina to rest
     f.write('\n')
     
     
