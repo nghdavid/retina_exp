@@ -1,4 +1,4 @@
-%cd('0704');
+cd('0704');
 all_file = dir('*.mcd') ; % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ; 
 
@@ -8,8 +8,8 @@ for m = 1:n_file
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
     filename = [name,ext];
-    %[Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all',210000);%If your ram is not enough, run this line
-    [Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all');%%If your ram is enough, run this line
+    [Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all',210000);%If your ram is not enough, run this line
+    %[Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([pwd,'\',filename],1,'','david','all');%%If your ram is enough, run this line
     
     %%analyze_MEA_data(filename,save_data,comment,experimenter,analog_type,r_interval)
     %save_data = 1 means save data

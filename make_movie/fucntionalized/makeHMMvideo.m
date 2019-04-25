@@ -4,16 +4,26 @@ function makeHMMvideo(makemovie_folder, theta, direction, video_folder, videowor
 
 
 G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
-
-
+%G_list=[20];
 %G_list=[9];
 countt=1;
 
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
-load('boundary_set.mat')
 cd('0421 new video Br25/rn_workspace');
 all_file = dir('*.mat');
+mea_size=433;
+mea_size_bm=465; %bigger mea size , from luminance calibrated region
+meaCenter_x=632; 
+meaCenter_y=570; 
+
+leftx_bd=meaCenter_x-(mea_size_bm-1)/2; %the first x position of the bigger mea region(luminance calibrated region) on LED screen
+lefty_bd=meaCenter_y-(mea_size_bm-1)/2;
+bar_le=floor((mea_size_bm-1)/2/sqrt(2)); %half of bar length / pixel number on LCD /total length = mea_size = 1919 um
+bar_wid=11; %half of bar width / total length = 11*2+1=23 pixels = 65 um
+%R-L
+leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
+rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
 
 fps =60;  %freq of the screen flipping
 T=7*60; %second

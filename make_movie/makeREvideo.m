@@ -1,4 +1,4 @@
-%% Reversal movimg
+%% ON OFF
 clear all;
 
 mea_size=433;

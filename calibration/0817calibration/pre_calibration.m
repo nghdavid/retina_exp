@@ -22,10 +22,11 @@ Screen('Flip', w);
 mea_size=433; %use odd number!
 %small_mea_size= 73;
 cal_size = 465;%number of channels for one side, should be an odd number
+N = 7;%
 baseRect = [0 0 mea_size mea_size];  %use odd number!
 
-meaCenter_x=632;
-meaCenter_y=570;
+meaCenter_x=631; 
+meaCenter_y=580;
 centeredRect = CenterRectOnPointd(baseRect, meaCenter_x, meaCenter_y);
 Screen('FillRect', w, 255, centeredRect);
 Screen('Flip', w);

@@ -1,29 +1,9 @@
-function [ideal_pt,ideal_distance_pt] = find_i_pt(frame,input_N,cal_size, pt_distance_per_pixel)
-    
-    global rect w
-
-    mea_size=433; %use odd number!
-    baseRect = [0 0 mea_size mea_size];  %use odd number!
-    meaCenter_x=631; 
-    meaCenter_y=572;  
-
+function [ideal_pt,ideal_distance_pt] = find_i_pt(frame, N, cal_size, pixel_distance_per_pt)
+                                                    %N^2 == # of input dots. cal_size == # of output dots.
     %input image and find detect pt
-    N = input_N;
-    
-%     cal_size = 469;
-%     pt_distance_per_pixel = 8;
-
-    % img = imread('C:\Users\Hydrolab320\Desktop\Oct2017_calibration\64dots_gain0_expT500000.tif');
-     %read in the ccd image
-    %img = imread('C:\Users\Hydrolab320\Desktop\0807calibration\64dots_gain0_expT2000000_dot8.tif');
-    %img_hole = imread('C:\Users\Hydrolab320\Desktop\0807calibration\64dots_gain0_expT1000000_hole5.tif'); 
-    CI0=mat2gray(frame); %turn to gray image
-    %CI_hole=mat2gray(img_hole); %turn to gray image
-    figure;imshow(CI0); 
-    % CI=CI0(:,:,2); %RGB
-    CI=CI0;
-    %[centers, radii, metric] = imfindcircles(CI,[8 18],'ObjectPolarity','bright','Sensitivity',0.99,'Method','twostage');  %find the center, radius of the detected ccd dots
-    [centers, radii, metric] = imfindcircles(CI,[1 8],'ObjectPolarity','bright','Sensitivity',0.95,'Method','twostage');  %find the center, radius of the detected ccd dots
+    CI=mat2gray(frame); %turn to gray image
+    figure;imshow(CI); 
+    [centers, radii, ~] = imfindcircles(CI,[1 6],'ObjectPolarity','bright','Sensitivity',0.90,'Method','twostage');  %find the center, radius of the detected ccd dots
     %picking the right radius size influence the detect accuracy A LOT!!
     centersStrong5 = centers(1:length(centers),:);
     radiiStrong5 = radii(1:length(centers));
@@ -59,12 +39,10 @@ function [ideal_pt,ideal_distance_pt] = find_i_pt(frame,input_N,cal_size, pt_dis
     title('reconstructed pts on ccd'); 
 
     %% direct error calculation
-    % N=15;
-    %generate the 225 ideal points first
     ideal_pt=cell(cal_size,cal_size);
 
     c1 = detect_pt{floor(N/2)  ,floor(N/2)  };   %c1 c6 c3
-    c2 = detect_pt{floor(N/2)+2,floor(N/2)  };   %c5    c8
+    c2 = detect_pt{floor(N/2)+2,floor(N/2)  };   %c5 c9 c8
     c3 = detect_pt{floor(N/2)  ,floor(N/2)+2};   %c2 c7 c4
     c4 = detect_pt{floor(N/2)+2,floor(N/2)+2};
     c5 = detect_pt{floor(N/2)+1,floor(N/2)  };
@@ -73,26 +51,27 @@ function [ideal_pt,ideal_distance_pt] = find_i_pt(frame,input_N,cal_size, pt_dis
     c8 = detect_pt{floor(N/2)+1,floor(N/2)+2};
     c9 = detect_pt{floor(N/2)+1,floor(N/2)+1};
 
-    center = c9;
-    
+    center = c9; %cneter of ideal_pt.
+     
     ideal_distance_pt = zeros(1,2);
-    ideal_distance_pt(1) = (norm(c1-c6) + norm(c5-c9) + norm(c6-c3) + norm(c9-c8) + norm(c2-c7) + norm(c7-c4))/6/pt_distance_per_pixel;
-    ideal_distance_pt(2) = (norm(c1-c5) + norm(c5-c2) + norm(c6-c9) + norm(c9-c7) + norm(c3-c8) + norm(c8-c4))/6/pt_distance_per_pixel;
+    ideal_distance_pt(1) = (norm(c1-c6) + norm(c5-c9) + norm(c6-c3) + norm(c9-c8) + norm(c2-c7) + norm(c7-c4))/6/pixel_distance_per_pt;
+    ideal_distance_pt(2) = (norm(c1-c5) + norm(c5-c2) + norm(c6-c9) + norm(c9-c7) + norm(c3-c8) + norm(c8-c4))/6/pixel_distance_per_pt;
     
-    center_slope_row=((c2(2)-c1(2))/(c2(1)-c1(1)) + (c4(2)-c3(2))/(c4(1)-c3(1)) + (c7(2)-c6(2))/(c7(1)-c6(1)))/2 ;
-    center_slope_col=((c3(2)-c1(2))/(c3(1)-c1(1)) + (c4(2)-c2(2))/(c4(1)-c2(1)) + (c8(2)-c5(2))/(c8(1)-c5(1)))/2;
+    center_slope_col=((c2(2)-c1(2))/(c2(1)-c1(1)) + (c4(2)-c3(2))/(c4(1)-c3(1)) + (c7(2)-c6(2))/(c7(1)-c6(1)))/2 ;
+    center_slope_row=((c3(2)-c1(2))/(c3(1)-c1(1)) + (c4(2)-c2(2))/(c4(1)-c2(1)) + (c8(2)-c5(2))/(c8(1)-c5(1)))/2;
 
-    theta = ( atan(1/center_slope_row) - atan(center_slope_col) )/2;
-    RR_matrix = [cos(theta) sin(theta) ; -sin(theta) cos(theta)];
+    theta = ( atan(1/center_slope_colw) - atan(center_slope_row) )/2; %angle because of CCD
+    RR_matrix = [cos(theta) sin(theta) ; -sin(theta) cos(theta)]; %rotation matrix
     
+    %construct ideal_pt
     for r=1:cal_size
         for c=1:cal_size
             ideal_pt{r,c} = center + [(c-round(cal_size/2))*ideal_distance_pt(1) , (r-round(cal_size/2))*ideal_distance_pt(1) ];
         end
     end
 
+    %rotate the ideal_pts to fit the inclination of CCD. And reannounce ideal_pts.
     R_ideal_pt = cell(cal_size,cal_size);
-
     for r=1:cal_size
         for c=1:cal_size
              R_ideal_pt{r,c} = RR_matrix * (ideal_pt{r,c} - center)'  + center';
