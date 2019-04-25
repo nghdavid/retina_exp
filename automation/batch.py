@@ -17,14 +17,14 @@ for line in r:
     
 f = open('exp.bat','w')
 #Pull up board
-servo_up = 'powershell "$port= new-Object System.IO.Ports.SerialPort COM7,9600,None,8,one; $port.open(); $port.WriteLine("180"); $port.Close()"'
+servo_up = 'powershell "$port= new-Object System.IO.Ports.SerialPort COM3,9600,None,8,one; $port.open(); $port.WriteLine("180"); $port.Close()"'
 #Pull down board
-serve_down = 'powershell "$port= new-Object System.IO.Ports.SerialPort COM7,9600,None,8,one; $port.open(); $port.Writeline("0"); $port.Close()"'
-start = r'psexec -u MEA -p hydrolab \\192.168.1.174 -d -l -i C:\auto\start.exe'#Start recording
-end = r'psexec -u MEA -p hydrolab \\192.168.1.174 -d -l -i C:\auto\end.exe'#End recording
+serve_down = 'powershell "$port= new-Object System.IO.Ports.SerialPort COM3,9600,None,8,one; $port.open(); $port.Writeline("0"); $port.Close()"'
+start = r'psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe'#Start recording
+end = r'psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe'#End recording
 sleep = 'timeout /t '#Force procedure to stop for a few second(need + 'time')
 play = 'START C:"\Program Files"\DAUM\PotPlayer\PotPlayerMini64.exe '#Play movie(need + 'movie_name')
-matlab = r'psexec -u MEA -p hydrolab \\192.168.1.174 -s "C:\auto\diode.bat" ' #Use Daq to check whether it is played normally
+matlab = r'psexec -u MEA -p hydrolab \\192.168.1.171 -s "C:\auto\diode.bat" ' #Use Daq to check whether it is played normally
 dot = "'"
 
 #Function that make each movie's batch
@@ -36,17 +36,6 @@ def play_movie(f,movie,time):
     f.write('40')#Adaptation time 
     f.write('\n')
 
-    f.write(matlab)#Diode
-    f.write(dot)
-    f.write(movie[:-4])#stimulation name
-    f.write(dot)
-    f.write(' ')#space
-    f.write(str(time+25))#Add 25 sec to prevent record too short
-    f.write('\n')
-
-    f.write(sleep)
-    f.write(str(10))
-    f.write('\n')
 
     f.write(play)#Play movie
     f.write(movie)#Name of movie
@@ -64,10 +53,20 @@ def play_movie(f,movie,time):
 
     f.write(serve_down)#Pull down board
     f.write('\n')
-
+    
+    f.write(matlab)#Diode
+    f.write(dot)
+    f.write(movie[:-4])#stimulation name
+    f.write(dot)
+    f.write(' ')#space
+    f.write(str(time+25))#Add 25 sec to prevent record too short
+    f.write('\n')
+    
     f.write(sleep)#Force procedure to stop 40 sec
     f.write('300')#Time for retina to rest
     f.write('\n')
+    
+    
     return
     
 #Make all batches
@@ -89,9 +88,13 @@ f.write('\n')
 f.write(end)#End recording
 f.write('\n')
 
-for i in range(len(movie_list)):    
+for i in range(len(movie_list)):
+    f.write('\n')
+    f.write('::')
+    f.write(movie_list[i])
+    f.write('\n')
     play_movie(f,movie_list[i],times[i])
-
+    
     
 
 f.close()

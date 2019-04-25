@@ -5,24 +5,15 @@ function makeOUvideo(makemovie_folder, theta, direction, video_folder, videowork
 
 
 G_list=[1.55 2.45 3.2 4 5.7 7.6 10.5 5.03];  %list of Gamma valau
+
+
 countt=1;
 
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
+load('boundary_set.mat')
 cd('0421 new video Br25/rn_workspace');
 all_file = dir('*.mat');
-mea_size=433;
-mea_size_bm=465; %bigger mea size , from luminance calibrated region
-meaCenter_x=632; 
-meaCenter_y=570; 
-
-leftx_bd=meaCenter_x-(mea_size_bm-1)/2; %the first x position of the bigger mea region(luminance calibrated region) on LED screen
-lefty_bd=meaCenter_y-(mea_size_bm-1)/2;
-bar_le=floor((mea_size_bm-1)/2/sqrt(2)); %half of bar length / pixel number on LCD /total length = mea_size = 1919 um
-bar_wid=11; %half of bar width / total length = 11*2+1=23 pixels = 65 um
-%R-L
-leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
-rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
 
 fps =60;  %freq of the screen flipping
 T=5*60; %second
@@ -55,7 +46,7 @@ for Gvalue=G_list
     nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(x)-min(x)));
     x2=x*nrx;
     x3=x2-min(x2)+leftx_bar+bar_wid;%rearrange the boundary values
-    new_x=round(x3); 
+    newXarray=x3; 
     Y =meaCenter_y;
 
     cd (video_folder)
@@ -84,7 +75,7 @@ for Gvalue=G_list
         a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
 
         %OU RL bar trajectory
-        X=new_x(kk);
+        X=newXarray(kk);
 
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
@@ -188,7 +179,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,' OU ',direction,' G',num2str(G_OU) ,' 5min Br50 Q100','.mat'],'new_x')
+    save([date,' OU ',direction,' G',num2str(G_OU) ,' 5min Br50 Q100','.mat'],'newXarray')
     
 end
 cd(makemovie_folder)
