@@ -1,26 +1,27 @@
 %load mat file first
 % clear all;
 % close all;
-function pass = reconstruct(pwd,type,Dir,Gamma,name)
 
-    
-data = [pwd,'\',name,'.mat'];
+function pass = reconstruct(pwd,type,data_name,workspace_name)
+
+pass = 1;
+data = [pwd,'\data\',data_name,'.mat'];
 if strcmp(type,'HMM')
-    complete_name =[ 'D:\0115_videoworkspace\',type,'\' ,name,'.mat'];
-    file=[pwd,'\0119 ',type,' ',Dir,' G',Gamma,' 7min Br50 Q100.mat'];
+    complete_name =[ 'D:\0304v\videoworkspace\',type,'\' ,workspace_name,'.mat'];
     load(complete_name)
     load(data)
     idealStimuli=newXarray;
 elseif strcmp(type,'OU')
-    complete_name =[ 'D:\0115_videoworkspace\',type,'\' ,name,'.mat'];
-    file=[pwd,name,' 5min Br50 Q100.mat'];
+    complete_name =[ 'D:\0304v\videoworkspace\',type,'\' ,workspace_name,'.mat'];
     load(complete_name)
     load(data)
-    idealStimuli=new_x;
+    idealStimuli=newXarray;
 else
-    disp('type error')
-    pass = 0;
-    return
+    complete_name =[ 'D:\0304v\videoworkspace\',workspace_name,'.mat'];
+    load(complete_name)
+    load(data)
+    idealStimuli=newXarray;
+    
 end
 
 %%
@@ -32,8 +33,6 @@ last_gray = max(lumin)*0.25+min(lumin)*0.75;
 thre_up = max(lumin)*0.7+min(lumin)*0.3;
 
 thre_down = max(lumin)*0.2+min(lumin)*0.8;
-
-
 
 idealTime = length(idealStimuli)/60;
 
@@ -101,7 +100,7 @@ for jj=1:length(off_ends_lumin)
         lumin_state(jj)=3;  %highest diode value: state 3
     elseif   smoothed_lumin(jj) >= thre_down &&  smoothed_lumin(jj)  < thre_up
         lumin_state(jj)=2; %middle diode value: state 2
-       
+        
     else
         lumin_state(jj)=1; %lowest diode value: state 1
     end
@@ -141,24 +140,53 @@ end
 
 
 % assign bar position to every number in lumin_state(1,2,3)
-stimuli_pos=[]; %the bar position value corresponding to the states of diode
-Fcount=1; %counting for the idealStimuli
-stimuli_pos(1)=idealStimuli(1);
-skippos=zeros(1,length(lumin_state));
-
-for uu=2:length(lumin_state)
-    Ptbefore=lumin_state(uu-1);
-    Pt=lumin_state(uu);
-    if Pt-Ptbefore == 0  %if they are the same state
-        stimuli_pos(uu)=idealStimuli(Fcount);
-    elseif Pt-Ptbefore == -1 || Pt-Ptbefore==2 %normal transition
-        Fcount=Fcount+1;
-        stimuli_pos(uu)=idealStimuli(Fcount);
-    elseif Pt-Ptbefore == 1 || Pt-Ptbefore== -2 %skipped frame
-        Fcount=Fcount+2;
-        skippos(uu)=1;
-        stimuli_pos(uu)=idealStimuli(Fcount);
+if strcmp(type,'Checker')
+    stimuli_pos=cell(length(lumin_state),1); %the bar position value corresponding to the states of diode
+    Fcount=1; %counting for the idealStimuli
+    %stimuli_pos{1} = idealStimuli{Fcount};
+    skippos=zeros(1,length(lumin_state));
+    Fcheck =[];
+    Fcheck(1) =  Fcount;
+    for uu=2:length(lumin_state)
+        Ptbefore=lumin_state(uu-1);
+        Pt=lumin_state(uu);
+        if Pt-Ptbefore == 0  %if they are the same state
+            Fcheck(uu) = Fcount;
+            %stimuli_pos{uu} = idealStimuli{Fcount};
+        elseif Pt-Ptbefore == -1 || Pt-Ptbefore==2 %normal transition
+            Fcount=Fcount+1;
+            Fcheck(uu) = Fcount;
+            %stimuli_pos{uu} = idealStimuli{Fcount};
+        elseif Pt-Ptbefore == 1 || Pt-Ptbefore== -2 %skipped frame
+            Fcount=Fcount+2;
+            skippos(uu)=1;
+            Fcheck(uu) = Fcount;
+            %stimuli_pos{uu} = idealStimuli{Fcount};
+        end
     end
+    
+else
+    
+    stimuli_pos=[]; %the bar position value corresponding to the states of diode
+    Fcount=1; %counting for the idealStimuli
+    stimuli_pos(1)=idealStimuli(1);
+    skippos=zeros(1,length(lumin_state));
+    
+    for uu=2:length(lumin_state)
+        Ptbefore=lumin_state(uu-1);
+        Pt=lumin_state(uu);
+        if Pt-Ptbefore == 0  %if they are the same state
+            stimuli_pos(uu)=idealStimuli(Fcount);
+        elseif Pt-Ptbefore == -1 || Pt-Ptbefore==2 %normal transition
+            Fcount=Fcount+1;
+            stimuli_pos(uu)=idealStimuli(Fcount);
+        elseif Pt-Ptbefore == 1 || Pt-Ptbefore== -2 %skipped frame
+            Fcount=Fcount+2;
+            skippos(uu)=1;
+            stimuli_pos(uu)=idealStimuli(Fcount);
+        end
+    end
+    
 end
 
 pt_skip=find(skippos~=0); %find how many skipped frames
@@ -182,58 +210,135 @@ diode_BT = [BinningInterval : BinningInterval : (diode_end-diode_start+1)/Sampli
 %[16,33,49,-----] %lack one frame, due to DataTime is not 150s
 
 
-
-bin_pos=[]; %the result we want
-tog3=[];
-pt_per_frame=BinningInterval*Samplingrate; %number of diode points in one frame
-same_len_pos=[];
-ratio3=[]; count=1; %ratio3 calculate the ratio for 3 states in one bin
-
-for hj= 1:length(diode_BT) %length is same as BinningTime for Spikes %8534:8539 %8457:8461
-    numT=diode_BT(hj)*Samplingrate; %the corresponding number of point to timing in diode_BT
-    C=[];
-    C = unique(stimuli_pos(round(numT-pt_per_frame)+1:round(numT)),'stable'); %unique number in one frame
-    %     hj
-    %     C
-    if length(C)==1
-        bin_pos(hj)=C;
-    elseif length(C)==2
-        pt1n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(1))); %number of first number
-        pt2n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(2)));
-        if pt1n==pt2n
-            bin_pos(hj)=C(2);
-            same_len_pos(hj)= 1;
-        elseif pt1n > pt2n
-            bin_pos(hj)=C(1);
-        elseif pt1n < pt2n
-            bin_pos(hj)=C(2);
-        end
-    elseif length(C) ==3
-        %             tog3(round(numT-pt_per_frame)+1:round(numT))=1;
-        tog3(round(numT-pt_per_frame))=1;
-        tog3(round(numT))=1;
-        pt1n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(1))); %number of first number
-        pt2n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(2)));
-        pt3n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(3)));
-        err=max([pt1n, pt2n, pt3n]);
-        if length(err)~=1
-            hj
-            break
-        end
-        if err==pt1n  %assign the value that has the most numbers
-            bin_pos(hj)=C(1);
-        elseif err==pt2n
-            bin_pos(hj)=C(2);
-        elseif err==pt3n
-            bin_pos(hj)=C(3);
-        end
+if strcmp(type,'Checker')
+    
+    bin_pos=cell(length(idealStimuli),1); %the result we want
+    tog3=[];
+    pt_per_frame=BinningInterval*Samplingrate; %number of diode points in one frame
+    same_len_pos=[];
+    ratio3=[]; count=1; %ratio3 calculate the ratio for 3 states in one bin
+    
+    for hj= 1:length(diode_BT) %length is same as BinningTime for Spikes %8534:8539 %8457:8461
+        numT=diode_BT(hj)*Samplingrate; %the corresponding number of point to timing in diode_BT
+        C=[];
         
-        sumtemp=pt1n+pt2n+pt3n;
-        ratio3(count,1:3)=[pt1n pt2n pt3n]./sumtemp;  %ration between these 3 values
-        count=count+1;
         
-    else
-        bin_pos(hj)=-5;
+        
+        
+        C = unique(Fcheck(round(numT-pt_per_frame)+1:round(numT)),'stable');
+        %     hj
+        %     C
+        if length(C)==1
+%             Fcounter = find(Fcheck == C);
+%             bin_pos{hj} = stimuli_pos{Fcounter(1)};
+            bin_pos{hj} = idealStimuli{C};
+        elseif length(C)==2
+            pt1n=length(find(Fcheck(round(numT-pt_per_frame)+1:round(numT))==C(1))); %number of first number
+            pt2n=length(find(Fcheck(round(numT-pt_per_frame)+1:round(numT))==C(2)));
+            if pt1n==pt2n
+                
+%                 Fcounter = find(Fcheck == C(2));
+%                 bin_pos{hj} = stimuli_pos{Fcounter(1)};
+                bin_pos{hj} = idealStimuli{C(2)};
+                same_len_pos(hj)= 1;
+            elseif pt1n > pt2n
+                
+%                 Fcounter = find(Fcheck == C(1));
+%                 bin_pos{hj} = stimuli_pos{Fcounter(1)};
+                bin_pos{hj} = idealStimuli{C(1)};
+            elseif pt1n < pt2n
+                
+%                 Fcounter = find(Fcheck == C(2));
+%                 bin_pos{hj} = stimuli_pos{Fcounter(1)};
+                bin_pos{hj} = idealStimuli{C(2)};
+            end
+        elseif length(C) ==3
+            %             tog3(round(numT-pt_per_frame)+1:round(numT))=1;
+            tog3(round(numT-pt_per_frame))=1;
+            tog3(round(numT))=1;
+            pt1n=length(find(Fcheck(round(numT-pt_per_frame)+1:round(numT))==C(1))); %number of first number
+            pt2n=length(find(Fcheck(round(numT-pt_per_frame)+1:round(numT))==C(2)));
+            pt3n=length(find(Fcheck(round(numT-pt_per_frame)+1:round(numT))==C(3)));
+            err=max([pt1n, pt2n, pt3n]);
+            if length(err)~=1
+                hj
+                break
+            end
+            if err==pt1n  %assign the value that has the most numbers
+%                 Fcounter = find(Fcheck == C(1));
+%                 bin_pos{hj} = stimuli_pos{Fcounter(1)};
+                  bin_pos{hj} = idealStimuli{C(1)};
+            elseif err==pt2n
+%                 Fcounter = find(Fcheck == C(2));
+%                 bin_pos{hj} = stimuli_pos{Fcounter(1)};
+                bin_pos{hj} = idealStimuli{C(2)};
+            elseif err==pt3n
+%                 Fcounter = find(Fcheck == C(3));
+%                 bin_pos{hj} = stimuli_pos{Fcounter(1)};
+                bin_pos{hj} = idealStimuli{C(3)};
+            end
+            
+            sumtemp=pt1n+pt2n+pt3n;
+            ratio3(count,1:3)=[pt1n pt2n pt3n]./sumtemp;  %ration between these 3 values
+            count=count+1;
+            
+        else
+            bin_pos{hj} = -5*ones(length(idealStimuli));
+        end
+    end
+else
+    bin_pos=[]; %the result we want
+    tog3=[];
+    pt_per_frame=BinningInterval*Samplingrate; %number of diode points in one frame
+    same_len_pos=[];
+    ratio3=[]; count=1; %ratio3 calculate the ratio for 3 states in one bin
+    
+    for hj= 1:length(diode_BT) %length is same as BinningTime for Spikes %8534:8539 %8457:8461
+        numT=diode_BT(hj)*Samplingrate; %the corresponding number of point to timing in diode_BT
+        C=[];
+        C = unique(stimuli_pos(round(numT-pt_per_frame)+1:round(numT)),'stable'); %unique number in one frame
+        %     hj
+        %     C
+        if length(C)==1
+            bin_pos(hj)=C;
+        elseif length(C)==2
+            pt1n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(1))); %number of first number
+            pt2n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(2)));
+            if pt1n==pt2n
+                bin_pos(hj)=C(2);
+                same_len_pos(hj)= 1;
+            elseif pt1n > pt2n
+                bin_pos(hj)=C(1);
+            elseif pt1n < pt2n
+                bin_pos(hj)=C(2);
+            end
+        elseif length(C) ==3
+            %             tog3(round(numT-pt_per_frame)+1:round(numT))=1;
+            tog3(round(numT-pt_per_frame))=1;
+            tog3(round(numT))=1;
+            pt1n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(1))); %number of first number
+            pt2n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(2)));
+            pt3n=length(find(stimuli_pos(round(numT-pt_per_frame)+1:round(numT))==C(3)));
+            err=max([pt1n, pt2n, pt3n]);
+            if length(err)~=1
+                hj
+                break
+            end
+            if err==pt1n  %assign the value that has the most numbers
+                bin_pos(hj)=C(1);
+            elseif err==pt2n
+                bin_pos(hj)=C(2);
+            elseif err==pt3n
+                bin_pos(hj)=C(3);
+            end
+            
+            sumtemp=pt1n+pt2n+pt3n;
+            ratio3(count,1:3)=[pt1n pt2n pt3n]./sumtemp;  %ration between these 3 values
+            count=count+1;
+            
+        else
+            bin_pos(hj)=-5;
+        end
     end
 end
 
@@ -257,7 +362,7 @@ if length(find(same_len_pos~=0)) ~=  0
     disp('ratio3/ problem points: ')
     disp('2 states Error')
     pass = 0;
-    return 
+    return
 end
 
 reconstruct_spikes=[];
@@ -274,9 +379,8 @@ end
 
 %% Saving
 % clearvars -except bin_pos diode_BT BinningInterval a_data Spikes reconstruct_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
-save([pwd,'\merge','\merge_',name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
+save([pwd,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
 
 
-pass = 1;
-
+    
 end

@@ -1,9 +1,13 @@
+code_folder = pwd;
+exp_folder = 'D:\Leo\0417exp';
+cd(exp_folder);
 mkdir MI
+cd sort_merge_spike
 all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir. 
 n_file = length(all_file) ;
+cd(code_folder);
 
-
-for z =1%:n_file %choose file
+for z =2:11 %choose file
     Mutual_infos = cell(1,60);
     Mutual_shuffle_infos = cell(1,60);
     
@@ -11,7 +15,7 @@ for z =1%:n_file %choose file
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
     filename = [name,ext];
-    load([filename]);
+    load([exp_folder,'\sort_merge_spike\',filename]);
     name=[name];
     z
     name
@@ -67,5 +71,5 @@ for z =1%:n_file %choose file
 
     end
 
-    save(['MI\',name(17:end-15),'.mat'],'time','Mutual_infos','Mutual_shuffle_infos')
+    save([exp_folder,'\MI\',name(17:end),'.mat'],'time','Mutual_infos','Mutual_shuffle_infos')
 end
