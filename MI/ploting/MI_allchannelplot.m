@@ -23,7 +23,7 @@ for z =1:n_file
     ha = tight_subplot(8,8,[.03 .01],[0.02 0.02],[.01 .01]);
     for channelnumber=1:60
         axes(ha(rr(channelnumber))); 
-        plot(time,Mutual_infos{channelnumber}-mean(Mutual_shuffle_infos{channelnumber}),'LineWidth',2,'LineStyle','-');
+        plot(time,Mutual_infos{channelnumber},'LineWidth',2,'LineStyle','-');
 
         xlim([ -1300 1300])
         ylim([0 inf+0.1])
