@@ -2,7 +2,8 @@
 %sorted_spikes stores all spikes in A unit. It is a 1*60(channel) cell
 clear all;
 close all;
-current_path =pwd;
+exp_folder = 'D:\Leo\0417exp';
+cd(exp_folder);
 mkdir sort_merge_spike
 cd merge
 
@@ -16,7 +17,7 @@ for m = 1:n_file
     end
     load(all_file(m).name);
     file = all_file(m).name(7:end);
-    load([current_path,'\sort\',file]);
+    load([exp_folder,'\sort\',file]);
     
     sorted_spikes=cell(1,60);
     for j = 1:length(Spikes)    %running through each channel
@@ -30,13 +31,8 @@ for m = 1:n_file
         sorted_spikes{j} = ss;
     end
     
-    save([current_path,'\sort_merge_spike','\sort_merge_',file],'sorted_spikes','bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
+    save([exp_folder,'\sort_merge_spike','\sort_merge_',file],'sorted_spikes','bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
 end
-
-cd ..
-
-
-
 
 
 
