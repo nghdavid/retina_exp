@@ -1,8 +1,9 @@
-function a = write_CalBar(Vertex, theta,  mea_size_bm)
+function frame = write_CalBar(frame,Vertex, theta,  mea_size_bm)
 
-a=zeros(1024,1280);
+
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
+load('boundary_set.mat')
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
 screen_brightness(screen_brightness<0)=0;
@@ -10,10 +11,23 @@ screen_brightness(screen_brightness<0)=0;
 if theta == 0 || theta == pi/2  % vertical case
     for y = round(Vertex{1}(2)) : round(Vertex{3}(2))
         for x = round(Vertex{2}(1)):round(Vertex{4}(1))
-            cal_x = dotPositionMatrix{y,x}(1);
-            cal_y = dotPositionMatrix{y,x}(2);
-            cal_lum = screen_brightness(y,x);
-            a(cal_y,cal_x) = cal_lum;
+            new_y = y;
+            new_x = x;
+            if y > size(dotPositionMatrix,1)
+                new_y = mod(y,size(dotPositionMatrix,1))+(mea_size_bm-mea_size);
+                
+            end
+            if x > size(dotPositionMatrix,1)
+                new_x = mod(x,size(dotPositionMatrix,1))+(mea_size_bm-mea_size);
+                
+            end
+            
+            cal_x = dotPositionMatrix{new_y,new_x}(1);
+            cal_y = dotPositionMatrix{new_y,new_x}(2);
+            cal_lum = screen_brightness(y,new_x);
+            frame(cal_y,cal_x) = cal_lum;
+            
+            
         end
     end
     
@@ -63,7 +77,7 @@ else
             cal_x = dotPositionMatrix{y,x}(1);
             cal_y = dotPositionMatrix{y,x}(2);
             cal_lum = screen_brightness(y,x);
-            a(cal_y,cal_x) = cal_lum;
+            frame(cal_y,cal_x) = cal_lum;
         end
     end
 end
