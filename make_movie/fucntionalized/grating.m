@@ -2,9 +2,9 @@ clear all;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
-parameter1 = [376,94,1,250];%1199um
-parameter2 = [152 ,38,3,200];%485um
-parameter3 = [90,22,5,200];%287um
+parameter1 = [376,94,1,800];%1199um
+parameter2 = [152 ,38,3,400];%485um
+parameter3 = [90,22,5,400];%287um
 parameters = [parameter1;parameter2;parameter3];
 
 
