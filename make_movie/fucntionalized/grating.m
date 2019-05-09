@@ -16,7 +16,7 @@ writerObj.Quality = 80;
 open(writerObj);
 Y =meaCenter_y;
 %start part: dark adaptation
-for mm=1:fps*20
+for mm=1:video_fps*20
     img=zeros(1024,1280);
     writeVideo(writerObj,img);
 end
@@ -37,7 +37,7 @@ for k = 1:3
                 R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
 
                 xarray = zeros(num_bar,num_move);%Array that store each bar postion(each row store each bar postions)
-                xarray(1,1) = leftx_bd+bar_wid+1;%Left bar first position
+                xarray(1,1) = 1;%leftx_bd+bar_wid+1;%Left bar first position
 
                 
                 if coherent %grating set 0, coherent set 1
@@ -92,15 +92,19 @@ for k = 1:3
                             a = write_CalBar(a,Vertex, theta,  mea_size_bm); %a = the bar
 
                         end
+%                         a(:,leftx_bd+11)=1;
+%                         a(:,leftx_bd+471)=1;
                         a(500-35:500+35,1230:1280)=1;
                         writeVideo(writerObj,a);
 
-                        %Interval frame
-                        for l = 1:100
-                            a = zeros(1024,1280).*0.2;%Gray frame
-                            writeVideo(writerObj,a);
-                        end
+                       
                     end
+                end
+                 %Interval frame
+                for l = 1:100
+                     a = ones(1024,1280);%Gray frame
+                     a = a.*0.2;
+                     writeVideo(writerObj,a);
                 end
             end
         end

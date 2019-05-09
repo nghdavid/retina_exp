@@ -11,20 +11,12 @@ screen_brightness(screen_brightness<0)=0;
 if theta == 0 || theta == pi/2  % vertical case
     for y = round(Vertex{1}(2)) : round(Vertex{3}(2))
         for x = round(Vertex{2}(1)):round(Vertex{4}(1))
-            new_y = y;
-            new_x = x;
-            if y > size(dotPositionMatrix,1)
-                new_y = mod(y,size(dotPositionMatrix,1))+(mea_size_bm-mea_size);
-                
-            end
-            if x > size(dotPositionMatrix,1)
-                new_x = mod(x,size(dotPositionMatrix,1))+(mea_size_bm-mea_size);
-                
-            end
             
+            new_y = mod(y,mea_size)+(mea_size_bm-mea_size)/2+1;
+            new_x= mod(x,mea_size)+(mea_size_bm-mea_size)/2+1;
             cal_x = dotPositionMatrix{new_y,new_x}(1);
             cal_y = dotPositionMatrix{new_y,new_x}(2);
-            cal_lum = screen_brightness(y,new_x);
+            cal_lum = screen_brightness(new_y,new_x);
             frame(cal_y,cal_x) = cal_lum;
             
             
