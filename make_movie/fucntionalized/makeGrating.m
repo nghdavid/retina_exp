@@ -1,136 +1,119 @@
-% function makeREvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date, deltaT)
-makemovie_folder = 'H:\';
-theta = 0;
-direction = 'RL';
-video_folder = 'H:\';
-videoworkspace_folder = 'H:\';
-date = '0319';
-%% ON OFF
-
-%moving times.
-%deltaT = 2.4; %s
-
-rest_T = 10;
-fps =60;  %freq of the screen flipping
-T=(rest_T+2+2*deltaT)*12; %second
-dt=1/fps;
-T=dt:dt:T;
-
+clear all;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
-bar_wid = 22;
-screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
-screen_brightness(screen_brightness>1)=1;
-screen_brightness(screen_brightness<0)=0;
-R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
+parameter1 = [376,94,1,800];%1199um
+parameter2 = [152 ,38,3,400];%485um
+parameter3 = [90,22,5,400];%287um
+parameters = [parameter1;parameter2;parameter3];
+bar_len = (mea_size_bm-1)/2;
 
-
-all_file = dir('*.mat');
-
-
-Xarray = zeros(1,length(T));
-Xarray(1,1)=0; % since the mean value of damped eq is zero
-%Use rntest(t)!!!
-
-for i = 1:round(12*(rest_T+2+2*deltaT)*fps)
-    if mod(i , (rest_T+2+2*deltaT)*fps) < 1*fps
-        Xarray(i) = 0;
-    elseif mod(i , (rest_T+2+2*deltaT)*fps) < 1*fps+deltaT*fps
-        Xarray(i) = (mod(i , (rest_T+2+2*deltaT)*fps)-1*fps)/(deltaT*fps) ;
-    elseif mod(i , (rest_T+2+2*deltaT)*fps) < 1*fps+2*deltaT*fps
-        Xarray(i) = 1- (mod(i , (rest_T+2+2*deltaT)*fps)-(1+deltaT)*fps)/(deltaT*fps) ;
-    elseif mod(i , (rest_T+2+2*deltaT)*fps) < 2*fps+2*deltaT*fps
-        Xarray(i) = 0;
-    else
-        Xarray(i) = -2;
-    end
-end
-
-
-% Normalize to proper moving range
-max_x = floor(rightx_bar-bar_wid);
-min_x = ceil(leftx_bar+bar_wid);
-for i = 1:length(Xarray)
-    if Xarray(i) >= 0
-        newXarray(i)= Xarray(i)*(max_x-min_x)+min_x;
-    else
-        newXarray(i) = -1;
-    end
-end
-Y =meaCenter_y;
-cd (video_folder)
-%video frame file
-name=[date,'_Reversal_moving_',direction,'_',num2str(T(end)) ,'s_Br50_Q100'];
-
-name
-
-%video setting
-Time=T; %sec
-video_fps=fps;
-writerObj = VideoWriter([name,'.avi']);  %change video name here!
+video_fps=60;
+writerObj = VideoWriter('_grating_.avi');%change video name here!
 writerObj.FrameRate = video_fps;
-writerObj.Quality = 100;
+writerObj.Quality = 80;
 open(writerObj);
+Y =meaCenter_y;
 %start part: dark adaptation
-for mm=1:fps*20
+for mm=1:video_fps*20
     img=zeros(1024,1280);
     writeVideo(writerObj,img);
 end
 
 
-cd(makemovie_folder)
-%%draw moving bar
-for kk =1:length(T)
-    
-    if mod(kk , fps*(rest_T+2+2*deltaT))<(2+2*deltaT)*fps
-        X=newXarray(kk);
-        barX=X-round(leftx_bd);
-        barY=round(Y)-round(lefty_bd);
-        
-        Vertex = cell(4);
-        Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
-        Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
-        Vertex{3} = [barX+bar_wid  barY+bar_le];
-        Vertex{4} = [barX+bar_wid  barY-bar_le];
-        %ratation
-        for i = 1:4
-            Vertex{i} = R_matrix*(Vertex{i}-[(mea_size_bm+1)/2  (mea_size_bm+1)/2])'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]';
+for k = 1:3
+    for theta = [pi/4 pi*3/4]%Direction of moving bar
+        for reversal = [0 1]
+            for coherent = [0 1]%grating set 0, coherent set 1
+                bar_interval = parameters(k,1);%The distance between bar and bar
+                bar_wid = parameters(k,2);%The bar width is 2*bar_wid+1
+                num_bar = parameters(k,3);%number of bar in movie
+                num_move = parameters(k,4);%Number of steps that move
+                
+                screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
+                screen_brightness(screen_brightness>1)=1;
+                screen_brightness(screen_brightness<0)=0;
+                R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
+
+                xarray = zeros(num_bar,num_move);%Array that store each bar postion(each row store each bar postions)
+                xarray(1,1) = 1;%leftx_bd+bar_wid+1;%Left bar first position
+
+                
+                if coherent %grating set 0, coherent set 1
+                    for i = 2:length(xarray)%Initialize left bar
+                        if xarray(1,i-1) <= xarray(1,1)
+                            xarray(1,i) = xarray(1,i-1)+2*randsample([1,0],1);
+                        else
+                            xarray(1,i) = xarray(1,i-1)+2*randsample([1,-1],1);
+                        end
+
+                    end
+                else
+                    for i = 2:length(xarray)
+                        xarray(1,i) = xarray(1,i-1)+2;
+                    end
+                end
+
+                if num_bar > 1
+                    for i = 2:size(xarray,1)%Calculate other bar
+                        xarray(i,:) = xarray(i-1,:)+bar_interval;
+                    end
+                end
+                if reversal
+                    xarray = fliplr(xarray);%For reverse direction
+                end
+
+                %video setting
+                % Time=T; %sec
+                
+                for kk =1:length(xarray)
+                    if xarray(1,kk) > 0%Grating frame
+
+                        a = zeros(1024,1280);%Initialize each frame
+
+                        for i = 1:num_bar%Plot each bar
+
+                            X=xarray(i,kk);
+
+                            barX=X-round(leftx_bd);
+                            barY=round(Y)-round(lefty_bd);
+
+                            Vertex = cell(4);
+                            Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
+                            Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
+                            Vertex{3} = [barX+bar_wid  barY+bar_le];
+                            Vertex{4} = [barX+bar_wid  barY-bar_le];
+                            %rotation
+                            for i = 1:4
+                                Vertex{i} = R_matrix*(Vertex{i}-[(mea_size_bm+1)/2  (mea_size_bm+1)/2])'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]';
+                            end
+
+                            a = write_CalBar(a,Vertex, theta,  mea_size_bm); %a = the bar
+
+                        end
+%                         a(:,leftx_bd+11)=1;
+%                         a(:,leftx_bd+471)=1;
+                        a(500-35:500+35,1230:1280)=1;
+                        writeVideo(writerObj,a);
+
+                       
+                    end
+                end
+                 %Interval frame
+                for l = 1:100
+                     a = ones(1024,1280);%Gray frame
+                     a = a.*0.2;
+                     writeVideo(writerObj,a);
+                end
+            end
         end
-        
-        a = write_CalBar(Vertex, theta,  mea_size_bm); %a = the bar
-        
     end
-    
-    
-    
-    if mod(kk,3)==1 %odd number
-        a(500-35:500+35,1230:1280)=1; % white square
-    elseif mod(kk,3)==2
-        a(500-35:500+35,1230:1280)=0.2; %gray
-    else
-        a(500-35:500+35,1230:1280)=0; % dark
-    end
-    cd (video_folder)
-    writeVideo(writerObj,a);
 end
 
-%end part video
 for mm=1:10
     img=zeros(1024,1280);
-    img(500-35:500+35,1230:1280)=0.2; %gray
+    
     writeVideo(writerObj,img);
 end
 close(writerObj);
-% cd(videoworkspace_folder)
-% save([date,'_Reversal_moving_',direction,'_',num2str(T(end)) ,'s_Br50_Q100.mat'],'newXarray')
 
-
-%video setting
-
-
-
-
-% cd(makemovie_folder)
-
-% end
