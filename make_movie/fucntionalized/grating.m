@@ -6,7 +6,7 @@ parameter1 = [376,94,1,800];%1199um
 parameter2 = [152 ,38,3,400];%485um
 parameter3 = [90,22,5,400];%287um
 parameters = [parameter1;parameter2;parameter3];
-
+bar_len = (mea_size_bm-1)/2*sqrt(2);
 
 
 video_fps=60;
@@ -25,7 +25,7 @@ end
 for k = 1:3
     for theta = [0 pi/2]%Direction of moving bar
         for reversal = [0 1]
-            for coherent = [0 1]%grating set 0, coherent set 1
+            
                 bar_interval = parameters(k,1);%The distance between bar and bar
                 bar_wid = parameters(k,2);%The bar width is 2*bar_wid+1
                 num_bar = parameters(k,3);%number of bar in movie
@@ -38,22 +38,11 @@ for k = 1:3
 
                 xarray = zeros(num_bar,num_move);%Array that store each bar postion(each row store each bar postions)
                 xarray(1,1) = 1;%leftx_bd+bar_wid+1;%Left bar first position
-
                 
-                if coherent %grating set 0, coherent set 1
-                    for i = 2:length(xarray)%Initialize left bar
-                        if xarray(1,i-1) <= xarray(1,1)
-                            xarray(1,i) = xarray(1,i-1)+2*randsample([1,0],1);
-                        else
-                            xarray(1,i) = xarray(1,i-1)+2*randsample([1,-1],1);
-                        end
-
-                    end
-                else
-                    for i = 2:length(xarray)
+                for i = 2:length(xarray)
                         xarray(1,i) = xarray(1,i-1)+2;
-                    end
                 end
+                
 
                 if num_bar > 1
                     for i = 2:size(xarray,1)%Calculate other bar
@@ -106,7 +95,7 @@ for k = 1:3
                      a = a.*0.2;
                      writeVideo(writerObj,a);
                 end
-            end
+            
         end
     end
 end
