@@ -1,3 +1,4 @@
+clear all;
 mea_size=461;
 mea_size_bm=483; %bigger mea size , from luminance calibrated region
 meaCenter_x=715; 
