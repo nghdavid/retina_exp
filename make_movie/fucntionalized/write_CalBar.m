@@ -19,17 +19,17 @@ if theta == 0 || theta == pi/2  % vertical case
         max_x = Vertex{4}(1);
     end
     if Vertex{1}(2) < 1
-        min_y = 1;
+        lower_y = 1;
     else
-        min_y = Vertex{1}(2);
+        lower_y = Vertex{1}(2);
     end
     if Vertex{3}(2) > mea_size_bm
-        max_y = mea_size_bm;
+        upper_y = mea_size_bm;
     else
-        max_y = Vertex{3}(2);
+        upper_y = Vertex{3}(2);
     end
-    for y = min_y : max_y
-        for x = min_x: max_x
+    for x = floor(min_x) : ceil(max_x)
+        for y = floor(lower_y) : ceil(upper_y)
             cal_x = dotPositionMatrix{y,x}(1);
             cal_y = dotPositionMatrix{y,x}(2);
             cal_lum = screen_brightness(y,x);
