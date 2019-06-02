@@ -204,7 +204,6 @@ for Gvalue=G_list
         img(500-35:500+35,1230:1280)=0.2; %gray
         writeVideo(writerObj,img);
     end
-    
     img=zeros(1024,1280);
     writeVideo(writerObj,img);
     
