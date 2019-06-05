@@ -1,4 +1,4 @@
-function makeREvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date,deltaT)
+function makeBarvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date,deltaT)
 
 %%
 %moving times.
