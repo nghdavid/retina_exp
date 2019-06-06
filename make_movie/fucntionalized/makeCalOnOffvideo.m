@@ -1,31 +1,18 @@
 function CalOnOffvideo(makemovie_folder,  video_folder,  date)
 %% ON OFF
 
-
-mea_size=433;
-mea_size_bm=465; %bigger mea size , from luminance calibrated region
-meaCenter_x=640; 
-meaCenter_y=461; 
-
 %ONOFF times.
 on_time = 2; %s
-off_time = 10; %s
-
-leftx_bd=meaCenter_x-(mea_size_bm-1)/2; %the first x position of the bigger mea region(luminance calibrated region) on LED screen
-lefty_bd=meaCenter_y-(mea_size_bm-1)/2;
-leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
-rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
-upy_bar = ceil(meaCenter_y-(mea_size_bm-1)/2/sqrt(2));
-downy_bar = floor(meaCenter_y+(mea_size_bm-1)/2/sqrt(2));
-
-
-
+off_time = 2; %s
+rest_time = 5; %s
 
 fps =60;  %freq of the screen flipping
+
 T=5*60; %second
 dt=1/fps;
 T=dt:dt:T;
 cd(makemovie_folder);
+load('boundary_set.mat')
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
@@ -58,7 +45,7 @@ for kk =0:length(T)-1
     a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
     
     %square_flicker
-    if mod(kk,fps*(on_time+off_time))<on_time*fps %odd number
+    if mod(kk,fps*(on_time+off_time) )<on_time*fps %odd number
         for y = upy_bar - lefty_bd : downy_bar - lefty_bd
             for x = leftx_bar - leftx_bd : rightx_bar - leftx_bd
                 cal_x = dotPositionMatrix{y,x}(1);

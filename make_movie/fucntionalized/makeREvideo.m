@@ -74,16 +74,17 @@ for mm=1:fps*20
 end
 
 
-cd(makemovie_folder)
+
 %%draw moving bar
 for kk =1:length(T)
+    cd(makemovie_folder)
     a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
     if mod(kk , fps*(rest_T+2+2*deltaT))<(2+2*deltaT)*fps
         X=newXarray(kk);
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
         
-        Vertex = cell(4);
+        Vertex = cell(2);
         Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
         Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
         Vertex{3} = [barX+bar_wid  barY+bar_le];

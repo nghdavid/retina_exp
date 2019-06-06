@@ -16,14 +16,20 @@ parameter1 = [376,94,1,800];%1199um
 parameter2 = [152 ,38,3,400];%485um
 parameter3 = [90,22,8,400];%287um
 parameters = [parameter1;parameter2;parameter3];
-bar_len = (mea_size_bm-1)/2;
+bar_real_width = 300;
+%bar_len = (mea_size_bm-1)/2;
 
 video_fps=60;
-writerObj = VideoWriter('grating.avi');%change video name here!
+writerObj = VideoWriter('0527_grating_300micro.avi');%change video name here!
 writerObj.FrameRate = video_fps;
 writerObj.Quality = 80;
 open(writerObj);
 Y =meaCenter_y;
+for l = 1:60*5
+    a = ones(1024,1280);%Gray frame
+    a = a.*0.2;
+    writeVideo(writerObj,a);
+end
 %start part: dark adaptation
 % for mm=1:video_fps*20
 %     img=zeros(1024,1280);
@@ -32,18 +38,19 @@ Y =meaCenter_y;
 
 
 for k = 3
-    for theta = [0 pi/4 pi/2 pi*3/4]%Direction of moving bar
-        for reversal = [0 1]
-            for coherent = 0%grating set 0, coherent set 1
-                if pi/4 <= theta || pi*3/4 >= theta
+    for reversal = [0 1]
+        for theta = [0 pi/4 pi/2 pi*3/4]%Direction of moving bar
+            for coherent = 0 %grating set 0, coherent set 1
+                if pi/4 <= theta && pi*3/4 >= theta
                     longest_dis = mea_size_bm/sin(theta);
-                    
                 else
                     longest_dis = abs(mea_size_bm/cos(theta));
                 end
-                bar_interval = parameters(k,1);%The distance between bar and bar
-                bar_wid = parameters(k,2);%The bar width is 2*bar_wid+1
-                num_bar = ceil(longest_dis/bar_interval);%number of bar in movie
+                
+                bar_wid = bar_real_width/ micro_per_pixel/2;;%The bar width is 2*bar_wid+1
+                bar_interval = bar_wid*4;%The distance between bar and bar
+                bar_len = longest_dis/2;
+                num_bar = ceil((longest_dis+2*bar_wid/bar_interval));%number of bar in movie
                 num_move = parameters(k,4);%Number of steps that move
                 
                 
@@ -92,9 +99,8 @@ for k = 3
                             [kk i]
                             X=xarray(i,kk);
                             
-                            barX=X+(mea_size_bm-1)/2-round(longest_dis/2)+bar_wid;
-                            barY=round(Y)-round(lefty_bd);
-                            bar_len = (mea_size_bm-1)/2;;
+                            barX=X+(mea_size_bm-1)/2-(longest_dis/2)+bar_wid;
+                            barY=Y-lefty_bd;
                             Vertex = cell(4);
                             Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
                             Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3

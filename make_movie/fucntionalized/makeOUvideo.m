@@ -46,7 +46,7 @@ for Gvalue=G_list
     nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(x)-min(x)));
     x2=x*nrx;
     x3=x2-min(x2)+leftx_bar+bar_wid;%rearrange the boundary values
-    newXarray=x3; 
+    newXarray=round(x3); 
     Y =meaCenter_y;
 
     cd (video_folder)
@@ -81,7 +81,7 @@ for Gvalue=G_list
         barY=round(Y)-round(lefty_bd);
         
         
-        Vertex = cell(4);
+        Vertex = cell(2);
         Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
         Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
         Vertex{3} = [barX+bar_wid  barY+bar_le];
