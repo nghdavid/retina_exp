@@ -11,7 +11,7 @@ screen_brightness(screen_brightness<0)=0;
 % %             width   interval
 % % grating     300     300
 % % jittering   150     150
-bar_wid = bar_real_width/ micro_per_pixel/2
+bar_wid = bar_real_width/ micro_per_pixel/2 %unit of bar_real_width is micro
 bar_interval = bar_wid*4;%The distance between bar and bar
 
 cd (video_folder)
@@ -47,7 +47,7 @@ for reversal = [0 1]
         end
         bar_le = longest_dis/2;
         num_bar = ceil(longest_dis/bar_interval)+1;%number of bar in movie
-        num_move = 200; %Number of steps that move %1.67s
+        num_move = 400; %Number of steps that move %1.67s
         
         R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
         
@@ -80,9 +80,9 @@ for reversal = [0 1]
                     [kk i]
                     X=xarray(i,kk);
                     
-                    barX=X;+(mea_size_bm-1)/2-(longest_dis/2)+bar_wid;
+                    barX= X +(mea_size_bm-1)/2-(longest_dis/2);
                     barY=Y-lefty_bd;
-                    Vertex = cell(4);
+                    Vertex = cell(2);
                     Vertex{1} = round([barX-bar_wid  barY-bar_le]);  %V1  V4
                     Vertex{2} = round([barX-bar_wid  barY+bar_le]);  %V2  V3
                     Vertex{3} = round([barX+bar_wid  barY+bar_le]);
@@ -108,6 +108,7 @@ for reversal = [0 1]
         for l = 1:100
             a = ones(1024,1280);%Gray frame
             a = a.*0.2;
+            a(500-35:500+35,1230:1280)=0; % dark
             writeVideo(writerObj,a);
         end
     end
