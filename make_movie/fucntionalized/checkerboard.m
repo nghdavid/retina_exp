@@ -6,7 +6,7 @@ function checkerboard(makemovie_folder,  video_folder, videoworkspace_folder, da
 fps =60;  %freq of the screen flipping
 refresh_fps=20;
 frame_per_board = fps/refresh_fps;
-num_pixel = 23;
+num_pixel = 13; %there are num_pixel^2 checker
 T=5*60; %second
 dt=1/fps;
 T=dt:dt:T;
@@ -22,7 +22,7 @@ all_file = dir('*.mat');
 cd (video_folder);
 %video frame file
 
-name=[date,'_Checkerboard_5min_Br50_Q100'];
+name=[date,'_Checkerboard_20Hz_13_5min_Br50_Q100'];
 name
 
 newXarray = cell(length(T),1);
@@ -38,7 +38,7 @@ for  i = 0 : length(T)/frame_per_board-1
         checkerboard(k) = initial_checkerboard(r(k));
     end
     for j = 1:frame_per_board
-        newXarray(3*i+j)  = { checkerboard };
+        newXarray(frame_per_board*i+j)  = { checkerboard };
     end
 end
 
@@ -62,13 +62,13 @@ end
 
 %%rotation theta = 0 for RL
 
-for kk =0:length(T)-1
+for kk =1:length(T)
     a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
     
     %square_flicker
     for y = 1 : mea_size_bm
         for x = 1 : mea_size_bm
-            if newXarray{kk+1}(ceil(y/num_pixel),ceil(x/num_pixel)) ==1
+            if newXarray{kk}(ceil(y*num_pixel/mea_size_bm),ceil(x*num_pixel/mea_size_bm)) ==1
                 cal_x = dotPositionMatrix{y,x}(1);
                 cal_y = dotPositionMatrix{y,x}(2);
                 cal_lum = screen_brightness(y,x);
@@ -107,7 +107,7 @@ writeVideo(writerObj,img);
 close(writerObj);
 cd(videoworkspace_folder)
 %save parameters needed
-save([date,'_Checkerboard_5min_Br50_Q100','.mat'],'newXarray')
+save([date,'_Checkerboard_20Hz_13_5min_Br50_Q100','.mat'],'newXarray')
     
 cd(makemovie_folder);
 end

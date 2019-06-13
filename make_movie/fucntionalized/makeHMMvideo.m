@@ -89,7 +89,7 @@ for Gvalue=G_list
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
         
-        Vertex = cell(4);
+        Vertex = cell(2);
         Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
         Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
         Vertex{3} = [barX+bar_wid  barY+bar_le];

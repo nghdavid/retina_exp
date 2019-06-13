@@ -3,7 +3,7 @@ function makeCirclevideo(makemovie_folder, video_folder, videoworkspace_folder, 
 %% ON OFF
 
 %moving times.
-deltaT = 0.7; %s
+deltaT = 2.4; %s
 
 
 fps =60;  %freq of the screen flipping 
