@@ -64,10 +64,10 @@ for k =displaychannel
             end
         end
         RF{i,k} = sum_checkerboard/length(analyze_spikes{k});
+        gauss_RF{i,k} = imgaussfilt(RF{i,k},1.5);
     end
 end
 side_length = length(sum_checkerboard);%length of checkerboard
-
 
 %% calculate SVD and plot SVD
 electrode_x = zeros(1,60);%x positions of electrode
@@ -78,7 +78,7 @@ for k =displaychannel
     %calculate SVD
     reshape_RF = zeros(side_length^2,length(time_shift));
     for i =  time_shift %for -50ms:-300ms
-        reshape_RF(:,i) = reshape(RF{i,k},[side_length^2,1]);
+        reshape_RF(:,i) = reshape(gauss_RF{i,k},[side_length^2,1]);
     end
     [U,S,V] = svd(reshape_RF');%U is temporal filter, V is one dimensional spatial filter, S are singular values
     space = reshape(V(:,1),[side_length,side_length]);%Reshape one dimensional spatial filter to two dimensional spatial filter
@@ -165,7 +165,6 @@ for k =displaychannel
     figure(k);
     num_spike =  length(analyze_spikes{k});
     for i = time_shift
-        gauss_RF{i,k} = imgaussfilt(RF{i,k},1.5);
         subplot(2,3,i),imagesc(gauss_RF{i,k});hold on;
         pbaspect([1 1 1])
         title([num2str(-i*50),'ms']);
