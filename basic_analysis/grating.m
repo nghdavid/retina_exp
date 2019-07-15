@@ -2,10 +2,13 @@ close all;
 clear all;
 code_folder = pwd;
 
-exp_folder = 'H:\0709';
+exp_folder = 'E:\0709';
 displaychannel = 1:60;%Choose which channel to display
 cd(exp_folder)
-
+direction_order = [0,7,6,5,4,3,2,1];%It will be multiplied by pi/4
+%0 is right 4 is left 2 is up 6 is down 
+%7 is right down 3 is left up
+% 1 is rigtht up 5 is left down
 %% For unsorted spikes
 load('data\0625_Grating_300micro_72s_Br50_Q80.mat')
 analyze_spikes = Spikes;
@@ -106,7 +109,7 @@ end
 
 %% Calculate DSI
 DSI =zeros(60,2);
-direction_vector = exp((0:7)*pi/4*1j);
+direction_vector = exp((direction_order)*pi/4*1j);
 for k = channel_number % k is the channel number
     if sum(counter(:,k))/sum(trial_length) >= 0.1%Only mean firing rate greater than 0.1 HZ is considered
         DSI(k,1) = abs(dot(direction_vector, counter(:,k)))/sum(counter(:,k)); %DSI in number of spikes
