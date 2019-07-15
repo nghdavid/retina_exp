@@ -96,7 +96,6 @@ for j = 1:length(display_trial)
     BinningInterval = 1/fps;  %s
     BinningTime = [0 : BinningInterval : trial_length(display_trial(j))];
     BinningSpike = zeros(60,length(BinningTime));
-    sub_Spikes = cell(60,1);
     for k = channel_number % i is the channel number
         [n,~] = hist(trial_spikes{display_trial(j),k},BinningTime) ;
         BinningSpike(k,:) = n;
