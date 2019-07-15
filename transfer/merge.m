@@ -2,7 +2,7 @@ clear all;
 close all;
 
 code_folder = pwd;
-exp_folder = 'D:\Leo\0417exp';
+exp_folder = 'E:\0709';
 cd(exp_folder)
 cd playmovie
 fileID = fopen('playmovie/list.txt','r');
@@ -18,7 +18,7 @@ cd ..
 mkdir merge
 
 
-for m = 1:num_files
+for m = 6%:num_files
     name = txt{1}{m};
     workspace_name = merge_txt{1}{m};
     if length(name) < 6
@@ -55,4 +55,4 @@ for m = 1:num_files
 end
 
 
-load('D:\Leo\0327exp\data\0304_Reversal_moving_RL_Br50_Q100.mat');
+
