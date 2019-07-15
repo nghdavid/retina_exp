@@ -1,9 +1,7 @@
+load('boundary_set.mat')
+pic_size = 441;%Picture size that tina gives you
 
-mea_size=433;
-mea_size_bm=465; %bigger mea size , from luminance calibrated region
-meaCenter_x=640; 
-meaCenter_y=461; 
-pic = (465-441)/2;
+pic = (mea_size_bm-pic_size)/2;
 
 
 leftx_bd=meaCenter_x-(mea_size_bm-1)/2; %the first x position of the bigger mea region(luminance calibrated region) on LED screen

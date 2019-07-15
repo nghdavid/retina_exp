@@ -1,86 +1,101 @@
-function makeBarvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date,deltaT)
+%function makeHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
+makemovie_folder = 'H:\HMM';
+date = '0602';
+theta = 0;
+video_folder = 'H:\HMM';
+videoworkspace_folder = 'H:\HMM\videoworkspace\HMM';
+direction = 'RL';
 
-%%
-%moving times.
+%% HMM base from RL motion
+
+
+G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
 
 
 
-rest_T = 6;
-fps =60;  %freq of the screen flipping
-T=(rest_T+2+2*deltaT)*12; %second
-dt=1/fps;
-T=dt:dt:T;
+countt=1;
 
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
+cd('0421 new video Br25/rn_workspace');
+all_file = dir('*.mat');
+
+fps =60;  %freq of the screen flipping
+T=7*60; %second
+dt=1/fps;
+T=dt:dt:T;
+
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
 screen_brightness(screen_brightness<0)=0;
+
+%%rotation theta = 0 for RL theta
+%theta must between [0,pi)
 R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
 
-
-all_file = dir('*.mat');
-
-
-Xarray = zeros(1,length(T));
-Xarray(1,1)=0; % since the mean value of damped eq is zero
-%Use rntest(t)!!!
-
-for i = 1:round(12*(rest_T+2+2*deltaT)*fps)
-    if mod(i , (rest_T+2+2*deltaT)*fps) < 1*fps
-        Xarray(i) = 0;%Left
-    elseif mod(i , (rest_T+2+2*deltaT)*fps) < 1*fps+deltaT*fps
-        Xarray(i) = (mod(i , (rest_T+2+2*deltaT)*fps)-1*fps)/(deltaT*fps) ;
-    elseif mod(i , (rest_T+2+2*deltaT)*fps) < 1*fps+2*deltaT*fps
-        Xarray(i) =-2;%1- (mod(i , (rest_T+2+2*deltaT)*fps)-(1+deltaT)*fps)/(deltaT*fps);
-    elseif mod(i , (rest_T+2+2*deltaT)*fps) < 2*fps+2*deltaT*fps
-        Xarray(i) = -2;%Left
-    else
-        Xarray(i) = -2;%Rest
+for Gvalue=G_list
+    cd([makemovie_folder, '\0421 new video Br25\rn_workspace']);
+    G_HMM =Gvalue; % damping / only G will influence correlation time
+    D_HMM = 2700000; %dynamical range
+    omega =G_HMM/2.12;   % omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
+    %for randon number files ( I specifically choose some certain random seed series
+    
+    file = all_file(countt).name ;
+    [pathstr, name, ext] = fileparts(file);
+    directory = [pathstr,'\'];
+    filename = [name,ext];
+    load([filename]);
+    name=[name];
+    name
+    Gvalue
+    countt=countt+1;
+    
+    Xarray = zeros(1,length(T));
+    Xarray(1,1)=0; % since the mean value of damped eq is zero
+    Vx = zeros(1,length(T));
+    %Use rntest(t)!!!
+    for t = 1:length(T)-1
+        Xarray(t+1) = Xarray(t) + Vx(t)*dt;
+        Vx(t+1) = (1-G_HMM*dt)*Vx(t) - omega^2*Xarray(t)*dt + sqrt(dt*D_HMM)*rntest(t);
     end
-end
-
-
-% Normalize to proper moving range
-max_x = floor(rightx_bar-bar_wid);
-min_x = ceil(leftx_bar+bar_wid);
-for i = 1:length(Xarray)
-    if Xarray(i) >= 0
-        newXarray(i)= Xarray(i)*(max_x-min_x)+min_x;
-    else
-        newXarray(i) = -1;
+    % Normalize to proper moving range
+    nrx=abs((mea_size_bm-2*bar_wid-1)/(max(Xarray)-min(Xarray)));
+    Xarray2=Xarray*nrx;
+    Xarray3=Xarray2-min(Xarray2)+leftx_bd+bar_wid;%rearrange the boundary values
+    newXarray=round(Xarray3);
+    Y =meaCenter_y;
+    cd (video_folder)
+    %video frame file
+    name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100'];
+    name
+    
+    
+    %video setting
+    Time=T; %sec
+    video_fps=fps;
+    writerObj = VideoWriter([name,'.avi']);  %change video name here!
+    writerObj.FrameRate = video_fps;
+    writerObj.Quality = 100;
+    open(writerObj);
+    %start part: dark adaptation
+    for mm=1:fps*20
+        img=zeros(1024,1280);
+        writeVideo(writerObj,img);
     end
-end
-Y =meaCenter_y;
-cd (video_folder)
-%video frame file
-name=[date,'_smooth_moving_',direction,'_Br50_Q100_',num2str(deltaT)];
-name
-
-%video setting
-Time=T; %sec
-video_fps=fps;
-writerObj = VideoWriter([name,'.avi']);  %change video name here!
-writerObj.FrameRate = video_fps;
-writerObj.Quality = 100;
-open(writerObj);
-%start part: dark adaptation
-for mm=1:fps*20
-    img=zeros(1024,1280);
-    writeVideo(writerObj,img);
-end
-
-
-
-%%draw moving bar
-for kk =1:length(T)
-    a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
-    if newXarray(kk) >= 0
-        X=newXarray(kk);
-        barX=X-round(leftx_bd);
-        barY=round(Y)-round(lefty_bd);
+    
+    
+    
+    %%draw moving bar
+    for kk =1:length(T)
+        a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
         
+        %HMM RL bar trajectory
+        X=newXarray(kk);
+        
+        barX=X-round(leftx_bd)+1;
+        barY=round(Y)-round(lefty_bd)+1;
+        bar_le = (mea_size_bm-1)/2;
         Vertex = cell(4);
         Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
         Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
@@ -165,39 +180,46 @@ for kk =1:length(T)
                 end
             end
         end
-            
-    else
-        a=zeros(1024,1280); % dark
-    end
-    if mod(kk,3)==1 %odd number
+        %expandind theta
+        
+        %         if Vertex{1}(2) < 1
+        %             min_y = 1;
+        %         else
+        %             min_y = Vertex{1}(2);
+        %         end
+        %         if Vertex{3}(2) > mea_size_bm
+        %             max_y = 1;
+        %         else
+        %             max_y = Vertex{3}(2);
+        %         end
+        %square_flicker
+        if mod(kk,3)==1 %odd number
             a(500-35:500+35,1230:1280)=1; % white square
         elseif mod(kk,3)==2
             a(500-35:500+35,1230:1280)=0.2; %gray
         else
             a(500-35:500+35,1230:1280)=0; % dark
         end
-    writeVideo(writerObj,a);
-end
-
-%end part video
-for mm=1:10
+%         percentage = kk/length(T)*100;
+%         percentage
+        writeVideo(writerObj,a);
+    end
+    
+    %end part video
+    for mm=1:10
+        img=zeros(1024,1280);
+        img(500-35:500+35,1230:1280)=0.2; %gray
+        writeVideo(writerObj,img);
+    end
     img=zeros(1024,1280);
-    img(500-35:500+35,1230:1280)=0.2; %gray
     writeVideo(writerObj,img);
+    
+    close(writerObj);
+    cd(videoworkspace_folder)
+    %save parameters needed
+    save([date,' HMM ',direction,' G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
+    
 end
-close(writerObj);
-cd(videoworkspace_folder)
-save([date,'_smooth_moving_',direction,'_Br50_Q100_',num2str(deltaT),'.mat'],'newXarray')
-
-
-
-
-
-%video setting
-
-
-
-
 cd(makemovie_folder)
 
-end
+%end

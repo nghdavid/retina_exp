@@ -1,9 +1,8 @@
 %% This code specially transfer only A unit spikes from offlinesorter
-%sorted_spikes stores all spikes in A unit. It is a 1*60(channel) cell
 clear all;
-close all;
-exp_folder = 'D:\Leo\0417exp';
-cd(exp_folder);
+code_folder = pwd;
+exp_folder =  'E:\0709';
+cd(exp_folder)
 mkdir sort_merge_spike
 cd merge
 
@@ -12,9 +11,7 @@ n_file = length(all_file) ;
 
 for m = 1:n_file
     Spikes = cell(1,60);
-    if strcmp(all_file(m).name,'onoff') or strcmp(all_file(m).name,'spon')
-        continue;
-    end
+    
     load(all_file(m).name);
     file = all_file(m).name(7:end);
     load([exp_folder,'\sort\',file]);
@@ -36,4 +33,4 @@ end
 
 
 
-cd ..
+cd(code_folder)
