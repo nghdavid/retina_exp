@@ -1,13 +1,24 @@
+clear all;
 code_folder = pwd;
-exp_folder = 'D:\Leo\0417exp';
+sorted = 1;
+exp_folder = 'E:\0709';
 cd(exp_folder);
 mkdir MI
-cd sort_merge_spike
-all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir. 
-n_file = length(all_file) ;
+cd MI
+if sorted
+    mkdir sort
+    cd ([exp_folder,'\sort_merge_spike\MI'])
+    all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir. 
+    n_file = length(all_file) ;
+else
+    mkdir unsort
+    cd ([exp_folder,'\merge\MI'])
+    all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir. 
+    n_file = length(all_file) ;
+end
 cd(code_folder);
 
-for z =2:11 %choose file
+for z =1:n_file %choose file
     Mutual_infos = cell(1,60);
     Mutual_shuffle_infos = cell(1,60);
     
@@ -15,7 +26,7 @@ for z =2:11 %choose file
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
     filename = [name,ext];
-    load([exp_folder,'\sort_merge_spike\',filename]);
+    load([directory,filename]);
     name=[name];
     z
     name
@@ -40,11 +51,17 @@ for z =2:11 %choose file
 
     %% BinningSpike
     BinningSpike = zeros(60,length(BinningTime));
-    for i = 1:60  % i is the channel number
-        [n,~] = hist(sorted_spikes{i},BinningTime) ;  %yk_spikes is the spike train made from"Merge_rePos_spikes"
-        BinningSpike(i,:) = n ;
+    if sorted
+        for i = 1:60  % i is the channel number
+            [n,~] = hist(sorted_spikes{i},BinningTime) ;  %yk_spikes is the spike train made from"Merge_rePos_spikes"
+            BinningSpike(i,:) = n ;
+        end
+    else
+         for i = 1:60  % i is the channel number
+            [n,~] = hist(reconstruct_spikes{i},BinningTime) ;  %yk_spikes is the spike train made from"Merge_rePos_spikes"
+            BinningSpike(i,:) = n ;
+        end
     end
-
     %% Predictive information
     backward=ceil(15000/bin); 
     forward=ceil(15000/bin);
@@ -70,6 +87,9 @@ for z =2:11 %choose file
         Mutual_shuffle_infos{channelnumber} = information_shuffle;
 
     end
-
-    save([exp_folder,'\MI\',name(17:end),'.mat'],'time','Mutual_infos','Mutual_shuffle_infos')
+    if sorted
+        save([exp_folder,'\MI\sort\',name(12:end),'.mat'],'time','Mutual_infos','Mutual_shuffle_infos')
+    else
+        save([exp_folder,'\MI\unsort\',name(7:end),'.mat'],'time','Mutual_infos','Mutual_shuffle_infos')
+    end
 end
