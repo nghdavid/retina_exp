@@ -1,5 +1,11 @@
+close all;
+clear all;
+code_folder = pwd;
+exp_folder = 'E:\0709';
+cd(exp_folder)
+
 %Load calculated MI first(Need to run Calculate_MI.m first to get)
-cd unit_a\sort_merge_spike\MI
+cd MI\sort
 all_file = dir('*.mat') ; % change the type of the files which you want to select, subdir or dir. 
 n_file = length(all_file) ;
 %Tina orientation
@@ -20,17 +26,21 @@ for z =1:n_file
     filename = [name,ext];
     load([filename]);
     figure('units','normalized','outerposition',[0 0 1 1])
-    ha = tight_subplot(8,8,[.03 .01],[0.02 0.02],[.01 .01]);
+    ha = tight_subplot(8,8,[.04 .02],[0.07 0.02],[.02 .02]);
     for channelnumber=1:60
         axes(ha(rr(channelnumber))); 
-        plot(time,Mutual_infos{channelnumber},'LineWidth',2,'LineStyle','-');
+        plot(time,Mutual_infos{channelnumber},'LineWidth',2,'LineStyle','-');hold on;
+         plot(time,smooth(Mutual_shuffle_infos{channelnumber}),'LineWidth',2,'LineStyle','-');hold off;
 
         xlim([ -1300 1300])
         ylim([0 inf+0.1])
         title(channelnumber)
 
     end
-    saveas(gcf,[name,'.tiff'])
+    set(gcf,'units','normalized','outerposition',[0 0 1 1])
+    fig = gcf;
+    fig.PaperPositionMode = 'auto';
+    saveas(fig,[name,'.tiff'])
     saveas(gcf,[name,'.fig'])
 
 end
