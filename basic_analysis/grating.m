@@ -2,7 +2,7 @@ close all;
 clear all;
 code_folder = pwd;
 
-exp_folder = 'E:\0709';
+exp_folder = 'D:\Leo\0712exp';
 displaychannel = 1:60;%Choose which channel to display
 cd(exp_folder)
 direction_order = [0,7,6,5,4,3,2,1];%It will be multiplied by pi/4
@@ -11,11 +11,12 @@ direction_order = [0,7,6,5,4,3,2,1];%It will be multiplied by pi/4
 % 1 is rigtht up 5 is left down
 %% For unsorted spikes
 load('data\0625_Grating_300micro_72s_Br50_Q80.mat')
+%% For sorted spikes
+load('sort\0625_Grating_300micro_72s_Br50_Q80.mat')
 analyze_spikes = Spikes;
 
-%% For sorted spikes
-% load('sort_merge_spike\sort_merge_0507_Checkerboard_20Hz_13_5min_Br50_Q100_re.mat')
-% analyze_spikes = sorted_spikes;
+
+
 
 
 analyze_spikes{31} = [0];
@@ -72,7 +73,7 @@ title('start and end')
 
 %% Seperate orientation 
 diode_start = [diode_start./20000. diode_end./20000.]+1.33;%Minus first 1.33 sec for adaptation
-trial_length = diff(diode_start)-3;%Minus 1.33 sec for adaptation and minus 1.67 sec for mean luminance interval
+trial_length = diff(diode_start)-4/3-10;%Minus 1.33 sec for adaptation and minus 1.67 sec for mean luminance interval
 trial_spikes = cell(trial_num,60);
 
 for k = channel_number% k is the channel number
@@ -110,7 +111,7 @@ end
 DSI =zeros(60,2);
 direction_vector = exp((direction_order)*pi/4*1j);
 for k = channel_number % k is the channel number
-    if sum(counter(:,k))/sum(trial_length) >= 0.1%Only mean firing rate greater than 0.1 HZ is considered
+    if sum(counter(:,k))/sum(trial_length) >= 0.5%Only mean firing rate greater than 0.1 HZ is considered
         DSI(k,1) = abs(dot(direction_vector, counter(:,k)))/sum(counter(:,k)); %DSI in number of spikes
         DSI(k,2) = sum(counter(:,k)); %total firing spikes
         disp(['Channel ',int2str(k),' has mean firing rate of ',num2str(sum(counter(:,k))/sum(trial_length)),' HZ'])

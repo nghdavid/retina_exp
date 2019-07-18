@@ -4,24 +4,26 @@ code_folder = pwd;
 load('channel_pos.mat')
 load('boundary_set.mat')
 
-displaychannel = 1:60;%Choose which channel to display
-save_photo = 1;%0 is no save RF photo, 1 is save
-save_svd = 1;%0 is no save svd photo, 1 is save
+displaychannel = 19;%30;%Choose which channel to display
+save_photo = 0;%0 is no save RF photo, 1 is save
+save_svd = 0;%0 is no save svd photo, 1 is save
 
-time_shift = 1:6;%for -50ms:-300ms
+time_shift = 1:5;%for -50ms:-300ms
 num_shift = 0.05;%50ms
-exp_folder = 'E:\0709';
+exp_folder = 'D:\Leo\0620exp';
 cd(exp_folder)
-name = '20Hz_13x13_RF';%Directory name
+name = '20Hz_13x13_re_RF';%Directory name
 
-%% For unsorted spikes
-load('merge\merge_0507_Checkerboard_20Hz_13_5min_Br50_Q100.mat')
-analyze_spikes = reconstruct_spikes;
-sorted = 0;
 %% For sorted spikes
-% load('sort_merge_spike\sort_merge_0507_Checkerboard_20Hz_13_5min_Br50_Q100_re.mat')
-% analyze_spikes = sorted_spikes;
-% sorted = 1;
+load('sort_merge_spike\sort_merge_0507_Checkerboard_20Hz_13_5min_Br50_Q100_re.mat')
+analyze_spikes = sorted_spikes;
+sorted = 1;
+%% For unsorted spikes
+% load('merge\merge_0507_Checkerboard_20Hz_13_5min_Br50_Q100.mat')
+% analyze_spikes = reconstruct_spikes;
+% sorted = 0;
+
+
 
 %% Create directory
 mkdir FIG
@@ -90,7 +92,8 @@ for k =displaychannel
     
     %Calculate and plot temporal SVD
     figure(k+120)
-    plot(fliplr(time_shift*num_shift*-1000),fliplr(U(1,:)))
+%     plot(fliplr(time_shift*num_shift*-1000),fliplr(U(1,:)))
+        plot([ time_shift*num_shift*1000] ,[U(:,1)'])
     title(['temporal filter from SVD channel ',int2str(k)])
     xlabel('time before spike(ms)')
     ylabel('relative intensity')
@@ -196,7 +199,8 @@ for k =displaychannel
         for i = time_shift
             temporal_filter(i) = gauss_RF{i,k}(closest_extrema(1,k),closest_extrema(2,k));
         end
-        plot(fliplr(time_shift*num_shift*-1000),fliplr(temporal_filter))
+%         plot(fliplr(time_shift*num_shift*-1000),fliplr(temporal_filter))
+        plot(-[0 time_shift*num_shift*-1000],[0.5 temporal_filter])
         title(['temporal filter of RF channel ',int2str(k)])
         xlabel('time before spike(ms)')
         ylabel('relative intensity')
