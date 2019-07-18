@@ -1,15 +1,27 @@
 %%This code analyze on off response of retina
 %load on off data first
-load('0119_CalONOFF_5min_Br50_Q100.mat')
-lumin=[];
+clear all;
+close all;
+code_folder = pwd;
+exp_folder =  'E:\0709';
+cd(exp_folder)
+load('data\0304_CalONOFF_5min_Br50_Q100.mat')
+load('sort\0304_CalONOFF_5min_Br50_Q100.mat')
+rr =[9,17,25,33,41,49,...
+          2,10,18,26,34,42,50,58,...
+          3,11,19,27,35,43,51,59,...
+          4,12,20,28,36,44,52,60,...
+          5,13,21,29,37,45,53,61,...
+          6,14,22,30,38,46,54,62,...
+          7,15,23,31,39,47,55,63,...
+            16,24,32,40,48,56];
+
 lumin=a_data(3,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
 plateau_n=200;  %least number of point for plateau
 last_gray = max(lumin)*0.25+min(lumin)*0.75;
 
 thre_up = max(lumin)*0.7+min(lumin)*0.3;
-% thre_up = max(lumin)*0.65+min(lumin)*0.35;
 
-% thre_down = max(lumin)*0.15+min(lumin)*0.85;
 thre_down = max(lumin)*0.25+min(lumin)*0.75;
 
 
@@ -47,7 +59,7 @@ end
 Samplingrate=20000; %fps of diode in A3
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure;plot(lumin)
+figure(1);plot(lumin)
 hold on; plot(diode_start,lumin(diode_start),'r*');
 hold on;plot(diode_end,lumin(diode_end),'g*');
 xlabel('time')
@@ -55,7 +67,7 @@ ylabel('lumin')
 title('start and end')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-diode_start=diode_start./20000.
+diode_start=diode_start./20000;
 cut_spikes = seperate_trials(Spikes,diode_start); 
 DataTime=diode_start(2)-diode_start(1);
 % Binning
@@ -64,12 +76,12 @@ BinningTime = [ BinningInterval : BinningInterval : DataTime];
 BinningSpike = zeros(60,length(BinningTime));
 for i = 1:60  % i is the channel number
     [n,~] = hist(cut_spikes{i},BinningTime) ;
-%     [n,~] = hist(yk_spikes{i},BinningTime) ;
     BinningSpike(i,:) = n ;
 end
 
 
 %%  Heat Map / all channels
+figure(2)
 on_off = zeros(1,length(BinningTime));
 on_off(1,1:200) = 1;
 subplot(2,1,1),imagesc(BinningTime,[1:60],BinningSpike);
@@ -82,17 +94,6 @@ ylim([0 2])
 
 
 
-%Heatmap /  specific channels only
-% sp_BinningSpike=[];
-% ff=1;
-% chlist=[54 53 52  18 17 16   22 21 12]; %choose channels
-% for ch=chlist
-%     sp_BinningSpike(ff,:)=BinningSpike(ch,:);
-%     ff=ff+1;
-% end
-% figure;  
-% imagesc(BinningTime,[1,length(chlist)],sp_BinningSpike);
-
 %% PSTH
 % subplot all channels' OnOff   PSTH
 s=0;
@@ -100,11 +101,55 @@ for channelnumber=1:60
 s= s+ BinningSpike(channelnumber,:);
 
 end
-figure;
+figure(3);
 subplot(2,1,1),plot(BinningTime,s);
 subplot(2,1,2),plot(BinningTime,on_off)
 ylim([0 2])
   
+
+%% Plot all channels on off response
+figure('units','normalized','outerposition',[0 0 1 1])
+ha = tight_subplot(8,8,[.04 .02],[0.07 0.02],[.02 .02]);
+
+
+for channelnumber=1:60
+    axes(ha(rr(channelnumber))); 
+    if max(BinningSpike(channelnumber,:)) >2%If spikes are not enough
+        plot(BinningTime,BinningSpike(channelnumber,:));hold on;
+        plot(BinningTime,on_off,'r-')
+    end
+     xlim([ 0 4])
+
+    title(channelnumber)
+
+end
+set(gcf,'units','normalized','outerposition',[0 0 1 1])
+
+%% Caculate on_off index
+on_spikes = zeros(1,60);
+off_spikes = zeros(1,60);
+on_off_index = zeros(1,60);
+for channelnumber=1:60
+    on_spikes(channelnumber) = sum(BinningSpike(channelnumber,1:50));
+    off_spikes(channelnumber) = sum(BinningSpike(channelnumber,200:250));
+    on_off_index(channelnumber) = (on_spikes(channelnumber)-off_spikes(channelnumber))/(on_spikes(channelnumber)+off_spikes(channelnumber));
+    if max(BinningSpike(channelnumber,:)) >2
+        if ~isnan(on_off_index(channelnumber))
+            if on_off_index(channelnumber)>0.3%Criteria from 'Causal evidence for retina-dependent and -independent visual motion computations in mouse cortex'
+                disp(['Channel ',int2str(channelnumber),' is on cell '])
+                disp(['Channel ',int2str(channelnumber),' on_off index is ',num2str(on_off_index(channelnumber))])
+            elseif on_off_index(channelnumber)<-0.3
+                disp(['Channel ',int2str(channelnumber),' is off cell '])
+                 disp(['Channel ',int2str(channelnumber),' on_off index is ',num2str(on_off_index(channelnumber))])   
+            else 
+                disp(['Channel ',int2str(channelnumber),' is on-off cell '])
+                 disp(['Channel ',int2str(channelnumber),' on_off index is ',num2str(on_off_index(channelnumber))])
+            end
+        else
+            disp(['Channel ',int2str(channelnumber),'  does not have spikes'])
+        end
+    end
+end
 %plot single channel PSTH
 % channelnumber=18;
 % figure;
@@ -113,3 +158,4 @@ ylim([0 2])
 % plot(BinningTime,s);
 % xlim([0 18])
 % title(channelnumber)
+
