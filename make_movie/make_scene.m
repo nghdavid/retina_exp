@@ -1,9 +1,10 @@
 load('boundary_set.mat')
+name = '0718saccade';
 pic_size = 441;%Picture size that tina gives you
 
 pic = (mea_size_bm-pic_size)/2;
 
-
+newXarray = zeros(1,30000);
 leftx_bd=meaCenter_x-(mea_size_bm-1)/2; %the first x position of the bigger mea region(luminance calibrated region) on LED screen
 rightx_bd=meaCenter_x+(mea_size_bm-1)/2;
 lefty_bd=meaCenter_y-(mea_size_bm-1)/2;
@@ -36,7 +37,7 @@ video_fps=fps;
 
 
 
-writerObj = VideoWriter(['test','.avi']);  %change video name here!
+writerObj = VideoWriter([name,'.avi']);  %change video name here!
 writerObj.FrameRate = video_fps;
 writerObj.Quality = 100;
 open(writerObj);
@@ -81,9 +82,9 @@ for kk =0:30000-1
         pic_y = pic_y + 1;
     end
     
-    if mod(kk,3)==1 %odd number
+    if mod(kk+1,3)==1 %odd number
             a(500-35:500+35,1230:1280)=1; % white square
-        elseif mod(kk,3)==2
+        elseif mod(kk+1,3)==2
             a(500-35:500+35,1230:1280)=0.2; %gray
         else
             a(500-35:500+35,1230:1280)=0; % dark
@@ -108,4 +109,4 @@ writeVideo(writerObj,img);
 
 close(writerObj);
 
-
+save([name,'.mat'],'newXarray')
