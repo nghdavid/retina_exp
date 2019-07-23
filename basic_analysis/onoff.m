@@ -3,10 +3,11 @@
 clear all;
 close all;
 code_folder = pwd;
-exp_folder =  'E:\0709';
+exp_folder =  'E:\20190719';
 cd(exp_folder)
-load('data\0304_CalONOFF_5min_Br50_Q100.mat')
-load('sort\0304_CalONOFF_5min_Br50_Q100.mat')
+load('data\0710_CalONOFF_5min_Br50_Q100.mat')
+% load('sort\0304_CalONOFF_5min_Br50_Q100.mat')
+new =1;%0304onff use 0, 0710onoff use 1
 rr =[9,17,25,33,41,49,...
           2,10,18,26,34,42,50,58,...
           3,11,19,27,35,43,51,59,...
@@ -83,7 +84,11 @@ end
 %%  Heat Map / all channels
 figure(2)
 on_off = zeros(1,length(BinningTime));
-on_off(1,1:200) = 1;
+if new 
+    on_off(1,1:1000) = 1;
+else
+    on_off(1,1:200) = 1;
+end
 subplot(2,1,1),imagesc(BinningTime,[1:60],BinningSpike);
 colorbar
 title(' OnOff / BinningInterval=10ms')
@@ -118,8 +123,11 @@ for channelnumber=1:60
         plot(BinningTime,BinningSpike(channelnumber,:));hold on;
         plot(BinningTime,on_off,'r-')
     end
-     xlim([ 0 4])
-
+     if new
+        xlim([0 12])
+     else
+        xlim([0 2])
+     end
     title(channelnumber)
 
 end
