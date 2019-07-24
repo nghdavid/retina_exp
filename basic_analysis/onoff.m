@@ -3,10 +3,19 @@
 clear all;
 close all;
 code_folder = pwd;
-exp_folder =  'E:\0709';
+exp_folder =  'E:\20190719';
+save_photo =1;%0 is no save grating photo, 1 is save
 cd(exp_folder)
-load('data\0304_CalONOFF_5min_Br50_Q100.mat')
-load('sort\0304_CalONOFF_5min_Br50_Q100.mat')
+p_channel = [25,33,34,45,46];%Green is predictive
+n_channel = [52,53,57,58,59,60];%Purple is non-predictive
+%% For unsorted spikes
+load('data\0304_CalONOFF_5min_Br50_Q100_re.mat')
+sorted = 0;
+%% For sorted spikes
+load('sort\0304_CalONOFF_5min_Br50_Q100_re.mat')
+sorted = 1;
+name = '0304_CalONOFF_Re';
+new =0;%0304onff use 0, 0710onoff use 1
 rr =[9,17,25,33,41,49,...
           2,10,18,26,34,42,50,58,...
           3,11,19,27,35,43,51,59,...
@@ -15,6 +24,13 @@ rr =[9,17,25,33,41,49,...
           6,14,22,30,38,46,54,62,...
           7,15,23,31,39,47,55,63,...
             16,24,32,40,48,56];
+%% Create directory
+mkdir FIG
+cd FIG
+mkdir ONOFF
+cd ONOFF
+mkdir sort
+mkdir unsort
 
 lumin=a_data(3,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
 plateau_n=200;  %least number of point for plateau
@@ -26,7 +42,7 @@ thre_down = max(lumin)*0.25+min(lumin)*0.75;
 
 
 diode_start = zeros(1,15);
-num = 1;
+num = 1; 
 pass = 0;
 % Find when it starts
 for i = 1:length(lumin)-100
@@ -83,7 +99,11 @@ end
 %%  Heat Map / all channels
 figure(2)
 on_off = zeros(1,length(BinningTime));
-on_off(1,1:200) = 1;
+if new 
+    on_off(1,1:1000) = 1;
+else
+    on_off(1,1:200) = 1;
+end
 subplot(2,1,1),imagesc(BinningTime,[1:60],BinningSpike);
 colorbar
 title(' OnOff / BinningInterval=10ms')
@@ -105,25 +125,6 @@ figure(3);
 subplot(2,1,1),plot(BinningTime,s);
 subplot(2,1,2),plot(BinningTime,on_off)
 ylim([0 2])
-  
-
-%% Plot all channels on off response
-figure('units','normalized','outerposition',[0 0 1 1])
-ha = tight_subplot(8,8,[.04 .02],[0.07 0.02],[.02 .02]);
-
-
-for channelnumber=1:60
-    axes(ha(rr(channelnumber))); 
-    if max(BinningSpike(channelnumber,:)) >2%If spikes are not enough
-        plot(BinningTime,BinningSpike(channelnumber,:));hold on;
-        plot(BinningTime,on_off,'r-')
-    end
-     xlim([ 0 4])
-
-    title(channelnumber)
-
-end
-set(gcf,'units','normalized','outerposition',[0 0 1 1])
 
 %% Caculate on_off index
 on_spikes = zeros(1,60);
@@ -131,7 +132,11 @@ off_spikes = zeros(1,60);
 on_off_index = zeros(1,60);
 for channelnumber=1:60
     on_spikes(channelnumber) = sum(BinningSpike(channelnumber,1:50));
-    off_spikes(channelnumber) = sum(BinningSpike(channelnumber,200:250));
+    if new
+        off_spikes(channelnumber) = sum(BinningSpike(channelnumber,1000:1050));
+    else
+        off_spikes(channelnumber) = sum(BinningSpike(channelnumber,200:250));
+    end
     on_off_index(channelnumber) = (on_spikes(channelnumber)-off_spikes(channelnumber))/(on_spikes(channelnumber)+off_spikes(channelnumber));
     if max(BinningSpike(channelnumber,:)) >2
         if ~isnan(on_off_index(channelnumber))
@@ -150,6 +155,57 @@ for channelnumber=1:60
         end
     end
 end
+
+%% Plot all channels on off response
+figure('units','normalized','outerposition',[0 0 1 1])
+ha = tight_subplot(8,8,[.04 .02],[0.07 0.02],[.02 .02]);
+
+
+for channelnumber=1:60
+    axes(ha(rr(channelnumber))); 
+    if max(BinningSpike(channelnumber,:)) >2%If spikes are not enough
+        plot(BinningTime,BinningSpike(channelnumber,:));hold on;
+        plot(BinningTime,on_off,'r-')
+        if ismember(channelnumber,p_channel)
+            set(gca,'Color',[0.8 1 0.8])
+        elseif ismember(channelnumber,n_channel)
+            set(gca,'Color',[0.8 0.8 1])
+        else
+            
+        end
+    end
+     if new
+        xlim([0 14])
+     else
+        xlim([0 4])
+     end
+      if ~isnan(on_off_index(channelnumber))
+          if on_off_index(channelnumber)>0.3%Criteria from 'Causal evidence for retina-dependent and -independent visual motion computations in mouse cortex'
+              title([int2str(channelnumber),'ON'])
+          elseif on_off_index(channelnumber)<-0.3
+              title([int2str(channelnumber),'OFF'])
+          else
+              title([int2str(channelnumber),'ON-OFF'])
+          end
+      end
+    
+
+end
+set(gcf,'units','normalized','outerposition',[0 0 1 1])
+fig = gcf;
+fig.PaperPositionMode = 'auto';
+if save_photo
+    if sorted
+        %saveas(fig,[exp_folder, '\FIG\ONOFF\','\sort\', name,'.tiff'])
+        saveas(fig,[exp_folder, '\FIG\ONOFF\','\sort\', name,'.fig'])
+        cd([exp_folder, '\FIG\ONOFF\','\sort'])
+    else
+        %saveas(fig,[exp_folder, '\FIG\ONOFF\','\unsort\', name,'.tiff'])
+        saveas(fig,[exp_folder, '\FIG\ONOFF\','\unsort\', name,'.fig'])
+        cd([exp_folder, '\FIG\ONOFF\','\unsort'])
+    end
+end
+
 %plot single channel PSTH
 % channelnumber=18;
 % figure;
