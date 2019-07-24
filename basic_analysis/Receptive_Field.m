@@ -4,18 +4,18 @@ code_folder = pwd;
 load('channel_pos.mat')
 load('boundary_set.mat')
 
-displaychannel = 52;%1:60;%Choose which channel to display
-save_photo = 0;%0 is no save RF photo, 1 is save
-save_svd = 0;%0 is no save svd photo, 1 is save
+displaychannel = 1:60;%1:60;%Choose which channel to display
+save_photo = 1;%0 is no save RF photo, 1 is save
+save_svd = 1;%0 is no save svd photo, 1 is save
 
 time_shift = 1:6;%for -50ms:-300ms
 num_shift = 0.05;%50ms
 exp_folder = 'D:\Leo\0620exp';
 cd(exp_folder)
-name = '20Hz_13x13_re_RF';%Directory name
+name = '20Hz_13x13_RF';%Directory name
 
 %% For sorted spikes
-load('sort_merge_spike\sort_merge_0507_Checkerboard_20Hz_13_5min_Br50_Q100_re.mat')
+load('sort_merge_spike\sort_merge_0507_Checkerboard_20Hz_13_5min_Br50_Q100.mat')
 analyze_spikes = sorted_spikes;
 sorted = 1;
 %% For unsorted spikes
@@ -136,9 +136,9 @@ for k =displaychannel
         %                 closest_extrema(:,k) = [extreme_x(j) extreme_y(j)];
         %             end
         %         end
-        max  = max(space, [], 'all');
-        closest_extrema(1,k) = ceil(find(space == max)/side_length);
-        closest_extrema(2,k) = mod(find(space == max)-1, side_length)+1;
+        max_value  = max(space, [], 'all');
+        closest_extrema(1,k) = ceil(find(space == max_value)/side_length);
+        closest_extrema(2,k) = mod(find(space == max_value)-1, side_length)+1;
     end
     
     
@@ -214,12 +214,12 @@ for k =displaychannel
             center_upperbd = closest_extrema(2,k)-1;
         end
         if closest_extrema(1,k) == side_length
-            center_rightbd = 1;
+            center_rightbd = 13;
         else
             center_rightbd = closest_extrema(1,k)+1;
         end
         if closest_extrema(2,k) == side_length
-            center_lowerbd = 1;
+            center_lowerbd = 13;
         else
             center_lowerbd = closest_extrema(2,k)+1;
         end
