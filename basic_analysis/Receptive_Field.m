@@ -8,7 +8,7 @@ displaychannel = 19;%30;%Choose which channel to display
 save_photo = 0;%0 is no save RF photo, 1 is save
 save_svd = 0;%0 is no save svd photo, 1 is save
 
-time_shift = 1:5;%for -50ms:-300ms
+time_shift = 1:6;%for -50ms:-300ms
 num_shift = 0.05;%50ms
 exp_folder = 'D:\Leo\0620exp';
 cd(exp_folder)
