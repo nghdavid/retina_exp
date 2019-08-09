@@ -5,21 +5,22 @@ code_folder = pwd;
 
 exp_folder = 'E:\20190719';
 name = 'first';%Directory name
-% name = 'second';%Directory name
-save_photo = 1;%0 is no save RF photo, 1 is save
+%name = 'second';%Directory name
+save_photo = 0;%0 is no save grating photo, 1 is save
 displaychannel = [1:60];%Choose which channel to display
 cd(exp_folder)
 direction_order = [0,7,6,5,4,3,2,1];%It will be multiplied by pi/4
+theta = [0,7:-1:0]*0.25*pi;
 %0 is right 4 is left 2 is up 6 is down 
 %7 is right down 3 is left up
 % 1 is rigtht up 5 is left down
 %Notice it  is direction on monitor
 %% For unsorted spikes
- load('data\0718_Grating_300micro_72s_Br50_Q80.mat')
- sorted = 0;
+load('data\0718_Grating_300micro_72s_Br50_Q80_re.mat')
+% sorted = 0;
 %% For sorted spikes
-% load('sort\0625_Grating_300micro_72s_Br50_Q80.mat')
-%sorted = 1;
+load('sort\0718_Grating_300micro_72s_Br50_Q80_re.mat')
+sorted = 1;
 analyze_spikes = Spikes;
 
 
@@ -142,15 +143,18 @@ for k = channel_number % k is the channel number
             %Polar plot of DS cell
             if ismember(k,displaychannel)
                 figure(k+2)
+                polar(theta,[counter(:,k)',counter(1,k)]/max(counter(:,k)))%normalization by division by most spikes
+                hold on;
                 %For fixed radius of 1
                 max_lim = 1;
                 x_fake=[0 max_lim 0 -max_lim];
                 y_fake=[max_lim 0 -max_lim 0];
                 h_fake=compass(x_fake,y_fake);
-                hold on;
-                h = compass(dot(direction_vector, counter(:,k))/sum(counter(:,k)));
+                
+                h = compass(direction_vector*counter(:,k)/sum(counter(:,k)));
                 title(['Polar plot of channel ',int2str(k)])
                 set(h_fake,'Visible','off');
+                hold off;
                 if save_photo
                      if sorted
                          saveas(gcf,[exp_folder, '\FIG\grating\', name,'\sort','\polarplot_channel', num2str(k)  '.tiff'])
