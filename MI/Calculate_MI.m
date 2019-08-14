@@ -1,11 +1,11 @@
 clear all;
 code_folder = pwd;
-sorted =1;
-exp_folder = 'E:\0709';
+sorted =0;
+exp_folder = 'E:\20190811';
 cd(exp_folder);
 mkdir MI
 cd MI
-absolute = 1;
+absolute = 0;
 if sorted
     mkdir sort
     cd ([exp_folder,'\sort_merge_spike\MI'])
