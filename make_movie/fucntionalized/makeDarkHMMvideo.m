@@ -1,14 +1,14 @@
-function makeHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
+function makeDarkHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
 
 %% HMM base from RL motion
 
 
-G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
+% G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
 
+G_list=[ 6.5 7.5 9 12 20];  %list of Gamma value
 
-
-countt=1;
-
+% countt=1;
+countt=7;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
@@ -62,7 +62,7 @@ for Gvalue=G_list
     Y =meaCenter_y;
     cd (video_folder)
     %video frame file
-    name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100'];
+    name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100'];
     name
     
     
@@ -84,7 +84,14 @@ for Gvalue=G_list
     %%draw moving bar
     for kk =1:length(T)
         a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
-        
+        for y = 1 : length(screen_brightness)
+            for x = 1 : length(screen_brightness)
+                cal_x = dotPositionMatrix{y,x}(1);
+                cal_y = dotPositionMatrix{y,x}(2);
+                cal_lum = screen_brightness(y,x);
+                a(cal_y,cal_x) = cal_lum;
+            end
+        end
         %HMM RL bar trajectory
         X=newXarray(kk);
         barX=X-round(leftx_bd);
@@ -105,8 +112,7 @@ for Gvalue=G_list
                 for x = round(Vertex{2}(1)):round(Vertex{4}(1))
                     cal_x = dotPositionMatrix{y,x}(1);
                     cal_y = dotPositionMatrix{y,x}(2);
-                    cal_lum = screen_brightness(y,x);
-                    a(cal_y,cal_x) = cal_lum;
+                    a(cal_y,cal_x) = 0;
                 end
             end
             
@@ -170,7 +176,7 @@ for Gvalue=G_list
                     cal_x = dotPositionMatrix{y,x}(1);
                     cal_y = dotPositionMatrix{y,x}(2);
                     cal_lum = screen_brightness(y,x);
-                    a(cal_y,cal_x) = cal_lum;
+                    a(cal_y,cal_x) = 0;
                 end
             end
         end
@@ -194,8 +200,8 @@ for Gvalue=G_list
         else
             a(500-35:500+35,1230:1280)=0; % dark
         end
-%         percentage = kk/length(T)*100;
-%         percentage
+        %         percentage = kk/length(T)*100;
+        %         percentage
         writeVideo(writerObj,a);
     end
     
@@ -211,7 +217,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100','.mat'],'newXarray')
+    save([date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100','.mat'],'newXarray')
     
 end
 cd(makemovie_folder)

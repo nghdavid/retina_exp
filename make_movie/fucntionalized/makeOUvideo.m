@@ -81,7 +81,7 @@ for Gvalue=G_list
         barY=round(Y)-round(lefty_bd);
         
         
-        Vertex = cell(2);
+        Vertex = cell(4);
         Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
         Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
         Vertex{3} = [barX+bar_wid  barY+bar_le];
@@ -179,7 +179,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,' OU ',direction,' G',num2str(G_OU) ,' 5min Br50 Q100','.mat'],'newXarray')
+    save([date,'_OU_',direction,'_G',num2str(G_OU) ,'_5min_Br50_Q100','.mat'],'newXarray')
     
 end
 cd(makemovie_folder)

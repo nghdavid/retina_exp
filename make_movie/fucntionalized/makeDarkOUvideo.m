@@ -1,10 +1,10 @@
-function makeHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
+function makeDarkOUvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
 
-%% HMM base from RL motion
+%% OU RL
 
 
-G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
 
+G_list=[1.55 2.45 3.2 4 5.7 7.6 10.5 5.03];  %list of Gamma valau
 
 
 countt=1;
@@ -12,12 +12,13 @@ countt=1;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
-seed_directory_name = '0810 new video Br50\rn_workspace';
-cd(seed_directory_name);%New seed for HMM movie
+
+cd('0421 new video Br25/rn_workspace');
+
 all_file = dir('*.mat');
 
 fps =60;  %freq of the screen flipping
-T=7*60; %second
+T=5*60; %second
 dt=1/fps;
 T=dt:dt:T;
 
@@ -30,42 +31,32 @@ screen_brightness(screen_brightness<0)=0;
 R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
 
 for Gvalue=G_list
-    cd([makemovie_folder, '\',seed_directory_name]);
-    G_HMM =Gvalue; % damping / only G will influence correlation time
-    D_HMM = 2700000; %dynamical range
-    omega =G_HMM/2.12;   % omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
-    %for randon number files ( I specifically choose some certain random seed series
+      
+    G_OU = Gvalue; % damping / only G will influence correlation time
+    D_OU = 2700000; %dynamical range
+    omega =G_OU/2.12;   % omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
     
-    file = all_file(countt).name ;
-    [pathstr, name, ext] = fileparts(file);
-    directory = [pathstr,'\'];
-    filename = [name,ext];
-    load([filename]);
-    name=[name];
-    name
     Gvalue
-    countt=countt+1;
-    
-    Xarray = zeros(1,length(T));
-    Xarray(1,1)=0; % since the mean value of damped eq is zero
-    Vx = zeros(1,length(T));
-    %Use rntest(t)!!!
-    for t = 1:length(T)-1
-        Xarray(t+1) = Xarray(t) + Vx(t)*dt;
-        Vx(t+1) = (1-G_HMM*dt)*Vx(t) - omega^2*Xarray(t)*dt + sqrt(dt*D_HMM)*rntest(t);
+    x = zeros(1,length(T));
+    x(1,1)=0; % since the mean value of damped eq is zero
+    for uu = 1:length(T)-1
+          x(uu+1) = (1-dt*G_OU/(2.12)^2)*x(uu)+sqrt(dt*D_OU)*randn;
     end
-    % Normalize to proper moving range
-    nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(Xarray)-min(Xarray)));
-    Xarray2=Xarray*nrx;
-    Xarray3=Xarray2+leftx_bar+bar_wid-min(Xarray2);%rearrange the boundary values
-    newXarray=round(Xarray3);
+    %%% Normalize to proper moving range
+    
+    
+    nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(x)-min(x)));
+    x2=x*nrx;
+    x3=x2-min(x2)+leftx_bar+bar_wid;%rearrange the boundary values
+    newXarray=round(x3); 
     Y =meaCenter_y;
+
     cd (video_folder)
     %video frame file
-    name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100'];
+    name=[date,'_OU_Dark_',direction,'_G',num2str(G_OU) ,'_5min_Br50_Q100'];
     name
-    
-    
+
+
     %video setting
     Time=T; %sec
     video_fps=fps;
@@ -75,22 +66,31 @@ for Gvalue=G_list
     open(writerObj);
     %start part: dark adaptation
     for mm=1:fps*20
-        img=zeros(1024,1280);
+        img=zeros(1024,1280);   
         writeVideo(writerObj,img);
     end
     
     
-    
-    %%draw moving bar
+
     for kk =1:length(T)
-        a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
         
-        %HMM RL bar trajectory
+        a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
+        for y = 1 : length(screen_brightness)
+            for x = 1 : length(screen_brightness)
+                cal_x = dotPositionMatrix{y,x}(1);
+                cal_y = dotPositionMatrix{y,x}(2);
+                cal_lum = screen_brightness(y,x);
+                a(cal_y,cal_x) = cal_lum;
+            end
+        end
+        %OU RL bar trajectory
         X=newXarray(kk);
+
         barX=X-round(leftx_bd);
         barY=round(Y)-round(lefty_bd);
         
-        Vertex = cell(2);
+        
+        Vertex = cell(4);
         Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
         Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
         Vertex{3} = [barX+bar_wid  barY+bar_le];
@@ -106,11 +106,11 @@ for Gvalue=G_list
                     cal_x = dotPositionMatrix{y,x}(1);
                     cal_y = dotPositionMatrix{y,x}(2);
                     cal_lum = screen_brightness(y,x);
-                    a(cal_y,cal_x) = cal_lum;
+                    a(cal_y,cal_x) = 0;
                 end
             end
             
-        else
+        else 
             if theta > pi/2
                 newVertex = Vertex{1};
                 for i = 1:3
@@ -118,22 +118,9 @@ for Gvalue=G_list
                 end
                 Vertex{4} = newVertex;
             end
-            %stupid way
-            %         for y = 1:mea_size_bm %floor(Vertex{1}(2)) : ceil(Vertex{3}(2))
-            %             for x = 1:mea_size_bm %floor(Vertex{2}(2)) : ceil(Vertex{4}(2))
-            %                 if (y-Vertex{1}(2)) - (Vertex{1}(1)-Vertex{2}(1))/(Vertex{1}(2)-Vertex{2}(2)) * (x-Vertex{1}(2)) >= 0 && (y-Vertex{4}(2)) - (Vertex{4}(1)-Vertex{3}(1))/(Vertex{4}(2)-Vertex{3}(2)) * (x-Vertex{4}(2)) <= 0
-            %                     if (y-Vertex{1}(2)) - (Vertex{1}(1)-Vertex{4}(1))/(Vertex{1}(2)-Vertex{4}(2)) * (x-Vertex{1}(2)) >= 0 && (y-Vertex{2}(2)) - (Vertex{2}(1)-Vertex{3}(1))/(Vertex{2}(2)-Vertex{3}(2)) * (x-Vertex{2}(2)) <= 0
-            %                         cal_x = dotPositionMatrix{y,x}(1);
-            %                         cal_y = dotPositionMatrix{y,x}(2);
-            %                         cal_lum = screen_brightness(y,x);
-            %                         a(cal_y,cal_x) = cal_lum;
-            %                     end
-            %                 end
-            %             end
-            %         end
             
             %better way
-            %pervent out of rnage
+                %pervent out of rnage
             if Vertex{2}(1) < 1
                 min_x = 1;
             else
@@ -158,7 +145,7 @@ for Gvalue=G_list
                     upper_y = Vertex{3}(2) + (Vertex{3}(2)-Vertex{4}(2))/(Vertex{3}(1)-Vertex{4}(1)) * (x-Vertex{3}(1));
                 end
                 
-                %pervent out of rnage
+                    %pervent out of rnage
                 if lower_y < 1
                     lower_y = 1;
                 end
@@ -170,48 +157,38 @@ for Gvalue=G_list
                     cal_x = dotPositionMatrix{y,x}(1);
                     cal_y = dotPositionMatrix{y,x}(2);
                     cal_lum = screen_brightness(y,x);
-                    a(cal_y,cal_x) = cal_lum;
+                    a(cal_y,cal_x) =0;
                 end
             end
         end
-        %expandind theta
         
-        %         if Vertex{1}(2) < 1
-        %             min_y = 1;
-        %         else
-        %             min_y = Vertex{1}(2);
-        %         end
-        %         if Vertex{3}(2) > mea_size_bm
-        %             max_y = 1;
-        %         else
-        %             max_y = Vertex{3}(2);
-        %         end
         %square_flicker
         if mod(kk,3)==1 %odd number
-            a(500-35:500+35,1230:1280)=1; % white square
+        a(500-35:500+35,1230:1280)=1; % white square
         elseif mod(kk,3)==2
-            a(500-35:500+35,1230:1280)=0.2; %gray
+        a(500-35:500+35,1230:1280)=0.2; %gray 
         else
-            a(500-35:500+35,1230:1280)=0; % dark
+        a(500-35:500+35,1230:1280)=0; % dark
         end
-%         percentage = kk/length(T)*100;
-%         percentage
+        
+        
         writeVideo(writerObj,a);
     end
-    
+
     %end part video
     for mm=1:10
         img=zeros(1024,1280);
         img(500-35:500+35,1230:1280)=0.2; %gray
         writeVideo(writerObj,img);
     end
+    
     img=zeros(1024,1280);
     writeVideo(writerObj,img);
     
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100','.mat'],'newXarray')
+    save([date,'_OU_Dark_',direction,'_G',num2str(G_OU) ,'_5min_Br50_Q100','.mat'],'newXarray')
     
 end
 cd(makemovie_folder)
