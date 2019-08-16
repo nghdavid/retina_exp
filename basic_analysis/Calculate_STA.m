@@ -2,14 +2,10 @@
 close all;
 clear all;
 code_folder = pwd;
-<<<<<<< Updated upstream
-exp_folder = 'E:\20190719';
-=======
-exp_folder = 'D:\Leo\0807exp';
->>>>>>> Stashed changes
+exp_folder = 'E:\20190721';
 cd(exp_folder);
 mkdir STA
-cd sort_merge_spike
+cd sort_merge_spike\MI
 all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ;
 unit = 1;
@@ -54,11 +50,7 @@ for z =1:n_file %choose file
     dis_STA = zeros(60,forward+backward+1);
     for i = 1:60  % i is the channel number
         if sum(abs(TheStimuli(i,:))) <= 0
-<<<<<<< Updated upstream
-            disp(['channel ',int2str(i),'does not have RF center'])
-=======
             %disp(['channel ',int2str(i),'does not have RF center'])
->>>>>>> Stashed changes
             continue
         end
         [n,~] = hist(analyze_spikes{i},BinningTime) ;
