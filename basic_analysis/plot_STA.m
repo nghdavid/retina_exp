@@ -2,7 +2,7 @@ close all;
 clear all;
 code_folder = pwd;
 load('boundary_set.mat')
-exp_folder = 'E:\0709';
+exp_folder = 'E:\20190709';
 cd(exp_folder)
 cd STA
 mkdir FIG
@@ -27,7 +27,7 @@ for z =1:n_file
     figure('units','normalized','outerposition',[0 0 1 1])
     ha = tight_subplot(8,8,[.04 .02],[0.07 0.02],[.02 .02]);
     for channelnumber=1:60
-        if sum(dis_STA(channelnumber,:)) <= 0
+        if sum(abs(dis_STA(channelnumber,:))) <= 0
             disp(['channel ',int2str(channelnumber),' does not have RF center'])
             continue
         end

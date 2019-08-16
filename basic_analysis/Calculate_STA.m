@@ -2,7 +2,7 @@
 close all;
 clear all;
 code_folder = pwd;
-exp_folder = 'E:\0709';
+exp_folder = 'E:\20190719';
 cd(exp_folder);
 mkdir STA
 cd sort_merge_spike\MI
@@ -35,7 +35,7 @@ for z =1:n_file %choose file
     sum_n = zeros(1,60);
     dis_STA = zeros(60,forward+backward+1);
     for i = 1:60  % i is the channel number
-        if sum(TheStimuli(i,:)) <= 0
+        if sum(abs(TheStimuli(i,:))) <= 0
             disp(['channel ',int2str(i),'does not have RF center'])
             continue
         end
