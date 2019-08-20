@@ -1,5 +1,5 @@
-function xarray=makeGratingvideo(makemovie_folder, bar_real_width, video_folder, videoworkspace_folder, date)
-record = [];
+function xarray=makeGratingvideo(makemovie_folder, bar_real_width, temporal_frequency,video_folder, videoworkspace_folder, date)
+
 
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
@@ -16,13 +16,13 @@ bar_interval = bar_wid*4;%The distance between bar and bar
 
 cd (video_folder)
 %video frame file
-name=[date,'_Grating_',num2str(bar_real_width) ,'micro_72s_Br50_Q80'];
+name=[date,'_Grating_',num2str(bar_real_width) ,'micro_',num2str(temporal_frequency),'HZ_72s_Br50_Q100'];
 name
 
 video_fps=60;
 writerObj = VideoWriter([name,'.avi']);
 writerObj.FrameRate = video_fps;
-writerObj.Quality = 80;
+writerObj.Quality = 100;
 open(writerObj);
 Y =meaCenter_y;
 
@@ -34,7 +34,7 @@ for l = 1:60*10
 end
 
 
-for time = 1:5%Number of repeat
+for time = 1:12%Number of repeat
     for reversal = [0 1]
         for theta = [0 pi/4 pi/2 pi*3/4]%Direction of moving bar
             if pi/4 <= theta && pi*3/4 >= theta
@@ -52,7 +52,7 @@ for time = 1:5%Number of repeat
             xarray(1,1) = 1;%leftx_bd+bar_wid+1;%Left bar first position
 
             for i = 2:num_move
-                xarray(1,i) = xarray(1,i-1)+450/micro_per_pixel/60;
+                xarray(1,i) = xarray(1,i-1)+temporal_frequency*bar_real_width/micro_per_pixel/60*2;
             end
 
             if num_bar > 1
@@ -75,7 +75,6 @@ for time = 1:5%Number of repeat
                 for i = 1:num_bar%Plot each bar
                     %record = [record ;kk i];
                     X=xarray(i,kk);
-
                     barX= X +(mea_size_bm-1)/2-(longest_dis/2);
                     barY=Y-lefty_bd;
                     Vertex = cell(2);
@@ -87,7 +86,6 @@ for time = 1:5%Number of repeat
                     for i = 1:4
                         Vertex{i} = R_matrix*(Vertex{i}-[(mea_size_bm+1)/2  (mea_size_bm+1)/2])'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]';
                     end
-
                     a = write_CalBar(a,Vertex, theta,  mea_size_bm); %a = the bar
 
                 end
