@@ -9,10 +9,15 @@ to 550 ms after the onset of the ON- and OFF-flash, respectively, such that
 the ．．Flashes ON-OFF Index・・ is (f_on-f_off)/(f_on+f_off)
 %}
 
-%ONOFF times.
-on_brightness =0.91172;
-off_brightness = 0.60051;
+%0.8 ONOFF parameter 
+on_brightness =0.9116;
+off_brightness = 0.6006;
 rest_brightness = 0.8;
+%0.5 ONOFF parameter 
+% on_brightness =0.6072;
+% off_brightness = 0.3704;
+% rest_brightness = 0.5;
+
 num_cycle = 40;
 on_time = 0.5; %s
 off_time = 0.5; %s
@@ -41,7 +46,7 @@ load('boundary_set.mat')
 all_file = dir('*.mat');
 cd (video_folder);
 %video frame file
-name=[[date,'_ Gollish_OnOff_movie_5min_Br50_Q100']];
+name=[[date,'_Gollish_OnOff_movie_5min_Br50_Q100_',num2str(rest_brightness)]];
 name
 
 
