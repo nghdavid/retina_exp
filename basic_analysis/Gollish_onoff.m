@@ -105,7 +105,7 @@ diode_end = diode_end/Samplingrate;%Change to sec
 [cut_onspikes,cut_offspikes] = seperate_Gollishtrials(Spikes,diode_on_start,diode_off_start,diode_end); % Cut spikes and merge spikes
 
 %On binning
-onDataTime=mean(diff(diode_on_start));%Each stimulus length
+onDataTime=mean(diff(diode_on_start))/2;%Each stimulus length
 onBinningTime = [ 0 : BinningInterval : onDataTime];
 onBinningSpike = zeros(60,length(onBinningTime));
 for i = 1:60  % i is the channel number
@@ -114,7 +114,7 @@ for i = 1:60  % i is the channel number
 end
 
 %Off binning
-offDataTime=mean(diff(diode_off_start));
+offDataTime=mean(diff(diode_off_start))/2;
 offBinningTime = [ 0 : BinningInterval : offDataTime];
 offBinningSpike = zeros(60,length(offBinningTime));
 for i = 1:60  % i is the channel number
@@ -146,16 +146,23 @@ off_s= off_s+ offBinningSpike(channelnumber,:);
 end
 figure(4);
 subplot(3,1,1),plot(onBinningTime,on_s);
+xlabel('On---time(s)'); 
 subplot(3,1,2),plot(offBinningTime,off_s);
+xlabel('Off---time(s)'); 
 subplot(3,1,3),plot(onBinningTime,on_off)
 ylim([0 2])
 
 %% Delete useless spikes (not in 50ms~550ms interval)
 on_spikes = zeros(1,60);
 off_spikes = zeros(1,60);
+useless_channel = [];
 for channelnumber=1:60
     on_ss = cut_onspikes{channelnumber};
     off_ss = cut_offspikes{channelnumber};
+    %Exclude channels that mean firing rate is lower than one
+    if (length(on_ss)+length(off_ss))/(onDataTime*num_cycle+offDataTime*num_cycle) < 1
+        useless_channel = [useless_channel channelnumber];
+    end
     %Remove useless spikes
     on_ss(on_ss<0.05) = [];
     on_ss(on_ss>0.55)=[];
@@ -168,31 +175,28 @@ for channelnumber=1:60
 end
 %% Caculate on_off index
 
-on_off_index = zeros(1,60);
+on_off_index = ones(1,60)*-100000;
 for channelnumber=1:60
-    on_spikes(channelnumber) = sum(BinningSpike(channelnumber,1:50));
-    if new
-        off_spikes(channelnumber) = sum(BinningSpike(channelnumber,1000:1050));
-    else
-        off_spikes(channelnumber) = sum(BinningSpike(channelnumber,200:250));
+    if ismember(channelnumber,useless_channel)
+        disp(['Channel ',int2str(channelnumber),'  mean firing rate is lower than one'])
+        continue
     end
     on_off_index(channelnumber) = (on_spikes(channelnumber)-off_spikes(channelnumber))/(on_spikes(channelnumber)+off_spikes(channelnumber));
-    if max(BinningSpike(channelnumber,:)) >2
-        if ~isnan(on_off_index(channelnumber))
-            if on_off_index(channelnumber)>0.3%Criteria from 'Causal evidence for retina-dependent and -independent visual motion computations in mouse cortex'
-                disp(['Channel ',int2str(channelnumber),' is on cell '])
-                disp(['Channel ',int2str(channelnumber),' on_off index is ',num2str(on_off_index(channelnumber))])
-            elseif on_off_index(channelnumber)<-0.3
-                disp(['Channel ',int2str(channelnumber),' is off cell '])
-                 disp(['Channel ',int2str(channelnumber),' on_off index is ',num2str(on_off_index(channelnumber))])   
-            else 
-                disp(['Channel ',int2str(channelnumber),' is on-off cell '])
-                 disp(['Channel ',int2str(channelnumber),' on_off index is ',num2str(on_off_index(channelnumber))])
-            end
-        else
-            disp(['Channel ',int2str(channelnumber),'  does not have spikes'])
+    if ~isnan(on_off_index(channelnumber))
+        if on_off_index(channelnumber)>0.3%Criteria from 'Causal evidence for retina-dependent and -independent visual motion computations in mouse cortex'
+            disp(['Channel ',int2str(channelnumber),' is on cell '])
+            disp(['Channel ',int2str(channelnumber),' on_off index is ',num2str(on_off_index(channelnumber))])
+        elseif on_off_index(channelnumber)<-0.3
+            disp(['Channel ',int2str(channelnumber),' is off cell '])
+             disp(['Channel ',int2str(channelnumber),' on_off index is ',num2str(on_off_index(channelnumber))])   
+        else 
+            disp(['Channel ',int2str(channelnumber),' is on-off cell '])
+             disp(['Channel ',int2str(channelnumber),' on_off index is ',num2str(on_off_index(channelnumber))])
         end
+    else
+        disp(['Channel ',int2str(channelnumber),'  does not have spikes'])
     end
+    
 end
 
 %% Plot all channels on off response
