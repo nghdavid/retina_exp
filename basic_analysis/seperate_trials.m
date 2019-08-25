@@ -1,9 +1,9 @@
 function[spikes] = seperate_trials(spikes,starts)
     %This function cut each stimulus' spikes and add them up
-    for j = 1:length(spikes)         %running through each channel
+    for j = 1:length(spikes) %running through each channel
         ss = spikes{j};
         ss(ss<starts(1)) = [];
-        ss(ss>=starts(end))=[];
+        ss(ss>=starts(end))=[];%Notice that last in starts should be end of stimulus
         ss(ss==0)=[];
         for i = 1:length(ss)
             loc = find(ss(i)>starts);

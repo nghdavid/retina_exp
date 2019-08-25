@@ -3,19 +3,21 @@
 clear all;
 close all;
 code_folder = pwd;
-exp_folder =  'E:\20190719';
-save_photo =1;%0 is no save grating photo, 1 is save
+exp_folder =  'E:\20190811';
+save_photo =0;%0 is no save grating photo, 1 is save
 cd(exp_folder)
 p_channel = [25,33,34,45,46];%Green is predictive
 n_channel = [52,53,57,58,59,60];%Purple is non-predictive
+p_channel = [];%Green is predictive
+n_channel = [];%Purple is non-predictive
 %% For unsorted spikes
-load('data\0304_CalONOFF_5min_Br50_Q100_re.mat')
+load('data\0710_CalONOFF_5min_Br50_Q100.mat')
 sorted = 0;
 %% For sorted spikes
-load('sort\0304_CalONOFF_5min_Br50_Q100_re.mat')
+load('sort\0710_CalONOFF_5min_Br50_Q100.mat')
 sorted = 1;
-name = '0304_CalONOFF_Re';
-new =0;%0304onff use 0, 0710onoff use 1
+name = '0710_CalONOFF';
+new =1;%0304onff use 0, 0710onoff use 1
 rr =[9,17,25,33,41,49,...
           2,10,18,26,34,42,50,58,...
           3,11,19,27,35,43,51,59,...
@@ -82,7 +84,7 @@ xlabel('time')
 ylabel('lumin')
 title('start and end')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+diode_start = [diode_start diode_end];
 diode_start=diode_start./20000;
 cut_spikes = seperate_trials(Spikes,diode_start); 
 DataTime=diode_start(2)-diode_start(1);
@@ -196,11 +198,11 @@ fig = gcf;
 fig.PaperPositionMode = 'auto';
 if save_photo
     if sorted
-        %saveas(fig,[exp_folder, '\FIG\ONOFF\','\sort\', name,'.tiff'])
+        saveas(fig,[exp_folder, '\FIG\ONOFF\','\sort\', name,'.tiff'])
         saveas(fig,[exp_folder, '\FIG\ONOFF\','\sort\', name,'.fig'])
         cd([exp_folder, '\FIG\ONOFF\','\sort'])
     else
-        %saveas(fig,[exp_folder, '\FIG\ONOFF\','\unsort\', name,'.tiff'])
+        saveas(fig,[exp_folder, '\FIG\ONOFF\','\unsort\', name,'.tiff'])
         saveas(fig,[exp_folder, '\FIG\ONOFF\','\unsort\', name,'.fig'])
         cd([exp_folder, '\FIG\ONOFF\','\unsort'])
     end
