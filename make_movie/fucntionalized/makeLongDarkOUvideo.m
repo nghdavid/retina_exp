@@ -1,4 +1,4 @@
-function makeLongOUvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
+function makeLongDarkOUvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
 
 %% OU RL
 
