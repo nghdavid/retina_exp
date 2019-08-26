@@ -1,4 +1,4 @@
-function makeLongHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, seed_date,date,mins)
+function makeLongDarkHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, seed_date,date,mins)
 
 
 %% HMM base from RL motion
@@ -63,7 +63,7 @@ for Gvalue=G_list
     Y =meaCenter_y;
     cd (video_folder)
     %video frame file
-    name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100_Long'];
+    name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100'];
     name
     
     
@@ -85,7 +85,14 @@ for Gvalue=G_list
     %%draw moving bar
     for kk =1:length(T)
         a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
-        
+        for y = 1 : length(screen_brightness)
+            for x = 1 : length(screen_brightness)
+                cal_x = dotPositionMatrix{y,x}(1);
+                cal_y = dotPositionMatrix{y,x}(2);
+                cal_lum = screen_brightness(y,x);
+                a(cal_y,cal_x) = cal_lum;
+            end
+        end
         %HMM RL bar trajectory
         X=newXarray(kk);
         
@@ -108,7 +115,7 @@ for Gvalue=G_list
                     cal_x = dotPositionMatrix{y,x}(1);
                     cal_y = dotPositionMatrix{y,x}(2);
                     cal_lum = screen_brightness(y,x);
-                    a(cal_y,cal_x) = cal_lum;
+                    a(cal_y,cal_x) = 0;
                 end
             end
             
@@ -172,7 +179,7 @@ for Gvalue=G_list
                     cal_x = dotPositionMatrix{y,x}(1);
                     cal_y = dotPositionMatrix{y,x}(2);
                     cal_lum = screen_brightness(y,x);
-                    a(cal_y,cal_x) = cal_lum;
+                    a(cal_y,cal_x) = 0;
                 end
             end
         end
@@ -213,7 +220,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100_Long','.mat'],'newXarray')
+    save([date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100','.mat'],'newXarray')
     
 end
 cd(makemovie_folder)
