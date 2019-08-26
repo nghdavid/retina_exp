@@ -1,10 +1,5 @@
-%function makeHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
-makemovie_folder = 'H:\HMM';
-date = '0602';
-theta = 0;
-video_folder = 'H:\HMM';
-videoworkspace_folder = 'H:\HMM\videoworkspace\HMM';
-direction = 'RL';
+function makeLongHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, seed_date,date,mins)
+
 
 %% HMM base from RL motion
 
@@ -18,11 +13,12 @@ countt=1;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
-cd('0421 new video Br25/rn_workspace');
+seed_directory_name = [seed_date,' new video Br50\rn_workspace'];
+cd(seed_directory_name);%New seed for HMM movie
 all_file = dir('*.mat');
 
 fps =60;  %freq of the screen flipping
-T=7*60; %second
+T=mins*60; %second
 dt=1/fps;
 T=dt:dt:T;
 
@@ -35,7 +31,7 @@ screen_brightness(screen_brightness<0)=0;
 R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
 
 for Gvalue=G_list
-    cd([makemovie_folder, '\0421 new video Br25\rn_workspace']);
+    cd([makemovie_folder, '\',seed_directory_name]);
     G_HMM =Gvalue; % damping / only G will influence correlation time
     D_HMM = 2700000; %dynamical range
     omega =G_HMM/2.12;   % omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
@@ -67,7 +63,7 @@ for Gvalue=G_list
     Y =meaCenter_y;
     cd (video_folder)
     %video frame file
-    name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100'];
+    name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100'];
     name
     
     
@@ -217,7 +213,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,' HMM ',direction,' G',num2str(G_HMM) ,' 7min Br50 Q100','.mat'],'newXarray')
+    save([date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100','.mat'],'newXarray')
     
 end
 cd(makemovie_folder)
