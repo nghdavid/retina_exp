@@ -1,23 +1,23 @@
-function makeDarkHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date)
+function makeDarkHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, seed_date,date,mins)
 
 %% HMM base from RL motion
 
 
-% G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
+G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
 
-G_list=[ 6.5 7.5 9 12 20];  %list of Gamma value
 
-% countt=1;
-countt=7;
+
+countt=1;
+
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
-seed_directory_name = '0810 new video Br50\rn_workspace';
+seed_directory_name = [seed_date,' new video Br50\rn_workspace'];
 cd(seed_directory_name);%New seed for HMM movie
 all_file = dir('*.mat');
 
 fps =60;  %freq of the screen flipping
-T=7*60; %second
+T=mins*60; %second
 dt=1/fps;
 T=dt:dt:T;
 
@@ -62,7 +62,7 @@ for Gvalue=G_list
     Y =meaCenter_y;
     cd (video_folder)
     %video frame file
-    name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100'];
+    name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100'];
     name
     
     
@@ -217,7 +217,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_7min_Br50_Q100','.mat'],'newXarray')
+    save([date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100'],'newXarray')
     
 end
 cd(makemovie_folder)
