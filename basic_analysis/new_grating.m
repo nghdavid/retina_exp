@@ -3,10 +3,8 @@ close all;
 clear all;
 code_folder = pwd;
 
-exp_folder = 'E:\20190719';
-name = 'first';%Directory name
-%name = 'second';%Directory name
-save_photo = 0;%0 is no save grating photo, 1 is save
+exp_folder = 'E:\20190825';
+save_photo = 1;%0 is no save grating photo, 1 is save
 displaychannel = [1:60];%Choose which channel to display
 cd(exp_folder)
 direction_order = [0,7,6,5,4,3,2,1];%It will be multiplied by pi/4
@@ -15,18 +13,22 @@ theta = [0,7:-1:0]*0.25*pi;
 %7 is right down 3 is left up
 % 1 is rigtht up 5 is left down
 %Notice it  is direction on monitor
+file_name = '0820_Grating_300micro_72s_Br50_Q80_3';
 %% For unsorted spikes
-load('data\0718_Grating_300micro_72s_Br50_Q80_re.mat')
-% sorted = 0;
+load(['data\',file_name,'.mat'])
+sorted = 0;
 %% For sorted spikes
-load('sort\0718_Grating_300micro_72s_Br50_Q80_re.mat')
-sorted = 1;
+% load(['sort\',file_name,'.mat'])
+% sorted = 1;
+
+
 analyze_spikes = Spikes;
 
+trial_num =96;
 
 analyze_spikes{31} = [0];
 
-trial_num =40;
+
 num_direction = 8;
 display_trial = 1:trial_num;
 fps = 60;
@@ -41,8 +43,15 @@ mkdir FIG
 cd FIG
 mkdir grating
 cd grating
-mkdir(name)
-cd (name)
+if save_photo
+    if strcmp(file_name(end),'1')
+        name = 'first';
+    elseif strcmp(file_name(end),'2')
+        name = 'second';
+    elseif strcmp(file_name(end),'3')
+        name = 'third';
+    end
+end
 mkdir sort
 mkdir unsort
 %% Determine time of start and end
@@ -157,9 +166,9 @@ for k = channel_number % k is the channel number
                 hold off;
                 if save_photo
                      if sorted
-                         saveas(gcf,[exp_folder, '\FIG\grating\', name,'\sort','\polarplot_channel', num2str(k)  '.tiff'])
+                         saveas(gcf,[exp_folder, '\FIG\grating\sort\',name,'_polarplot_channel', num2str(k)  '.tiff'])
                      else
-                         saveas(gcf,[exp_folder, '\FIG\grating\', name,'\unsort','\polarplot_channel', num2str(k)  '.tiff'])
+                         saveas(gcf,[exp_folder, '\FIG\grating\unsort\',name,'_polarplot_channel', num2str(k)  '.tiff'])
                      end
                 end
             end
