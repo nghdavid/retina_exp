@@ -3,22 +3,22 @@
 clear all;
 close all;
 code_folder = pwd;
-exp_folder =  'E:\20190823';
+exp_folder =  'E:\20190825';
 save_photo =1;%0 is no save on off photo and data, 1 is save
 cd(exp_folder)
 % p_channel = [25,33,34,45,46];%Green is predictive
 % n_channel = [52,53,57,58,59,60];%Purple is non-predictive
 p_channel = [];%Green is predictive
 n_channel = [];%Purple is non-predictive
-
+name = '0821_Gollish_OnOff_movie_5min_Br50_Q100_0.5';%Name that used to save photo and data
 Samplingrate=20000; %fps of diode in A3
 %% For unsorted spikes
-load('data\0821_Gollish_OnOff_movie_5min_Br50_Q100_0.8.mat')
-sorted = 0;
+load(['data\',name,'.mat'])
+% sorted = 0;
 %% For sorted spikes
-% load('sort\0710_CalONOFF_5min_Br50_Q100.mat')
-% sorted = 1;
-name = '0821_Gollish_OnOff_0.8';%Name that used to save photo and data
+load(['sort\',name,'.mat'])
+sorted = 1;
+
 num_cycle =40;
 lumin=a_data(3,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
 rr =[9,17,25,33,41,49,...
@@ -183,7 +183,7 @@ for channelnumber=1:60
         end
     end
 end
-
+on_off_index (find(on_off_index == -10000000)) = NaN;
 %% Plot all channels on off response
 figure('units','normalized','outerposition',[0 0 1 1])
 ha = tight_subplot(8,8,[.04 .02],[0.07 0.02],[.02 .02]);
@@ -205,13 +205,15 @@ for channelnumber=1:60
     end
     xlim([0 2])
      
-  if ~isnan(on_off_index(channelnumber)) && on_off_index(channelnumber) >-1000
+  if ~isnan(on_off_index(channelnumber))
       if on_off_index(channelnumber)>0.3%Criteria from 'Causal evidence for retina-dependent and -independent visual motion computations in mouse cortex'
           title([int2str(channelnumber),'ON'])
       elseif on_off_index(channelnumber)<-0.3
           title([int2str(channelnumber),'OFF'])
-      else
+      elseif on_off_index(channelnumber)>0
           title([int2str(channelnumber),'ON-OFF'])
+      elseif on_off_index(channelnumber)<0
+          title([int2str(channelnumber),'OFF-ON'])
       end
   end
 end
