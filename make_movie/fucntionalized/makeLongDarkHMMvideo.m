@@ -63,7 +63,7 @@ for Gvalue=G_list
     Y =meaCenter_y;
     cd (video_folder)
     %video frame file
-    name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100'];
+    name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100_Long'];
     name
     
     
@@ -220,7 +220,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %save parameters needed
-    save([date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100','.mat'],'newXarray')
+    save([date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100_Long','.mat'],'newXarray')
     
 end
 cd(makemovie_folder)
