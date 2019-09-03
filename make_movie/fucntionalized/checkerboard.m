@@ -1,13 +1,8 @@
-function checkerboard(makemovie_folder,  video_folder, videoworkspace_folder, date)
+function checkerboard(makemovie_folder,  video_folder, videoworkspace_folder, date,refresh_fps,num_pixel,mins)
 %% Checkerboard
-
-%ONOFF times.
-
 fps =60;  %freq of the screen flipping
-refresh_fps=20;
 frame_per_board = fps/refresh_fps;
-num_pixel = 13; %there are num_pixel^2 checker
-T=5*60; %second
+T=mins*60; %second
 dt=1/fps;
 T=dt:dt:T;
 cd(makemovie_folder);
@@ -22,7 +17,7 @@ all_file = dir('*.mat');
 cd (video_folder);
 %video frame file
 
-name=[date,'_Checkerboard_20Hz_13_5min_Br50_Q100'];
+name=[date,'_Checkerboard_',int2str(refresh_fps),'Hz_',int2str(num_pixel),'_',int2str(mins),'min_Br50_Q100'];
 name
 
 newXarray = cell(length(T),1);
@@ -41,12 +36,6 @@ for  i = 0 : length(T)/frame_per_board-1
         newXarray(frame_per_board*i+j)  = { checkerboard };
     end
 end
-
-
-
-
-
-
 %video setting
 Time=T; %sec
 video_fps=fps;
@@ -60,7 +49,6 @@ for mm=1:fps*20
     writeVideo(writerObj,img);
 end
 
-%%rotation theta = 0 for RL
 
 for kk =1:length(T)
     a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
@@ -76,10 +64,6 @@ for kk =1:length(T)
             end
         end
     end
-
-    
-   
-    
     if mod(kk,3)==1 %odd number
         a(500-35:500+35,1230:1280)=1; % white square
     elseif mod(kk,3)==2
@@ -107,7 +91,7 @@ writeVideo(writerObj,img);
 close(writerObj);
 cd(videoworkspace_folder)
 %save parameters needed
-save([date,'_Checkerboard_20Hz_13_5min_Br50_Q100','.mat'],'newXarray')
+save([name,'.mat'],'newXarray')
     
 cd(makemovie_folder);
 end
