@@ -1,4 +1,4 @@
-function checkerboard(makemovie_folder,  video_folder, videoworkspace_folder, date,refresh_fps,num_pixel,mins)
+function checkerboard(makemovie_folder,video_folder, videoworkspace_folder,refresh_fps,num_pixel,date,mins)
 %% Checkerboard
 fps =60;  %freq of the screen flipping
 frame_per_board = fps/refresh_fps;
