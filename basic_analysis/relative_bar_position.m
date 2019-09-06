@@ -10,7 +10,8 @@ code_folder = pwd;
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
-exp_folder = 'E:\20190709';
+load('channel_pos.mat')
+exp_folder = 'E:\20190825';
 cd(exp_folder)
 load('data\RFcenter.mat')%Needed to run Receptive field.m first
 cd sort_merge_spike\MI%Go the directory that stores HMM or OU spikes data
@@ -60,7 +61,19 @@ for z =1:n_file %choose file
     
     for k = 1:60
         if sum(RFcenter(k,:)) <= 0%If no RF center, it will pass
-            continue
+            if strcmp(direction,'UD')
+                relative_pos(k,:) = (channel_pos(k,2)-meaCenter_y) - (bin_pos(:)-meaCenter_x);
+            elseif  strcmp(direction,'RL')
+                relative_pos(k,:)= (channel_pos(k,1)-meaCenter_x) - (bin_pos(:)-meaCenter_x);
+                
+            elseif  strcmp(direction,'UR_DL')
+                relative_pos(k,:)= (-channel_pos(k,1)+ channel_pos(k,2)+meaCenter_x-meaCenter_y)/sqrt(2) - (bin_pos(:)- meaCenter_x);
+            elseif  strcmp(direction,'UL_DR')
+                relative_pos(k,:) = (channel_pos(k,1)+channel_pos(k,2)-meaCenter_x-meaCenter_y)/sqrt(2) - (bin_pos(:)- meaCenter_x);
+            else
+                disp('strange direction')
+            end
+            continue;
         end
         if strcmp(direction,'UD')
             relative_pos(k,:) = (RFcenter(k,2)-meaCenter_y) - (bin_pos(:)-meaCenter_x);

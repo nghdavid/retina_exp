@@ -1,14 +1,19 @@
 % Analysis STA experiment, by Rona
 clear all
 close all
-exp_folder = 'D:\Leo\0813exp';
+exp_folder = 'E:\20190825';
 cd(exp_folder);
-mkdir('Analyzed_data')
-mkdir('FIG')
-% all_file = dir('*.mat') ; % change the type of the files which you want to select, subdir or dir.
-% n_file = length(all_file);
+save_photo =1;%0 is no save on off photo and data, 1 is save
+name = 'csta_re';%Name that used to save photo and data
+bin = 5;  BinningInterval = bin*10^-3;  %ms
+%% For unsorted spikes
+load(['data\',name,'.mat'])
+sorted = 0;
+%% For sorted spikes
+% load(['sort\',name,'.mat'])
+% sorted = 1;
+
 SamplingRate = 20000;
-cc = hsv(3);
 rr =[9,17,25,33,41,49,...
     2,10,18,26,34,42,50,58,...
     3,11,19,27,35,43,51,59,...
@@ -17,25 +22,22 @@ rr =[9,17,25,33,41,49,...
     6,14,22,30,38,46,54,62,...
     7,15,23,31,39,47,55,63,...
     16,24,32,40,48,56];
-roi = [1:60];
+roi =1:60;
 
 
-% clearvars -except all_file n_file z SamplingRate cc ey isi2 statispks statistime w fr information rr STA roi
-% file = all_file(z).name ;
-% [pathstr, name, ext] = fileparts(file);
-% directory = [pathstr,'\'];
-% filename = [name,ext];
-load([exp_folder, '\data\csta..mat']);
-%name(name=='_')='-';
-bin = 10;  BinningInterval = bin*10^-3;  %ms
+%% Create directory
+mkdir Analyzed_data
+if save_photo
+mkdir FIG
+cd FIG
+mkdir cSTA
+cd cSTA
+mkdir sort
+mkdir unsort
+end
 
-%% diode as TriggerData
-%     load(['E:\google_rona\20170929\diode\diode_',filename]);
-%     [~,locs_a2]=findpeaks(diff(diff(a2)),'MINPEAKHEIGHT',5*std(diff(diff(a2))));
-%     TimeStamps_a2 = (locs_a2)/SamplingRate;
-%     TriggerData = eyf(TimeStamps_a2(1)*SamplingRate:TimeStamps_a2(end)*SamplingRate);% figure;plot(isi);
 %% a_data as TriggerData
-TriggerData = a_data(3,TimeStamps(1)*SamplingRate:TimeStamps(length(TimeStamps))*SamplingRate);% figure;plot(isi);
+TriggerData = a_data(1,TimeStamps(1)*SamplingRate:TimeStamps(length(TimeStamps))*SamplingRate);% figure;plot(isi);
 inten = downsample(TriggerData,SamplingRate*BinningInterval);
 
 %% spike process
@@ -50,13 +52,12 @@ temprr=0;
 
 
 %% STA
-    window = 1;  %STA window
-    window2 = 1;
+window = 1;  %STA window
+window2 = 1;
 cSTA = zeros(60, round(window/BinningInterval)+round(window2/BinningInterval)+1);
+useful_channelnumber = [];
 for nn = 1:length(roi)
     spike = BinningSpike(roi(nn),:);
-    
-
     sts = [];
     temp = 0;
     spike(1:window/BinningInterval) = 0;
@@ -74,14 +75,67 @@ for nn = 1:length(roi)
     
     STA = STA/max(abs(STA));
     cSTA(roi(nn),:) = STA;
+  
+    if isempty(find(abs(cSTA(nn,1:round(length(cSTA)/2))) >= 7*std(cSTA(nn,1:300/bin))))
+        cSTA(roi(nn),:) = NaN;
+    else
+        useful_channelnumber = [useful_channelnumber roi(nn)];
+    end
 end
+%% Plot STA
 time = [-window*1000:bin:window2*1000];
 figure('units','normalized','outerposition',[0 0 1 1])
-ha = tight_subplot(8,8,[.03 .01],[0.02 0.02],[.01 .01]);
-for channelnumber=1:60
+ha = tight_subplot(8,8,[.04 .02],[0.02 0.02],[.01 .01]);
+for channelnumber=useful_channelnumber
     axes(ha(rr(channelnumber)));
-    plot(time,cSTA(channelnumber,:),'LineWidth',1.5);%,'color',cc(z,:)
+    plot(time,cSTA(channelnumber,:),'LineWidth',1.5);
+    grid on
+    xlim([-500 0])
     title(channelnumber)
 end
-saveas(gcf,['FIG\', 'csta','.tiff'])
-save([exp_folder,'\Analyzed_data\','csta','.mat'],'time','cSTA')
+set(gcf,'units','normalized','outerposition',[0 0 1 1])
+fig = gcf;
+fig.PaperPositionMode = 'auto';
+if save_photo
+    if sorted
+        saveas(fig,[exp_folder, '\FIG\cSTA\','\sort\', name,'.tiff'])
+        saveas(fig,[exp_folder, '\FIG\cSTA\','\sort\', name,'.fig'])
+        cd([exp_folder, '\FIG\cSTA\','\sort'])
+    else
+        saveas(fig,[exp_folder, '\FIG\cSTA\','\unsort\', name,'.tiff'])
+        saveas(fig,[exp_folder, '\FIG\cSTA\','\unsort\', name,'.fig'])
+        cd([exp_folder, '\FIG\cSTA\','\unsort'])
+    end
+end
+%% Calculate OnOff Index
+tau =  zeros(1,60);
+Filker_OnOff_Index = ones(1,60)*-10000000;
+for channelnumber=useful_channelnumber
+    Filker_OnOff_Index(channelnumber) = sum(cSTA(channelnumber,round(length(cSTA)/2)-200/bin:round(length(cSTA)/2))) / sum(abs(cSTA(channelnumber, round(length(cSTA)/2)-200/bin:round(length(cSTA)/2))));
+    diff_smooth_cSTA = diff(smooth(cSTA(channelnumber,:)));
+
+    for l = fliplr(2:length(diff_smooth_cSTA)/2)
+        if diff_smooth_cSTA(l)*diff_smooth_cSTA(l-1) < 0
+            tau(channelnumber) = (length(diff_smooth_cSTA)/2-l+1)*bin;
+            break
+        end
+    end
+end
+Filker_OnOff_Index (find(Filker_OnOff_Index == --10000000)) = NaN;
+figure;
+hist(Filker_OnOff_Index(useful_channelnumber));
+xlim([-1 1])
+if save_photo
+    if sorted
+        saveas(fig,[exp_folder, '\FIG\cSTA\','\sort\', name,'_index','.tiff'])
+        saveas(fig,[exp_folder, '\FIG\cSTA\','\sort\', name, '_index','.fig'])
+        save([exp_folder,'\Analyzed_data\','csta','.mat'],'time','cSTA', 'Filker_OnOff_Index', 'tau')
+        cd([exp_folder, '\FIG\cSTA\','\sort'])
+    else
+        saveas(fig,[exp_folder, '\FIG\cSTA\','\unsort\', name, '_index','.tiff'])
+        saveas(fig,[exp_folder, '\FIG\cSTA\','\unsort\',name, '_index','.fig'])
+        save([exp_folder,'\Analyzed_data\','csta','.mat'],'time','cSTA', 'Filker_OnOff_Index', 'tau')
+        cd([exp_folder, '\FIG\cSTA\','\unsort'])
+    end
+end
+
