@@ -2,7 +2,7 @@
 close all;
 clear all;
 code_folder = pwd;
-exp_folder = 'E:\20190721';
+exp_folder = 'E:\20190825';
 cd(exp_folder);
 mkdir STA
 cd sort_merge_spike\MI
@@ -49,10 +49,6 @@ for z =1:n_file %choose file
     sum_n = zeros(1,60);
     dis_STA = zeros(60,forward+backward+1);
     for i = 1:60  % i is the channel number
-        if sum(abs(TheStimuli(i,:))) <= 0
-            %disp(['channel ',int2str(i),'does not have RF center'])
-            continue
-        end
         [n,~] = hist(analyze_spikes{i},BinningTime) ;
         BinningSpike(i,:) = n ;
         sum_n(i) = sum_n(i)+ sum(BinningSpike(i,forward+1:length(BinningTime)-backward));
@@ -64,6 +60,6 @@ for z =1:n_file %choose file
         end
     end
     
-    save([exp_folder,'\STA\',name(17:end),'.mat'],'time','dis_STA')
+    save([exp_folder,'\STA\',name(12:end),'.mat'],'time','dis_STA','relative_pos')
 end
 
