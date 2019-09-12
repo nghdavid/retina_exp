@@ -2,7 +2,7 @@
 close all;
 clear all;
 code_folder = pwd;
-exp_folder = 'E:\20190825';
+exp_folder = 'E:\20190811';
 cd(exp_folder);
 mkdir STA
 cd sort_merge_spike\MI
