@@ -5,7 +5,7 @@ load([diode_path_cal,'\calibration',ddd])
 clearvars -except rate volt lumin_filter stimu G_tau
 daq_out = daqmx_Task('chan','Dev1/ao1' ,'rate',rate, 'Mode', 'f');
 daq_out.write(0);
-rate=20000;
+%rate=20000;
 % load('E:\rona\20160318\map');
 %%%%%%%%%%%%% step3:calibration %%%%%%%%%%%%%%%%%%%
 x=volt;
@@ -14,7 +14,34 @@ y=(lumin_filter)';
 % date = '20190329';
 
 %stimu = input('Stimulation? onoff(on)/tsta(ts)/csta(cs)/adaptation(ad)/hmm(hm)/ou(ou)/repeat(re)/osr(os)/jittertime(jt)/curve(cu)  ');
-if stimu == 'on'
+if stimu == 'oo'
+    repeat = 20; 
+    on_t = 0.5; %s
+    off_t = 0.5; %s
+    mean_t = 1.5; %s
+    period = (2*mean_t+on_t+off_t);
+    mean_i = 0.05;
+    i_offset =0.4*mean_i;
+    at = 3;%adaptation time
+    ey = zeros; 
+    a2 = -0.1*ones;
+    ey(1:at*rate)=mean_i;
+    for j = (0:repeat-1) % how many a2 in a trial
+        ey( (at+period*j)*rate+1 : (at+period*j+on_t)*rate ) = mean_i+i_offset;
+        ey( (at+period*j+on_t)*rate+1 : (at+period*j+mean_t+on_t)*rate ) = mean_i;
+        ey( (at+period*j+mean_t+on_t)*rate+1 : (at+period*j+mean_t+on_t+off_t)*rate ) = mean_i-i_offset;
+        ey( (at+period*j+mean_t+on_t+off_t)*rate+1 : (at+period*j+2*mean_t+on_t+off_t)*rate ) = mean_i;
+        a2( (at+period*j)*rate+1 : (at+period*j+on_t)*rate ) = 1;
+        a2( (at+period*j+on_t)*rate+1 : (at+period*j+mean_t+on_t)*rate ) = -0.1;
+        a2( (at+period*j+mean_t+on_t)*rate+1 : (at+period*j+mean_t+on_t+off_t)*rate ) = 1;
+        a2( (at+period*j+mean_t+on_t+off_t)*rate+1 : (at+period*j+2*mean_t+on_t+off_t)*rate ) = -0.1;
+    end
+    x1 = 1:length(ey);
+    figure;plot(x1,ey);
+    ss = ['_Gonoff_'];
+    
+
+elseif stimu == 'on'
     %% ONOFF
     
     repeat = 20;
@@ -25,7 +52,6 @@ if stimu == 'on'
     period = rt+ns*(T+OT); % period of a loop
     m = 0;% onoff 0-0.18
     d = 0.2;% increment of lumin
-    x1 = 1:period*rate*repeat;
     ey = zeros; 
     a2 = -0.1*ones;
     at = 3;%adaptation time
@@ -48,16 +74,16 @@ if stimu == 'on'
 %% ContrastSTA
 elseif stimu == 'cs'
     T = 180; %nth in sec
-    unit = 0.050;  %time step unit in ~ms
+    unit = 1/30;  %time step unit in ~ms
     steps = T/unit;
     r=0.08;
-    d = r*(rand(1,steps)-0.5);  %intensity
+    %d = r*(rand(1,steps)-0.5);  %intensity
     at=30;
     m=0.05;
     d = m*0.3*(randn(1,steps));  %intensity
     ey1=[];ey=[];ey0=[];
     for i=1:steps
-        ey1(rate*unit*(i-1)+1:rate*unit*i)=m+d(i);
+        ey1(round(rate*unit*(i-1)+1) : round(rate*unit*i))=m+d(i);
     end
     ey0=m*ones(1,at*rate);%REST
     ey=[ey0 ey1]; 
