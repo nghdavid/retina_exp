@@ -13,7 +13,7 @@ load('boundary_set.mat')
 load('channel_pos.mat')
 exp_folder = 'E:\20190825';
 cd(exp_folder)
-load('data\RFcenter.mat')%Needed to run Receptive field.m first
+load('Analyzed_data\RFcenter.mat')%Needed to run Receptive field.m first
 cd sort_merge_spike\MI%Go the directory that stores HMM or OU spikes data
 all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ;

@@ -5,21 +5,22 @@ load('channel_pos.mat')
 load('boundary_set.mat')
 
 displaychannel = 1:60;%1:60;%Choose which channel to display
-save_photo =0;%0 is no save RF photo, 1 is save
+displaychannel = [52];%1:60;%Choose which channel to display
+save_photo =1;%0 is no save RF photo, 1 is save
 save_svd =0;%0 is no save svd photo, 1 is save
-
+save_center =0;
 time_shift = 1:6;%for -50ms:-300ms
 num_shift = 0.05;%50ms
-exp_folder = 'E:\0709';
+exp_folder = 'E:\20190825';
 cd(exp_folder)
-name = '20Hz_13x13_re_RF';%Directory name
-
+name = '20Hz_13x13_RF';%Directory name
+filename = '0507_Checkerboard_20Hz_13_5min_Br50_Q100';
 %% For sorted spikes
-load('sort_merge_spike\sort_merge_0507_Checkerboard_20Hz_13_5min_Br50_Q100.mat')
+load(['sort_merge_spike\sort_merge_',filename,'.mat'])
 analyze_spikes = sorted_spikes;
 sorted = 1;
 %% For unsorted spikes
-% load('merge\merge_0507_Checkerboard_20Hz_13_5min_Br50_Q100.mat')
+% load(['merge\merge_0507_',filename,'.mat'])
 % analyze_spikes = reconstruct_spikes;
 % sorted = 0;
 
@@ -96,22 +97,22 @@ for k =displaychannel
     disp(['channel',int2str(k),' 2nd_component power is ',num2str(power_2nd_component),'%'])
     
     %Calculate and plot temporal SVD
-    figure(k+120)
-    %     plot(fliplr(time_shift*num_shift*-1000),fliplr(U(1,:)))
-    plot([0 time_shift*num_shift*1000] ,[0 U(:,2)'], 'LineWidth',3)
-    title(['temporal filter from SVD channel ',int2str(k)])
-    xlabel('time before spike(ms)')
-    ylabel('relative intensity')
-    set(gcf,'units','normalized','outerposition',[0 0 1 1])
-    fig = gcf;
-    fig.PaperPositionMode = 'auto';
-    if save_svd
-        if sorted
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\sort','\temporal_svd_channel', num2str(k)  '.tiff'])
-        else
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\unsort','\temporal_svd_channel', num2str(k)  '.tiff'])
-        end
-    end
+%     figure(k+120)
+%     %     plot(fliplr(time_shift*num_shift*-1000),fliplr(U(1,:)))
+%     plot([0 time_shift*num_shift*1000] ,[0 U(:,2)'], 'LineWidth',3)
+%     title(['temporal filter from SVD channel ',int2str(k)])
+%     xlabel('time before spike(ms)')
+%     ylabel('relative intensity')
+%     set(gcf,'units','normalized','outerposition',[0 0 1 1])
+%     fig = gcf;
+%     fig.PaperPositionMode = 'auto';
+%     if save_svd
+%         if sorted
+%             saveas(fig,[exp_folder, '\FIG\RF\', name,'\sort','\temporal_svd_channel', num2str(k)  '.tiff'])
+%         else
+%             saveas(fig,[exp_folder, '\FIG\RF\', name,'\unsort','\temporal_svd_channel', num2str(k)  '.tiff'])
+%         end
+%     end
     
     %Calculate electrode position and RF center from SVD
     
@@ -120,23 +121,6 @@ for k =displaychannel
     electrode_y(k) = (channel_pos(k,2)-meaCenter_y)*side_length/mea_size_bm + (side_length+1)/2;
     num_spike =  length(analyze_spikes{k});
     if num_spike /stimulus_length > 0.3
-        %         [xymax,smax,xymin,smin] = extrema2(gauss_space);
-        %         x = ceil(smax/side_length);
-        %         y = mod(smax-1, side_length)+1;
-        %         extreme_x = x';
-        %         extreme_y = y';
-        %         x = ceil(smin/side_length);
-        %         y = mod(smin-1, side_length)+1;
-        %         extreme_x = [extreme_x x'];
-        %         extreme_y = [extreme_y y'];
-        %         closest_dis = side_length^2*2;
-        %         for j = 1:length(extreme_x)
-        %             dis = (electrode_x(k)-extreme_x(j))^2 + (electrode_y(k)-extreme_y(j))^2;
-        %             if dis <=  closest_dis
-        %                 closest_dis = dis;
-        %                 closest_extrema(:,k) = [extreme_x(j) extreme_y(j)];
-        %             end
-        %         end
         max_value  = max(space(:));
         closest_extrema(1,k) = ceil(find(space == max_value)/side_length);
         closest_extrema(2,k) = mod(find(space == max_value)-1, side_length)+1;
@@ -144,26 +128,26 @@ for k =displaychannel
     
     
     %Plot spatial SVD
-    figure(k+60)
-    imagesc(space);hold on;
-    title(k)
-    pbaspect([1 1 1])
-    colormap(gray);
-    colorbar;
-    scatter(electrode_x(k),electrode_y(k), 50, 'r','filled');
-    if num_spike /stimulus_length > 1
-        scatter(closest_extrema(1,k),closest_extrema(2,k), 100, 'b' ,'o','filled')
-    end
-    set(gcf,'units','normalized','outerposition',[0 0 1 1])
-    fig = gcf;
-    fig.PaperPositionMode = 'auto';
-    if save_svd
-        if sorted
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\sort','\spatial_svd_channel', num2str(k)  '.tiff'])
-        else
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\unsort','\spatial_svd_channel', num2str(k)  '.tiff'])
-        end
-    end
+%     figure(k+60)
+%     imagesc(space);hold on;
+%     title(k)
+%     pbaspect([1 1 1])
+%     colormap(gray);
+%     colorbar;
+%     scatter(electrode_x(k),electrode_y(k), 50, 'r','filled');
+%     if num_spike /stimulus_length > 1
+%         scatter(closest_extrema(1,k),closest_extrema(2,k), 100, 'b' ,'o','filled')
+%     end
+%     set(gcf,'units','normalized','outerposition',[0 0 1 1])
+%     fig = gcf;
+%     fig.PaperPositionMode = 'auto';
+%     if save_svd
+%         if sorted
+%             saveas(fig,[exp_folder, '\FIG\RF\', name,'\sort','\spatial_svd_channel', num2str(k)  '.tiff'])
+%         else
+%             saveas(fig,[exp_folder, '\FIG\RF\', name,'\unsort','\spatial_svd_channel', num2str(k)  '.tiff'])
+%         end
+%     end
     
     
 end
@@ -173,6 +157,8 @@ end
 for k =displaychannel
     %plot RF & electrode position & RF center
     figure(k);
+    h =suptitle(int2str(k));
+    set(h,'FontSize',10)
     num_spike =  length(analyze_spikes{k});
     for i = time_shift
         subplot(2,3,i),imagesc(gauss_RF{i,k});hold on;
@@ -182,7 +168,7 @@ for k =displaychannel
         colorbar;
         scatter(electrode_x(k),electrode_y(k), 10, 'r','filled');
         
-        if num_spike /stimulus_length > 1
+        if num_spike /stimulus_length > 0.5
             scatter(closest_extrema(1,k),closest_extrema(2,k), 50, 'b' ,'o','filled')
         end
         
@@ -200,8 +186,8 @@ for k =displaychannel
     end
     
     %Calculate and plot temporal filter
-    if num_spike /stimulus_length > 1
-        figure(k+180)
+    if num_spike /stimulus_length > 0.5
+       
         temporal_filter = zeros(1,length(time_shift));
         if closest_extrema(1,k) == 1
             center_leftbd = 1;
@@ -227,6 +213,7 @@ for k =displaychannel
             
             temporal_filter(i) = mean(mean(gauss_RF{i,k}(center_leftbd:center_rightbd,center_upperbd:center_lowerbd)));
         end
+        figure(k+180)
         %         plot(fliplr(time_shift*num_shift*-1000),fliplr(temporal_filter))
         plot(-[0 time_shift*num_shift*-1000],[0.5 temporal_filter],'LineWidth',3)
         title(['temporal filter of RF channel ',int2str(k)])
@@ -245,14 +232,21 @@ for k =displaychannel
     end
     
 end
-RFcenter = zeros(60,2);
-for k = displaychannel
-    RFcenter(k,1) = (closest_extrema(1,k) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_x;
-    RFcenter(k,2) = (closest_extrema(2,k) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_y;
-end
-save([exp_folder,'\data\RFcenter.mat'],'RFcenter');
+
 %titles and checkerboard size
 RF_pixel_size = mea_size_bm/side_length*micro_per_pixel %mircometer
+
+if save_center
+if sorted
+    RFcenter = zeros(60,2);
+    for k = displaychannel
+        RFcenter(k,1) = (closest_extrema(1,k) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_x;
+        RFcenter(k,2) = (closest_extrema(2,k) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_y;
+    end
+    save([exp_folder,'\Analyzed_data\RFcenter.mat'],'RFcenter','RF_pixel_size');
+end
+end
+
 
 
 cd(code_folder)
