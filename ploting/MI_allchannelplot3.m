@@ -5,7 +5,7 @@
 close all;
 clear all;
 code_folder = pwd;
-exp_folder = 'E:\20190825';
+exp_folder = 'D:\Leo\0823exp';
 cd(exp_folder)
 sorted =1;
 %Load calculated MI first(Need to run Calculate_MI.m first to get)
@@ -32,19 +32,20 @@ for z =1:n_file
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
     filename = [name,ext];
-    if name(1) == 's' | name(1) == 'a' |name(1) == 'v'
+    if name(1) == 'p' | name(1) == 'a' 
         continue
     end
-    name
+    
+    name = name(3:end)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    load(['speed_',name,ext])
+    load(['v_',name,ext])
     speed_MI = Mutual_infos;
     speed_MI_shuffle = Mutual_shuffle_infos;
-    load(['absolute_',name,ext])
+    load(['pos&v_',name,ext])
     absolute_MI = Mutual_infos;
     absolute_MI_shuffle = Mutual_shuffle_infos;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    load([name,ext])
+    load(['pos_',name,ext])
     figure('units','normalized','outerposition',[0 0 1 1])
     ha = tight_subplot(8,8,[.04 .02],[0.07 0.02],[.02 .02]);
     MI_peak=zeros(1,60);
