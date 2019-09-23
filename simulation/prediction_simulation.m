@@ -7,15 +7,15 @@ dt=1/60;
 bar_size = 5;
 stimulus_range = 200;
 
-G_HMM = 9;
+G_HMM = 3;
 G_OU = 2.45;
 
 ratio_on = 4;
-ratio_off = -1;
+ratio_off = -2;
 on_sigma = 10;
 off_sigma = 40;
 
-integration_time = 50;
+integration_time = 30;
 size_curve = 10;
 
 On_delay = 5;
@@ -66,8 +66,8 @@ for step = 1:T
    bar_position(step,newXarray(step)-bar_size:newXarray(step)+bar_size) = ones(1,2*bar_size+1); 
 end
 
-figure(100)
-plot(1:T,newXarray-100);
+% figure(100)
+% plot(1:T,newXarray-100);
 
 
 %% Receptive field center surround filter
@@ -76,11 +76,11 @@ plot(1:T,newXarray-100);
 range = 1:stimulus_range;
 On = ratio_on *gaussmf(range,[on_sigma stimulus_range/2]);
 Off = ratio_off*gaussmf(range,[off_sigma stimulus_range/2]);
-figure(1)
-plot(range,On);hold on
-plot(range,Off);hold off
-figure(2)
-plot(range,On+Off);
+% figure(1)
+% plot(range,On);hold on
+% plot(range,Off);hold off
+% figure(2)
+% plot(range,On+Off);
 
 
 %% On and Off temporal filter
@@ -91,11 +91,11 @@ x = linspace(-1.0, 1.0, size_curve);
 curve = -0.1*x.*x+1;
 On_temporal(On_delay:On_delay+size_curve-1) = On_temporal(On_delay:On_delay+size_curve-1)+curve;
 Off_temporal(Off_delay:Off_delay+size_curve-1) = Off_temporal(Off_delay:Off_delay+size_curve-1)+curve;
-figure(3)
-plot(1:integration_time,On_temporal);hold on
-plot(1:integration_time,Off_temporal);hold off
-xlabel('time before spike')
-ylabel('weight')
+% figure(3)
+% plot(1:integration_time,On_temporal);hold on
+% plot(1:integration_time,Off_temporal);hold off
+% xlabel('time before spike')
+% ylabel('weight')
 
 
 %% Convolution of stimulus and receptive field
@@ -105,15 +105,15 @@ for t = 1:T
     conv_on(t) = sum(bar_position(t,:).*On);
     conv_off(t) = sum(bar_position(t,:).*Off);
 end
-figure(4)
-plot(1:T,conv_on-min(conv_on));hold on
-plot(1:T,normalize(conv_off));hold on
-plot(1:T,normalize(newXarray-100),'k.');hold off
-xlabel('time')
-ylabel('Temporal change of center and surround')
-title('HMM trajectory and temporal change after Gaussian filter')
-legend('on','off','trajectory')
-
+% figure(4)
+% plot(1:T,conv_on-min(conv_on));hold on
+% plot(1:T,normalize(conv_off));hold on
+% plot(1:T,normalize(newXarray-100),'k.');hold off
+% xlabel('time')
+% ylabel('Temporal change of center and surround')
+% title('HMM trajectory and temporal change after Gaussian filter')
+% legend('on','off','trajectory')
+% 
 
 %% Temporal filtering
 temp_on =zeros(1,T-integration_time);
@@ -146,6 +146,8 @@ end
 %% Subtraction of ON and OFF
 
 Subtraction = temp_on + temp_off;
+
+
 % figure(7)
 % plot(1:T-integration_time,normalize(Subtraction));hold on;
 % plot(integration_time+1:T,normalize(newXarray(integration_time+1:T)),'k.');hold off
@@ -154,20 +156,20 @@ Subtraction = temp_on + temp_off;
 % title('Effect of subtraction')
 % legend('Subtract','trajectory')
 % set(gcf,'units','normalized','outerposition',[0 0 1 1])
-% 
-% figure(8)
-% plot(integration_time+1:T,temp_on);hold on;
-% plot(integration_time+1:T,temp_off);hold on;
-% plot(1:T-integration_time,Subtraction);hold off;
-% xlabel('time')
-% ylabel('Volt')
-% title('Comparison of ON and OFF')
-% legend('on','off','subtraction')
-% set(gcf,'units','normalized','outerposition',[0 0 1 1])
+
+figure(8)
+plot(integration_time+1:T,temp_on);hold on;
+plot(integration_time+1:T,temp_off);hold on;
+plot(1:T-integration_time,Subtraction);hold off;
+xlabel('time')
+ylabel('Volt')
+title('Comparison of ON and OFF')
+legend('on','off','subtraction')
+set(gcf,'units','normalized','outerposition',[0 0 1 1])
 
 
-%% Calculation of MI
-% TheStimuli = newXarray(integration_time+1:T);
+% Calculation of MI
+% TheStimuli = temp_on;%newXarray(integration_time+1:T);
 % StimuSN=30; %number of stimulus states
 % nX=sort(TheStimuli);
 % abin=length(nX)/StimuSN;
