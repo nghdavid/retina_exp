@@ -1,27 +1,20 @@
 % Analysis STA experiment, by Rona
 clear all
 close all
-exp_folder = 'E:\20190825';
+load('rr.mat')
+exp_folder = '\\Desktop-7k9ep2u\20190916';
 cd(exp_folder);
 save_photo =1;%0 is no save on off photo and data, 1 is save
-name = 'csta_re';%Name that used to save photo and data
+name = 'csta';%Name that used to save photo and data
 bin = 5;  BinningInterval = bin*10^-3;  %ms
 %% For unsorted spikes
 load(['data\',name,'.mat'])
 sorted = 0;
 %% For sorted spikes
-% load(['sort\',name,'.mat'])
-% sorted = 1;
+load(['sort\',name,'.mat'])
+sorted = 1;
 
 SamplingRate = 20000;
-rr =[9,17,25,33,41,49,...
-    2,10,18,26,34,42,50,58,...
-    3,11,19,27,35,43,51,59,...
-    4,12,20,28,36,44,52,60,...
-    5,13,21,29,37,45,53,61,...
-    6,14,22,30,38,46,54,62,...
-    7,15,23,31,39,47,55,63,...
-    16,24,32,40,48,56];
 roi =1:60;
 
 
@@ -122,18 +115,18 @@ for channelnumber=useful_channelnumber
     end
 end
 Filker_OnOff_Index (find(Filker_OnOff_Index == --10000000)) = NaN;
-figure;
+figure(1000);
 hist(Filker_OnOff_Index(useful_channelnumber));
 xlim([-1 1])
 if save_photo
     if sorted
-        saveas(fig,[exp_folder, '\FIG\cSTA\','\sort\', name,'_index','.tiff'])
-        saveas(fig,[exp_folder, '\FIG\cSTA\','\sort\', name, '_index','.fig'])
+        saveas(gcf,[exp_folder, '\FIG\cSTA\','\sort\', name,'_index','.tiff'])
+        saveas(gcf,[exp_folder, '\FIG\cSTA\','\sort\', name, '_index','.fig'])
         save([exp_folder,'\Analyzed_data\','csta','.mat'],'time','cSTA', 'Filker_OnOff_Index', 'tau')
         cd([exp_folder, '\FIG\cSTA\','\sort'])
     else
-        saveas(fig,[exp_folder, '\FIG\cSTA\','\unsort\', name, '_index','.tiff'])
-        saveas(fig,[exp_folder, '\FIG\cSTA\','\unsort\',name, '_index','.fig'])
+        saveas(gcf,[exp_folder, '\FIG\cSTA\','\unsort\', name, '_index','.tiff'])
+        saveas(gcf,[exp_folder, '\FIG\cSTA\','\unsort\',name, '_index','.fig'])
         save([exp_folder,'\Analyzed_data\','csta','.mat'],'time','cSTA', 'Filker_OnOff_Index', 'tau')
         cd([exp_folder, '\FIG\cSTA\','\unsort'])
     end
