@@ -1,4 +1,4 @@
-function xarray=makeGratingvideo(makemovie_folder, bar_real_width, temporal_frequency,video_folder, videoworkspace_folder, date)
+function xarray=makeGratingvideo(makemovie_folder,video_folder, bar_real_width, temporal_frequency,number_repeat,date)
 
 
 load('calibrate_pt.mat')%Load dotPositionMatrix
@@ -16,7 +16,7 @@ bar_interval = bar_wid*4;%The distance between bar and bar
 
 cd (video_folder)
 %video frame file
-name=[date,'_Grating_',num2str(bar_real_width) ,'micro_',num2str(temporal_frequency),'HZ_72s_Br50_Q100'];
+name=[date,'_Grating_',num2str(bar_real_width) ,'micro_',num2str(temporal_frequency),'HZ_',num2str(number_repeat),'times_Br50_Q100'];
 name
 
 video_fps=60;
@@ -34,7 +34,7 @@ for l = 1:60*10
 end
 
 
-for time = 1:12%Number of repeat
+for time = 1:number_repeat%Number of repeat
     for reversal = [0 1]
         for theta = [0 pi/4 pi/2 pi*3/4]%Direction of moving bar
             if pi/4 <= theta && pi*3/4 >= theta
