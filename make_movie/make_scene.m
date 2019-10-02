@@ -1,5 +1,6 @@
 load('boundary_set.mat')
-name = '0718saccade';
+name = '0930saccade';
+mat_directory = 'C:\2019_02_15_matimg\';
 pic_size = 441;%Picture size that tina gives you
 
 pic = (mea_size_bm-pic_size)/2;
@@ -51,15 +52,15 @@ end
 
 for kk =0:30000-1
     if kk < 9
-        load(['stimulus0000',int2str(kk+1),'.mat'])
+        load([mat_directory,'stimulus0000',int2str(kk+1),'.mat'])
     elseif kk < 99
-        load(['stimulus000',int2str(kk+1),'.mat'])
+        load([mat_directory,'stimulus000',int2str(kk+1),'.mat'])
     elseif  kk <  999
-        load(['stimulus00',int2str(kk+1),'.mat'])
+        load([mat_directory,'stimulus00',int2str(kk+1),'.mat'])
     elseif  kk <  9999
-        load(['stimulus0',int2str(kk+1),'.mat'])
+        load([mat_directory,'stimulus0',int2str(kk+1),'.mat'])
     else
-        load(['stimulus',int2str(kk+1),'.mat'])
+        load([mat_directory,'stimulus',int2str(kk+1),'.mat'])
     end
     imgs=mat2gray(imgs);
     a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
