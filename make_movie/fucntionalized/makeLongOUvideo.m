@@ -6,14 +6,11 @@ function makeLongOUvideo(makemovie_folder, theta, direction, video_folder, video
 
 G_list=[1.55 2.45 3.2 4 5.7 7.6 10.5 5.03];  %list of Gamma valau
 
-
 countt=1;
 
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
-
-all_file = dir('*.mat');
 
 fps =60;  %freq of the screen flipping
 T=5*60; %second

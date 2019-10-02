@@ -13,7 +13,6 @@ load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
 
-all_file = dir('*.mat');
 
 fps =60;  %freq of the screen flipping
 T=5*60; %second
