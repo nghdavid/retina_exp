@@ -5,7 +5,7 @@ load([diode_path_cal,'\calibration',ddd])
 clearvars -except rate volt lumin_filter stimu G_tau
 daq_out = daqmx_Task('chan','Dev1/ao1' ,'rate',rate, 'Mode', 'f');
 daq_out.write(0);
-%rate=20000;
+
 % load('E:\rona\20160318\map');
 %%%%%%%%%%%%% step3:calibration %%%%%%%%%%%%%%%%%%%
 x=volt;
@@ -85,6 +85,8 @@ elseif stimu == 'cs'
     for i=1:steps
         ey1(round(rate*unit*(i-1)+1) : round(rate*unit*i))=m+d(i);
     end
+    ey1(ey1 > 0.09) = 0.09;
+    ey1(ey1 < 0.01) = 0.01;
     ey0=m*ones(1,at*rate);%REST
     ey=[ey0 ey1]; 
     figure;plot(ey);
