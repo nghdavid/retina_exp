@@ -5,8 +5,10 @@ clear all;
 %% Go to photo directory
 recording_time = 8;%Hours
 time_cycle = 300;%second (5 mins)
-pos = [0 0 400 400];% Screen position [left top width height]
-photo_folder = 'C:\Users\nghdavid\Desktop\test';
+reciever_gmail = 'nghdavid123@gmail.com';
+%reciever_gmail = 'llincooi@gmail.com';
+pos = [0 0 1920 1080];% Screen position [left top width height]
+photo_folder = 'G:\Mc_rack_photo';
 rmdir(photo_folder,'s');%Remove whole directory
 mkdir(photo_folder)%Make new directory
 cd(photo_folder)
@@ -14,7 +16,6 @@ cd(photo_folder)
 mail = 'hydrolab320@gmail.com'; % my gmail address
 password = 'yourpassword';  % my gmail password 
 host = 'smtp.gmail.com';
-reciever_gmail = 'nghdavid123@gmail.com';
 %Remember to close down antivirus software and turn off security in gmail
 %% preferences
 setpref('Internet','SMTP_Server', host);

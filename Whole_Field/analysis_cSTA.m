@@ -64,9 +64,6 @@ for nn = 1:length(roi)
     STA = sum(sts)/sum(spike);%;
     STA = STA-STA(end);
     STA = STA/max(abs(STA));
-    %         figure(roi(nn));hold on;
-    
-    STA = STA/max(abs(STA));
     cSTA(roi(nn),:) = STA;
   
     if isempty(find(abs(cSTA(nn,1:round(length(cSTA)/2))) >= 7*std(cSTA(nn,1:300/bin))))

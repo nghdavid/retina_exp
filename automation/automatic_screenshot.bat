@@ -1,0 +1,1 @@
+matlab -nodisplay -nosplash -nodesktop -r automatic_screenshot;exit;"
