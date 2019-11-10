@@ -1,8 +1,8 @@
-function DAQ_LED_leo(stimu, G_tau)
+function DAQ_LED_leo(stimu, G_tau, mean_lumin)
 ddd=date;
-diode_path_cal=['D:\leo\stimulus saving\',ddd,'\calibration'];
-load([diode_path_cal,'\calibration',ddd])
-clearvars -except rate volt lumin_filter stimu G_tau
+diode_path_cal=['D:\leo\stimulus saving\','09-Nov-2019','\calibration'];
+load([diode_path_cal,'\calibration','09-Nov-2019'])
+%clearvars -except rate volt lumin_filter stimu G_tau true_lumin mean_lumin
 daq_out = daqmx_Task('chan','Dev1/ao1' ,'rate',rate, 'Mode', 'f');
 daq_out.write(0);
 
@@ -10,17 +10,17 @@ daq_out.write(0);
 %%%%%%%%%%%%% step3:calibration %%%%%%%%%%%%%%%%%%%
 x=volt;
 y=(lumin_filter)';
+z=(true_lumin)';
 %% Signal %%%%%%%%%%%%%%%%%%
 % date = '20190329';
-
 %stimu = input('Stimulation? onoff(on)/tsta(ts)/csta(cs)/adaptation(ad)/hmm(hm)/ou(ou)/repeat(re)/osr(os)/jittertime(jt)/curve(cu)  ');
 if stimu == 'oo'
-    repeat = 20; 
+    repeat = 40; 
     on_t = 0.5; %s
     off_t = 0.5; %s
     mean_t = 1.5; %s
     period = (2*mean_t+on_t+off_t);
-    mean_i = 0.05;
+    mean_i = mean_lumin;
     i_offset =0.4*mean_i;
     at = 3;%adaptation time
     ey = zeros; 
@@ -37,7 +37,8 @@ if stimu == 'oo'
         a2( (at+period*j+mean_t+on_t+off_t)*rate+1 : (at+period*j+2*mean_t+on_t+off_t)*rate ) = -0.1;
     end
     x1 = 1:length(ey);
-    figure;plot(x1,ey);
+    figure;plot(x1,ey);hold on; plot(x1,a2)
+    
     ss = ['_Gonoff_'];
     
 
@@ -79,14 +80,14 @@ elseif stimu == 'cs'
     r=0.08;
     %d = r*(rand(1,steps)-0.5);  %intensity
     at=30;
-    m=0.05;
+    m=mean_lumin;
     d = m*0.3*(randn(1,steps));  %intensity
     ey1=[];ey=[];ey0=[];
     for i=1:steps
         ey1(round(rate*unit*(i-1)+1) : round(rate*unit*i))=m+d(i);
     end
-    ey1(ey1 > 0.09) = 0.09;
-    ey1(ey1 < 0.01) = 0.01;
+    ey1(ey1 > 2*mean_lumin) = 2*mean_lumin;
+    ey1(ey1 < 0) = 0;
     ey0=m*ones(1,at*rate);%REST
     ey=[ey0 ey1]; 
     figure;plot(ey);
@@ -156,7 +157,7 @@ elseif stimu == 'hm'
     D = 4; %dynamical range
     at = 30;
 %     r = 0.14;%if G= 10 normal r =0.1
-    m = 0.05;
+    m = mean_lumin;
 
     a2=[];ey=[];ey1=[];
     L = zeros(1,length(T));
@@ -166,9 +167,11 @@ elseif stimu == 'hm'
         V(t+1) = (1-G*dt)*V(t) - w^2*L(t)*dt + sqrt(dt*D)*randn;
 %         V(t+1) = (1-G*dt)*V(t) - w^2*L(t)*dt + sqrt(dt*D)*noise(t);
     end      
-    L = 0.01*L/std(L);
+    L = 0.3*m*L/std(L);
     temp = L-mean(L)+m; % X is the final stimuX
-    X = abs(temp);
+    X = temp;
+    X(X<0) = 0;
+    X(X>2*mean_lumin) = 2*mean_lumin;
     std(X)/m
     ey1=zeros(1,length(X));
     temp = X(2:1:length(X));%temp = X(2:dtau/dt:Tot/dt);
@@ -251,20 +254,20 @@ elseif stimu == 'ou'
     tau=G_tau;%0.1 0.3 0.6
     D = 4; %dynamical range
     at = 30;
-    m = 0.05;
+    m = mean_lumin;
     a2=[];ey=[];ey1=[];
     L = zeros(1,length(T));
     for i = 1:length(T)-1
     L(i+1) = L(i) + (-L(i)/tau + randn*sqrt(D/dt))*dt;
 %     L(i+1) = L(i) + (-L(i)/tau + noise(i)*sqrt(D/dt))*dt;
     end  
-    L = 0.01*L/std(L);
-    X = L-mean(L)+m; % X is the final stimuX
-%     L = r*L;
-%     X = L-mean(L)+m; % X is the final stimuX
-    X = abs(X);
+    L = 0.3*m*L/std(L);
+    temp = L-mean(L)+m; % X is the final stimuX
+    X = temp;
+    X(X<0) = 0;
+    X(X>2*mean_lumin) = 2*mean_lumin;
     for i=1:length(X)
-    ey1(rate*dtau*(i-1)+1:rate*dtau*i)=X(i);
+        ey1(rate*dtau*(i-1)+1:rate*dtau*i)=X(i);
     end
     std(X)/m
     ey0=m*ones(1,at*rate);%REST
@@ -770,8 +773,8 @@ end
 % figure;plot(eyf);hold on;plot(a2,'r');plot(eyf,'g');
 eyf=ey;
 
-[y, index] = unique(y);
-ex = interp1(y,x(index),eyf,'spline');% ex=calibrate voltage
+[z, index] = unique(z);
+ex = interp1(z,x(index),eyf,'spline');% ex=calibrate voltage
 daq = daqmx_Task('chan','Dev1/ao1' ,'rate',rate, 'SampleNum', length(eyf));
 % daq.stop
 daq_out = daqmx_Task('chan','Dev1/ao0:1' ,'rate',rate, 'Mode', 'f');
@@ -784,9 +787,9 @@ A(:,2) = ex(1:length(eyf));
 %%%% output %%%%%%%%%%
 daq_out.write(A); 
 daq_in.read;
-callumin=daq_in.data;
+callumin=daq_in.data*meature2true_transformer;
 [b,a]=butter(2,10/rate,'low');
-callumin_filter=filter(b,a,daq_in.data);
+callumin_filter=filter(b,a,daq_in.data)*meature2true_transformer;
 daq_in.wait;
 
 close all;
@@ -795,7 +798,7 @@ daq_out.write(0);
 
 figure(5) ; plot(ex);title(['calibrated voltage v.s. time']);
 figure(6) ; plot(callumin);title(['lumin v.s. time']);hold on;plot(ey,'r');plot(eyf,'g');
-% figure(7) ; plot(callumin_filter);title(['lumin v.s. time']);hold on;plot(ey,'r');plot(eyf,'g');
+figure(7) ; plot(callumin_filter);title(['lumin v.s. time']);hold on;plot(ey,'r');plot(eyf,'g');
 
 ddd=date;
 diode_path=['D:\leo\',ddd];
