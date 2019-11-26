@@ -5,14 +5,12 @@ function makeRona_short_HMMvideo(makemovie_folder, video_folder, videoworkspace_
 
 G_list=[4.3];  %list of Gamma value
 
-
-%G_list=[9];
 countt=1;
 
 load('calibrate_pt.mat')%Load dotPositionMatrix
 load('screen_brightness.mat')%Load screen_brightness
 load('boundary_set.mat')
-cd('0421 new video Br25/rn_workspace');
+cd('0421 new video Br50/rn_workspace');
 all_file = dir('*.mat');
 
 fps =60;  %freq of the screen flipping

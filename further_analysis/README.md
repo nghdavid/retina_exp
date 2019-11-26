@@ -1,0 +1,1 @@
+cfNP.m is used to analyze difference between predictive and nonpredictive RGCs spiking response.

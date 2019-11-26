@@ -23,7 +23,7 @@ function [ideal_pt,ideal_distance_pt] = find_i_pt(frame,input_N,cal_size, pt_dis
     % CI=CI0(:,:,2); %RGB
     CI=CI0;
     %[centers, radii, metric] = imfindcircles(CI,[8 18],'ObjectPolarity','bright','Sensitivity',0.99,'Method','twostage');  %find the center, radius of the detected ccd dots
-    [centers, radii, metric] = imfindcircles(CI,[1 8],'ObjectPolarity','bright','Sensitivity',0.95,'Method','twostage');  %find the center, radius of the detected ccd dots
+    [centers, radii, metric] = imfindcircles(CI,[1 8],'ObjectPolarity','bright','Sensitivity',0.97,'Method','twostage');  %find the center, radius of the detected ccd dots
     %picking the right radius size influence the detect accuracy A LOT!!
     centersStrong5 = centers(1:length(centers),:);
     radiiStrong5 = radii(1:length(centers));

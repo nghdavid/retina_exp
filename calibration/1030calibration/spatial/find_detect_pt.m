@@ -1,11 +1,15 @@
 function detect_point = find_detect_pt(img,N,sensitivity,radius_range,show,ideal_point)
     %Function that find centers of points in the image
+    %CI=mat2gray(img-2*black_frame);
     CI=mat2gray(img);
     detected_num = 0;
     while detected_num ~= N^2%Stay in loop and increase sensitivity to find correct number of points
         [centers, radii, ~] = imfindcircles(CI,radius_range,'ObjectPolarity','bright','Sensitivity',sensitivity,'Method','twostage');  %find the center, radius of the detected ccd dots
         %picking the right radius size influence the detect accuracy A LOT!!
-        
+        centers( find(centers(:,1)> max(ideal_point(1,:))+10 ), :) = [];
+        centers( find(centers(:,2)> max(ideal_point(2,:))+10 ), :) = [];
+        centers( find(centers(:,1)< min(ideal_point(1,:))-10 ), :) = [];
+        centers( find(centers(:,2)< min(ideal_point(2,:))-10 ), :) = [];
         %Show image
         if strcmp(show,'on')
             figure;imshow(CI); 

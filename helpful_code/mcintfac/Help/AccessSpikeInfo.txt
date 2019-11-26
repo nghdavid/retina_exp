@@ -1,0 +1,42 @@
+To access the spike thresholds using Matlab do the following:
+
+// open file
+>> file = datastrm('8channelMCDfile.mcd')
+
+// check which field contains the spike data
+>> x = getfield(file,'StreamNames')
+x = 
+    'Spikes 1'
+    'Filtered Data 1'
+
+
+// retriev spike info (which is the first field in this example)
+>> SpikeInfo = getfield(file,'StreamInfo',{1})
+
+// check the field
+>> SpikeInfo{1}
+ans = 
+      StreamName: 'Spikes 1'
+        DataType: 'spikes'
+      PreTrigger: 1.0000e-003
+     PostTrigger: 0.0020
+        DeadTime: 0.0020
+           Level: [1x8 double]
+           Slope: [1 1 1 1 1 1 1 1]
+    ChannelNames: {1x8 cell}
+
+// access threshold levels of all channels
+>> SpikeInfo{1}.Level
+
+ans =
+  1.0e-003 *
+  Columns 1 through 8 
+   -0.1200   -0.1200   -0.1200   -0.1200   -0.1200   -0.1200   -0.1200   -0.1200
+
+
+//access the associated channel names
+>> spikeinfo{1}.ChannelNames
+ans = 
+  Columns 1 through 8
+    '14'    '15'    '16'    '17'    '28'    '38'    '45'    '48'
+

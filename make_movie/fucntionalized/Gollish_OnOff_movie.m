@@ -1,4 +1,4 @@
-function Gollish_OnOff_movie(makemovie_folder,  video_folder,  date)
+function Gollish_OnOff_movie(makemovie_folder,  video_folder,  date,average_brightness)
 %% It is adopted from STAR-METHODS of Activity Correlations between Direction-Selective Retinal Ganglion Cells Synergistically Enhance Motion Decoding from Complex Visual Scenes
 %{
 It used flashes of 500 ms of increased or decreased light level at 40% from mean luminance alternately, interleaved by 1.5 s of mean luminance. 
@@ -8,16 +8,17 @@ calculated from the spike countsfonandfoff, measured in a time window of 50
 to 550 ms after the onset of the ON- and OFF-flash, respectively, such that
 the ．．Flashes ON-OFF Index・・ is (f_on-f_off)/(f_on+f_off)
 %}
-
+if average_brightness == 0.8
 %0.8 ONOFF parameter 
 on_brightness =0.9116;
 off_brightness = 0.6006;
 rest_brightness = 0.8;
+elseif average_brightness == 0.5
 %0.5 ONOFF parameter 
-% on_brightness =0.6072;
-% off_brightness = 0.3704;
-% rest_brightness = 0.5;
-
+on_brightness =0.6072;
+off_brightness = 0.3704;
+rest_brightness = 0.5;
+end
 num_cycle = 40;
 on_time = 0.5; %s
 off_time = 0.5; %s

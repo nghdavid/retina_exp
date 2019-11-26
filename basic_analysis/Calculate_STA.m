@@ -2,7 +2,7 @@
 close all;
 clear all;
 code_folder = pwd;
-exp_folder = 'E:\20190811';
+exp_folder = 'E:\20190721';
 cd(exp_folder);
 mkdir STA
 cd sort_merge_spike\MI
@@ -27,7 +27,8 @@ for z =1:n_file %choose file
     name=[name];
     z
     name
-    
+    acf = autocorr(bin_pos,100);
+    corr_time = find(abs(acf-0.5) ==min(abs(acf-0.5)))/60;
     % put your stimulus here!!
     TheStimuli=relative_pos;  %recalculated bar position
     time=[-forward :backward]*BinningInterval;
@@ -60,6 +61,6 @@ for z =1:n_file %choose file
         end
     end
     
-    save([exp_folder,'\STA\',name(12:end),'.mat'],'time','dis_STA','relative_pos')
+    save([exp_folder,'\STA\',name(12:end),'.mat'],'time','dis_STA','relative_pos','corr_time')
 end
 
