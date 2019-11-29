@@ -30,7 +30,6 @@ daq_in.wait;
 figure(2) ; plot(lumin);title(['lumin v.s. time']);
 hold on; plot(lumin_filter);title(['filtered lumin v.s. time']);
 % figure(4) ; plot(volt,lumin_filter);title(['voltage v.s. lumin']);
-
 daq_out = daqmx_Task('chan','Dev1/ao1' ,'rate',rate, 'Mode', 'f');
 daq_out.write(0);
 
