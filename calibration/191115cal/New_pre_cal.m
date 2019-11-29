@@ -1,24 +1,54 @@
-close all;
+        %% initiate the PTB
 Screen('Preference', 'SkipSyncTests', 1)
 global rect w
 [w, rect] = Screen('OpenWindow',2, [0 0 0]); %black background
 
-%% decide mea size and center on LED screen
-mea_size=461;%461; %use odd number!
+
+%% test focus plane: see the edge of the black square is clear or not
+baseRect = [0 0 2000 2000]; %the size of the rectangle
+xCenter=670; %x coordination of the rectangel center
+yCenter=460;
+centeredRect = CenterRectOnPointd(baseRect, xCenter, yCenter);
+brightness = 1;
+Screen('FillRect', w,  brightness*255,centeredRect); %255 is the luminance value
+% Screen('Flip', w);
+
+
+baseRect = [0 0 150 150];
+xCenter=700; 
+yCenter=600; 
+centeredRect = CenterRectOnPointd(baseRect, xCenter, yCenter);
+Screen('FillRect', w, 0, centeredRect);
+Screen('Flip', w);
+
+
+%% decide mea region on LED screen
+mea_size=461; %use odd number!
 % mea_size = 493;
 %small_mea_size= 73;
-cal_size = 529;%number of channels for one side, should be an odd number
+cal_size = 493;%number of channels for one side, should be an odd number
 N = 7;%
 baseRect = [0 0 mea_size mea_size];  %use odd number!
 
-meaCenter_x=714;
+meaCenter_x=709;
 meaCenter_y=629;
 centeredRect = CenterRectOnPointd(baseRect, meaCenter_x, meaCenter_y);
 brightness = 1;
 Screen('FillRect', w, brightness*255, centeredRect);
 Screen('Flip', w);
-frame = getsnapshot(vid);
-imshow(frame);
+
+
+%% Setup video input
+vid = videoinput('gige',1); %Open video
+vid.SelectedSourceName = 'input1';
+scr_obj = getselectedsource(vid);
+set(scr_obj,'GainRaw',20)
+set(scr_obj,'ExposureTimeAbs',100000)
+src.PacketDelay = 9014;
+preview(vid);
+
+
+
 %% decide mea coner on LED screen
 vid = videoinput('gige',1); %Open video
 vid.SelectedSourceName = 'input1';
