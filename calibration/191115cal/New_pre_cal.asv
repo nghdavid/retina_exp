@@ -60,6 +60,6 @@ ccd_pt_dis_y = -(-(detect_point(2,1)-detect_point(2,2))-(detect_point(2,3)-detec
 ideal_pt = cell(cal_size);
 for i = -(cal_size-1)/2:(cal_size-1)/2
     for j = -(cal_size-1)/2:(cal_size-1)/2
-        ideal_pt{j+(cal_size+1)/2,i+(cal_size+1)/2} = ccd_center + [ccd_pt_dis_x*i ccd_pt_dis_y*j];
+        ideal_pt{i+(cal_size+1)/2,j+(cal_size+1)/2} = ccd_center + [ccd_pt_dis_x*i ccd_pt_dis_y*j];
     end
 end

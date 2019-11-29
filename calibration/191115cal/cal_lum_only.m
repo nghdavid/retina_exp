@@ -1,7 +1,7 @@
 dotPositionMatrix=cell(cal_size ,cal_size);
 for x = 1:cal_size
     for y = 1:cal_size
-        dotPositionMatrix{x, y}= [meaCenter_x+(cal_size+1)/2-x, meaCenter_y+(cal_size+1)/2-y];
+        dotPositionMatrix{y, x}= [meaCenter_x-(cal_size+1)/2+x, meaCenter_y-(cal_size+1)/2+y];
     end
 end
 %% Setup video input
@@ -20,7 +20,7 @@ black_frame = getsnapshot(vid);
 cal_size = 529;%Calibration cal_size
 baseRect = [0 0 cal_size cal_size]; %use odd number %for bigger mea region % I just think 541 is appropriate
 
-meaCenter_x=709;
+meaCenter_x=714;
 meaCenter_y=629;
 LED_based_color=256*0.25-1;%Luminance 10mW/m^2
 dotbrightnessMatrix = zeros(cal_size,cal_size);%Store brightness of corresponding points on ccd
