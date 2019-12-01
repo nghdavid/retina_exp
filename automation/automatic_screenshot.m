@@ -26,7 +26,7 @@ props = java.lang.System.getProperties;
 props.setProperty('mail.smtp.auth','true');
 props.setProperty('mail.smtp.socketFactory.class', 'javax.net.ssl.SSLSocketFactory');
 props.setProperty('mail.smtp.socketFactory.port','465');
-
+props.setProperty( 'mail.smtp.starttls.enable', 'true' );
 time = 0;%Counting time
 num = 1;%Counting numbers
 %% Run a cycle until time is up
