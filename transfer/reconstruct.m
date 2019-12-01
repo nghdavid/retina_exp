@@ -1,23 +1,23 @@
 %load mat file first
 % clear all;
 % close all;
-
-function pass = reconstruct(pwd,type,data_name,workspace_name)
+% 
+function pass = reconstruct(exp_folder,type,data_name,workspace_name)
 
 pass = 1;
-data = [pwd,'\data\',data_name,'.mat'];
+data = [exp_folder,'\data\',data_name,'.mat'];
 if strcmp(type,'HMM')
-    complete_name =[ 'D:\0304v\videoworkspace\',type,'\' ,workspace_name,'.mat'];
+    complete_name =[ 'D:\0930v\videoworkspace\',type,'\' ,workspace_name,'.mat'];
     load(complete_name)
     load(data)
     idealStimuli=newXarray;
 elseif strcmp(type,'OU')
-    complete_name =[ 'D:\0304v\videoworkspace\',type,'\' ,workspace_name,'.mat'];
+    complete_name =[ 'D:\0930v\videoworkspace\',type,'\' ,workspace_name,'.mat'];
     load(complete_name)
     load(data)
     idealStimuli=newXarray;
 else
-    complete_name =[ 'D:\0304v\videoworkspace\',workspace_name,'.mat'];
+    complete_name =[ 'D:\0930v\videoworkspace\',workspace_name,'.mat'];
     load(complete_name)
     load(data)
     idealStimuli=newXarray;
@@ -79,7 +79,7 @@ off_ends_lumin(diode_end+1-(diode_start-1):end)=[]; %clear numbers after the dio
 %time of stimulation from diode measurement
 totalTime=vpa(length(off_ends_lumin)/ Samplingrate,30);
 if abs(totalTime-idealTime)>3
-    disp('The end is not normal, needed to be done again')
+    disp([workspace_name,'The end is not normal, needed to be done again'])
     pass = 0;
     return
 end
@@ -378,9 +378,9 @@ for j = 1:length(Spikes)    %running through each channel
 end
 
 %% Saving
-% clearvars -except bin_pos diode_BT BinningInterval a_data Spikes reconstruct_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
-save([pwd,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
+
+save([exp_folder,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
 
 
-    
+%     
 end
