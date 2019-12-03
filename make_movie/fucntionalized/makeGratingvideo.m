@@ -114,5 +114,6 @@ for mm=1:10
     writeVideo(writerObj,img);
 end
 close(writerObj);
+cd(makemovie_folder)
 end
 
