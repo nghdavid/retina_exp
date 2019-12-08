@@ -30,7 +30,7 @@ cal_size = 493;%number of channels for one side, should be an odd number
 N = 7;%
 baseRect = [0 0 mea_size mea_size];  %use odd number!
 
-meaCenter_x=709;
+meaCenter_x=714; 
 meaCenter_y=629;
 centeredRect = CenterRectOnPointd(baseRect, meaCenter_x, meaCenter_y);
 brightness = 1;
