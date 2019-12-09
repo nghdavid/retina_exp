@@ -1,4 +1,7 @@
-load('boundary_set.mat')
+calibration_date = '20191115v';
+load(['C:\calibration\',calibration_date,'\calibrate_pt.mat'])%Load dotPositionMatrix
+load(['C:\calibration\',calibration_date,'\screen_brightness.mat'])%Load screen_brightness
+load(['C:\calibration\',calibration_date,'\boundary_set.mat'])
 name = '0930saccade';
 mat_directory = 'C:\2019_02_15_matimg\';
 pic_size = 441;%Picture size that tina gives you
@@ -24,8 +27,6 @@ T=5*60; %second
 dt=1/fps;
 T=dt:dt:T;
 
-load('calibrate_pt.mat')%Load dotPositionMatrix
-load('screen_brightness.mat')%Load screen_brightness
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
 screen_brightness(screen_brightness<0)=0;

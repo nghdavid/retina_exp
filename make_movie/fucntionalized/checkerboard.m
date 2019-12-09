@@ -1,4 +1,4 @@
-function checkerboard(makemovie_folder,video_folder, videoworkspace_folder,refresh_fps,num_pixel,date,mins)
+function checkerboard(makemovie_folder,video_folder, videoworkspace_folder,refresh_fps,num_pixel,date,mins,calibration_date)
 %% Checkerboard
 fps =60;  %freq of the screen flipping
 frame_per_board = fps/refresh_fps;
@@ -6,9 +6,9 @@ T=mins*60; %second
 dt=1/fps;
 T=dt:dt:T;
 cd(makemovie_folder);
-load('boundary_set.mat')
-load('calibrate_pt.mat')%Load dotPositionMatrix
-load('screen_brightness.mat')%Load screen_brightness
+load(['C:\calibration\',calibration_date,'\calibrate_pt.mat'])%Load dotPositionMatrix
+load(['C:\calibration\',calibration_date,'\screen_brightness.mat'])%Load screen_brightness
+load(['C:\calibration\',calibration_date,'\boundary_set.mat'])
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
 screen_brightness(screen_brightness<0)=0;
