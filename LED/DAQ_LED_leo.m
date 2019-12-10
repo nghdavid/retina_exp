@@ -1,7 +1,7 @@
 function DAQ_LED_leo(stimu, G_tau, mean_lumin)
 ddd=date;
-diode_path_cal=['D:\leo\stimulus saving\','09-Nov-2019','\calibration'];
-load([diode_path_cal,'\calibration','09-Nov-2019'])
+diode_path_cal=['D:\leo\stimulus saving\',ddd,'\calibration'];
+load([diode_path_cal,'\calibration',ddd])
 %clearvars -except rate volt lumin_filter stimu G_tau true_lumin mean_lumin
 daq_out = daqmx_Task('chan','Dev1/ao1' ,'rate',rate, 'Mode', 'f');
 daq_out.write(0);
@@ -11,6 +11,8 @@ daq_out.write(0);
 x=volt;
 y=(lumin_filter)';
 z=(true_lumin)';
+G_tau=4.5;
+mean_lumin=40;
 %% Signal %%%%%%%%%%%%%%%%%%
 % date = '20190329';
 %stimu = input('Stimulation? onoff(on)/tsta(ts)/csta(cs)/adaptation(ad)/hmm(hm)/ou(ou)/repeat(re)/osr(os)/jittertime(jt)/curve(cu)  ');
@@ -86,8 +88,8 @@ elseif stimu == 'cs'
     for i=1:steps
         ey1(round(rate*unit*(i-1)+1) : round(rate*unit*i))=m+d(i);
     end
-    ey1(ey1 > 2*mean_lumin) = 2*mean_lumin;
-    ey1(ey1 < 0) = 0;
+    ey1(ey1 > 1.95*mean_lumin) = 1.95*mean_lumin;
+    ey1(ey1 < 0.05*mean_lumin) = 0.05*mean_lumin;
     ey0=m*ones(1,at*rate);%REST
     ey=[ey0 ey1]; 
     figure;plot(ey);
@@ -170,8 +172,8 @@ elseif stimu == 'hm'
     L = 0.3*m*L/std(L);
     temp = L-mean(L)+m; % X is the final stimuX
     X = temp;
-    X(X<0) = 0;
-    X(X>2*mean_lumin) = 2*mean_lumin;
+    X(X > 1.95*mean_lumin) = 1.95*mean_lumin;
+    X(X < 0.05*mean_lumin) = 0.05*mean_lumin;
     std(X)/m
     ey1=zeros(1,length(X));
     temp = X(2:1:length(X));%temp = X(2:dtau/dt:Tot/dt);
@@ -264,8 +266,8 @@ elseif stimu == 'ou'
     L = 0.3*m*L/std(L);
     temp = L-mean(L)+m; % X is the final stimuX
     X = temp;
-    X(X<0) = 0;
-    X(X>2*mean_lumin) = 2*mean_lumin;
+    X(X > 1.95*mean_lumin) = 1.95*mean_lumin;
+    X(X < 0.05*mean_lumin) = 0.05*mean_lumin;
     for i=1:length(X)
         ey1(rate*dtau*(i-1)+1:rate*dtau*i)=X(i);
     end
@@ -774,7 +776,8 @@ end
 eyf=ey;
 
 [z, index] = unique(z);
-ex = interp1(z,x(index),eyf,'spline');% ex=calibrate voltage
+ex = interp1(z,x(index),eyf,'linear');% ex=calibrate voltage
+figure;plot(x(index),z);hold on; scatter (ex,eyf);
 daq = daqmx_Task('chan','Dev1/ao1' ,'rate',rate, 'SampleNum', length(eyf));
 % daq.stop
 daq_out = daqmx_Task('chan','Dev1/ao0:1' ,'rate',rate, 'Mode', 'f');
