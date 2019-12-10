@@ -59,10 +59,10 @@ for Gvalue=G_list
     D_HMM = 2700000; %dynamical range
     omega =G_HMM/2.12; %omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
     %Random number files ( I specifically choose some certain random seed series)
-    file = all_file(find(list==Gvalue)).name ;
+    file = all_file(find(list==Gvalue)).name;
     [~, name, ext] = fileparts(file);
     filename = [name,ext];
-    load([filename]);
+    load(['C:\',seed_directory_name,'\',filename]);
     name=[name];
     name
     Gvalue
