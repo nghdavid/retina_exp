@@ -54,7 +54,7 @@ T=dt:dt:T;
 %% Run each many Gamma value
 for Gvalue=G_list
     %% HMM parameter and video name
-    cd([makemovie_folder, '\',seed_directory_name]);
+    
     G_HMM =Gvalue; %damping / only G will influence correlation time
     D_HMM = 2700000; %dynamical range
     omega =G_HMM/2.12; %omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
