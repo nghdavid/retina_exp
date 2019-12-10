@@ -3,6 +3,14 @@ Screen('Preference', 'SkipSyncTests', 1)
 global rect w
 [w, rect] = Screen('OpenWindow',2, [0 0 0]); %black background
 
+%% Setup video input
+vid = videoinput('gige',1); %Open video
+vid.SelectedSourceName = 'input1';
+scr_obj = getselectedsource(vid);
+set(scr_obj,'GainRaw',20)
+set(scr_obj,'ExposureTimeAbs',100000)
+src.PacketDelay = 9014;
+preview(vid);
 
 %% test focus plane: see the edge of the black square is clear or not
 baseRect = [0 0 2000 2000]; %the size of the rectangle
@@ -26,26 +34,18 @@ Screen('Flip', w);
 mea_size=461; %use odd number!
 % mea_size = 493;
 %small_mea_size= 73;
-cal_size = 493;%number of channels for one side, should be an odd number
+cal_size = 529;%Calibration cal_size
 N = 7;%
 baseRect = [0 0 mea_size mea_size];  %use odd number!
-
-meaCenter_x=714; 
+meaCenter_x=714;
 meaCenter_y=629;
 centeredRect = CenterRectOnPointd(baseRect, meaCenter_x, meaCenter_y);
-brightness = 1;
+brightness = 0.25;
 Screen('FillRect', w, brightness*255, centeredRect);
 Screen('Flip', w);
 
 
-%% Setup video input
-vid = videoinput('gige',1); %Open video
-vid.SelectedSourceName = 'input1';
-scr_obj = getselectedsource(vid);
-set(scr_obj,'GainRaw',20)
-set(scr_obj,'ExposureTimeAbs',100000)
-src.PacketDelay = 9014;
-preview(vid);
+
 
 
 
