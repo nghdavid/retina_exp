@@ -1,4 +1,4 @@
-function makeOUvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, date,calibration_date,G_list,Length,Dark)
+function makeOUvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, seed_date, date,calibration_date,G_list,Length,Dark)
 %% This code can produce moving bar video whose trajectory is made of OU process
 %It can make four kinds version of moving bar: Long and Bright, Long and Dark, Short and Bright, Short and Dark
 %makemovie_folder is where you put your code
@@ -13,6 +13,7 @@ function makeOUvideo(makemovie_folder, theta, direction, video_folder, videowork
 
 %% Load boundary_set.mat
 load(['C:\calibration\',calibration_date,'\boundary_set.mat'])
+list = [2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];
 %% Setup matrix_folder(matrix_folder has four kinds of versions)
 if strcmp(Length,'Long')%Longer bar and bigger range
     if theta == 3*pi/4||theta==pi/4
@@ -45,16 +46,25 @@ fps =60;  %freq of the screen flipping
 T=5*60; %second
 dt=1/fps;
 T=dt:dt:T;
+seed_directory_name = [seed_date,' new video Br50\rn_workspace'];
+cd(['C:\',seed_directory_name]);%New seed for HMM movie
+all_file = dir('*.mat');%Load random seed
 %% Run each many Gamma value
 for Gvalue=G_list
     %% OU parameter and video name
     G_OU = Gvalue; % damping / only G will influence correlation time
     D_OU = 2700000; %dynamical range
+    file = all_file(find(list==Gvalue)).name;
+    [~, name, ext] = fileparts(file);
+    filename = [name,ext];
+    load(['C:\',seed_directory_name,'\',filename]);
+    name=[name];
+    name
     Gvalue
     x = zeros(1,length(T));
     x(1,1)=0; % since the mean value of damped eq is zero
     for uu = 1:length(T)-1
-          x(uu+1) = (1-dt*G_OU/(2.12)^2)*x(uu)+sqrt(dt*D_OU)*randn;
+          x(uu+1) = (1-dt*G_OU/(2.12)^2)*x(uu)+sqrt(dt*D_OU)*rntest(uu);
     end
     %Normalize to proper moving range
     if strcmp(Length,'Long')%Longer bar and bigger range

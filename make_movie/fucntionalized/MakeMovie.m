@@ -35,21 +35,21 @@ makeHMMvideo(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'HMM'], [videowork
 % makeHMMvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'],[videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Long','Dark');
 
 %% OU part
-% makeOUvideo(makemovie_folder, 0, 'RL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Short','Bright');
-% makeOUvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Short','Bright');
-% makeOUvideo(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Short','Bright');
-% makeOUvideo(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Short','Bright');
-% makeOUvideo(makemovie_folder, 0, 'RL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Short','Dark');
-% makeOUvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Short','Dark');
-% makeOUvideo(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Short','Dark');
-% makeOUvideo(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Short','Dark');
+% makeOUvideo(makemovie_folder, 0, 'RL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Short','Bright');
+% makeOUvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Short','Bright');
+% makeOUvideo(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Short','Bright');
+% makeOUvideo(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Short','Bright');
+% makeOUvideo(makemovie_folder, 0, 'RL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Short','Dark');
+% makeOUvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Short','Dark');
+% makeOUvideo(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Short','Dark');
+% makeOUvideo(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Short','Dark');
 
 %% Long OU part
 
-% makeOUvideo(makemovie_folder, 0, 'RL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Long','Bright');
-% makeOUvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Long','Bright');
-% makeOUvideo(makemovie_folder, 0, 'RL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Long','Dark');
-% makeOUvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], [videoworkspace_folder,'OU'], date,calibration_date,G_OU,'Long','Dark');
+% makeOUvideo(makemovie_folder, 0, 'RL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Long','Bright');
+% makeOUvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Long','Bright');
+% makeOUvideo(makemovie_folder, 0, 'RL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Long','Dark');
+% makeOUvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Long','Dark');
 % %% Short HMM part
 % makeshort_HMMvideo(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], videoworkspace_folder, date);
 % makeshort_HMMvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'], videoworkspace_folder, date);
