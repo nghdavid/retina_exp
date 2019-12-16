@@ -804,6 +804,6 @@ figure(7) ; plot(callumin_filter);title(['lumin v.s. time']);hold on;plot(ey,'r'
 ddd=date;
 diode_path=['D:\leo\',ddd];
 mkdir(diode_path)
-save(['D:\leo\',ddd,'\diode_',ss,mean_lumin,'_',date,'.mat'],'callumin','callumin_filter','a2','ex','ey','eyf');
+save(['D:\leo\',ddd,'\diode_',ss,num2str(mean_lumin),'_',date,'.mat'],'callumin','callumin_filter','a2','ex','ey','eyf');
 
 end
