@@ -1,11 +1,11 @@
 clear all;
 G_HMM = [2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];
-G_OU = [1.55 2.45 3.2 4 5.03 5.7 7.6 10.5];%list of Gamma value
+G_OU = [2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];%list of Gamma value
 calibration_date = '20191115v';
 HMM_time = 5;%Time length of HMM of movie
 makemovie_folder = pwd;
-date = '1209';
-seed_date = '0421';%'0809' or '0810'
+date = '1210';
+seed_date = '0809';
 
 
 movie_folder = '\\DESKTOP-JMQPLEJ\temp_movie\videos\';
@@ -19,9 +19,9 @@ mkdir OU
 cd(makemovie_folder);
 %% HMM 5min part
 % makeHMMvideo(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Bright');
-makeHMMvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Bright');
-makeHMMvideo(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Bright');
-makeHMMvideo(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Bright');
+% makeHMMvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Bright');
+% makeHMMvideo(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Bright');
+% makeHMMvideo(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Bright');
 % makeHMMvideo(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Dark');
 % makeHMMvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Dark');
 % makeHMMvideo(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Short','Dark');
@@ -29,10 +29,10 @@ makeHMMvideo(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'HMM'], [videowork
 
 %% Long HMM 5min part
 
-% makeHMMvideo(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Long','Bright');
-% makeHMMvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Long','Bright');
-% makeHMMvideo(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Long','Dark');
-% makeHMMvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'],[videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Long','Dark');
+makeHMMvideo(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Long','Bright');
+makeHMMvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Long','Bright');
+makeHMMvideo(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], [videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Long','Dark');
+makeHMMvideo(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'],[videoworkspace_folder,'HMM'], seed_date,date,calibration_date,HMM_time,G_HMM,'Long','Dark');
 
 %% OU part
 % makeOUvideo(makemovie_folder, 0, 'RL', [movie_folder,'OU'], [videoworkspace_folder,'OU'], seed_date, date,calibration_date,G_OU,'Short','Bright');
