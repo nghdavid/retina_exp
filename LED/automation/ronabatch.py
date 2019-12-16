@@ -5,26 +5,28 @@ Created on Sat Sep 22 15:35:31 2018
 
 @author: Leo
 """
-stimuli_list = []#Movies we are going to play
-G = []#Each movie time
+stimuli_list = []#stimuli we are going to play
+G = []#
+mean_lumin = []
 r = open('rona_list.txt','r')#Today arrangement
 
 #Read file
 for line in r:
     l = line.split(' ')
     stimuli_list.append(l[0])
-    G.append(l[1][:-1])
+    G.append(l[1])
+    mean_lumin.append(l[2][:-1])
+    
 
 print(stimuli_list)
 f = open('R_exp.bat','w')
 start = r'psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe'#Start recording
 end = r'psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe'#End recording
 sleep = 'timeout /t '#Force procedure to stop for a few second(need + 'time')
-#stimuli = r' matlab -nodisplay -nosplash -nodesktop -r check;exit;" '
 
 #Function that make each movie's batch
-def whole_field_stimuli(f,stimu,G):
-    stimuli = r' matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('+stimu+','+ G +');exit;"'
+def whole_field_stimuli(f,stimu,G, m):
+    stimuli = r' matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('+stimu+','+ G +','+m+');exit;"'
     
     f.write(start)#Start recording
     f.write('\n')
@@ -33,7 +35,10 @@ def whole_field_stimuli(f,stimu,G):
     f.write('\n')
 
     f.write(sleep)
-    f.write(str(300+65))#Add 20 sec to end recording too quick
+    if stimu == 'oo':
+        f.write(str(160+65))#Add 20 sec to end recording too quick
+    else:
+        f.write(str(300+65))#Add 20 sec to end recording too quick
     f.write('\n')
 
     f.write(end)#End recording
@@ -64,7 +69,7 @@ f.write('cs')
 
 f.write(l)
 
-f.write(',1);exit;" ')
+f.write(',1,10);exit;" ')
 f.write('\n')
 
 f.write(sleep)
@@ -83,7 +88,7 @@ for i in range(len(stimuli_list)):
     f.write('::')
     f.write(stimuli_list[i]+G[i])
     f.write('\n')
-    whole_field_stimuli(f,stimuli_list[i],G[i])
+    whole_field_stimuli(f,stimuli_list[i],G[i],mean_lumin[i])
     
 
 
