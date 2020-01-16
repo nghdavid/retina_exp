@@ -7,13 +7,15 @@ Created on Sat Sep 22 15:35:31 2018
 """
 stimuli_list = []#Movies we are going to play
 G = []#Each movie time
+seeddate = []
 r = open('rona_list.txt','r')#Today arrangement
 
 #Read file
 for line in r:
     l = line.split(' ')
     stimuli_list.append(l[0])
-    G.append(l[1][:-1])
+    G.append(l[1])
+    seeddate.append(l[2][:-1])
 
 print(stimuli_list)
 f = open('R_exp.bat','w')
@@ -23,8 +25,8 @@ sleep = 'timeout /t '#Force procedure to stop for a few second(need + 'time')
 #stimuli = r' matlab -nodisplay -nosplash -nodesktop -r check;exit;" '
 
 #Function that make each movie's batch
-def whole_field_stimuli(f,stimu,G):
-    stimuli = r' matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('+stimu+','+ G +');exit;"'
+def whole_field_stimuli(f,stimu,G,seeddate):
+    stimuli = r' matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('+stimu+','+ G +', '+seeddate+');exit;"'
     
     f.write(start)#Start recording
     f.write('\n')
@@ -51,7 +53,7 @@ f.write(sleep)
 f.write('3000')
 f.write('\n')
 
-#stimuli = r' matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('cs',1);exit;" '
+#stimuli = r' matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('cs',1);exit;" '
     
 f.write(start)#Start recording
 f.write('\n')
@@ -83,7 +85,7 @@ for i in range(len(stimuli_list)):
     f.write('::')
     f.write(stimuli_list[i]+G[i])
     f.write('\n')
-    whole_field_stimuli(f,stimuli_list[i],G[i])
+    whole_field_stimuli(f,stimuli_list[i],G[i],seeddate[i])
     
 
 
