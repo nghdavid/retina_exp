@@ -15,7 +15,8 @@ for line in r:
     l = line.split(' ')
     stimuli_list.append(l[0])
     G.append(l[1])
-    seeddate.append(l[2][:-1])
+    mean_lumin(l[2])
+    seeddate.append(l[3][:-1])
 
 print(stimuli_list)
 f = open('R_exp.bat','w')
@@ -25,8 +26,8 @@ sleep = 'timeout /t '#Force procedure to stop for a few second(need + 'time')
 #stimuli = r' matlab -nodisplay -nosplash -nodesktop -r check;exit;" '
 
 #Function that make each movie's batch
-def whole_field_stimuli(f,stimu,G,seeddate):
-    stimuli = r' matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('+stimu+','+ G +', '+seeddate+');exit;"'
+def whole_field_stimuli(f,stimu,G,m,seeddate):
+    stimuli = r' matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('+stimu+','+ G +','+ m +', '+seeddate+');exit;"'
     
     f.write(start)#Start recording
     f.write('\n')
@@ -83,9 +84,9 @@ f.write('\n')
 for i in range(len(stimuli_list)):
     f.write('\n')
     f.write('::')
-    f.write(stimuli_list[i]+G[i])
+    f.write(stimuli_list[i]+G[i]+';lumin'+mean_lumin[i])
     f.write('\n')
-    whole_field_stimuli(f,stimuli_list[i],G[i],seeddate[i])
+    whole_field_stimuli(f,stimuli_list[i],G[i],mean_lumin[i],seeddate[i])
     
 
 
