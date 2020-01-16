@@ -7,6 +7,7 @@ Created on Sat Sep 22 15:35:31 2018
 """
 stimuli_list = []#Movies we are going to play
 G = []#Each movie time
+mean_lumin =[]
 seeddate = []
 r = open('rona_list.txt','r')#Today arrangement
 
