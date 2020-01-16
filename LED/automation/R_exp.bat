@@ -5,58 +5,51 @@ timeout /t 240
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe
 timeout /t 300
 
-::'on'10000
+::'hm'2.5;lumin10
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe
- matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('on',10000);exit;"
+ matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('hm',2.5,10, 0421);exit;"
 timeout /t 365
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe
 timeout /t 300
 
-::'hm'2.5
+::'hm'4.5;lumin10
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe
- matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('hm',2.5);exit;"
+ matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('hm',4.5,10, 0421);exit;"
 timeout /t 365
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe
 timeout /t 300
 
-::'hm'4.5
+::'hm'9;lumin10
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe
- matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('hm',4.5);exit;"
+ matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('hm',9,10, 0421);exit;"
 timeout /t 365
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe
 timeout /t 300
 
-::'hm'9
+::'hm'12;lumin10
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe
- matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('hm',9);exit;"
+ matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('hm',12,10, 0421);exit;"
 timeout /t 365
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe
 timeout /t 300
 
-::'hm'12
+::'hm'20;lumin10
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe
- matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('hm',12);exit;"
+ matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('hm',20,10, 0421);exit;"
 timeout /t 365
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe
 timeout /t 300
 
-::'hm'20
+::'ou'3.2;lumin10
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe
- matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('hm',20);exit;"
+ matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('ou',3.2,10, 0421);exit;"
 timeout /t 365
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe
 timeout /t 300
 
-::'ou'0.3
+::'ou'7.6;lumin10
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe
- matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('ou',0.3);exit;"
-timeout /t 365
-psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe
-timeout /t 300
-
-::'ou'0.6
-psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\start.exe
- matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo('ou',0.6);exit;"
+ matlab -nodisplay -nosplash -nodesktop -r DAQ_LED_leo_fixedseed('ou',7.6,10, 421);exit;"
 timeout /t 365
 psexec -u MEA -p hydrolab \\192.168.1.171 -d -l -i C:\auto\end.exe
 timeout /t 300
