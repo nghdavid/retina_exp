@@ -16,7 +16,7 @@ for line in r:
     l = line.split(' ')
     stimuli_list.append(l[0])
     G.append(l[1])
-    mean_lumin(l[2])
+    mean_lumin.append(l[2])
     seeddate.append(l[3][:-1])
 
 print(stimuli_list)
