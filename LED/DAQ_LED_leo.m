@@ -11,6 +11,7 @@ daq_out.write(0);
 x=volt;
 y=(lumin_filter)';
 z=(true_lumin)';
+mean_lumin = 1;
 %% Signal %%%%%%%%%%%%%%%%%%
 % date = '20190329';
 %stimu = input('Stimulation? onoff(on)/tsta(ts)/csta(cs)/adaptation(ad)/hmm(hm)/ou(ou)/repeat(re)/osr(os)/jittertime(jt)/curve(cu)  ');
