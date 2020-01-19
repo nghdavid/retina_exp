@@ -97,7 +97,7 @@ end
 
 
 % 
-% %end part video
+ %end part video
 for mm=1:10
     img=zeros(1024,1280);
     img(500-35:500+35,1230:1280)=0.2; %gray
