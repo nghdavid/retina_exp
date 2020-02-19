@@ -1,9 +1,9 @@
-function xarray=makeGratingvideo(makemovie_folder,video_folder, bar_real_width, temporal_frequency,number_repeat,date)
+function xarray=makeGratingvideo(makemovie_folder,video_folder, bar_real_width, temporal_frequency,number_repeat,date,calibration_date)
 
 
-load('calibrate_pt.mat')%Load dotPositionMatrix
-load('screen_brightness.mat')%Load screen_brightness
-load('boundary_set.mat')
+load(['C:\calibration\',calibration_date,'\calibrate_pt.mat'])%Load dotPositionMatrix
+load(['C:\calibration\',calibration_date,'\screen_brightness.mat'])%Load screen_brightness
+load(['C:\calibration\',calibration_date,'\boundary_set.mat'])
 screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
 screen_brightness(screen_brightness>1)=1;
 screen_brightness(screen_brightness<0)=0;

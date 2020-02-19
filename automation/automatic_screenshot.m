@@ -3,7 +3,7 @@
 close all;
 clear all;
 %% Go to photo directory
-recording_time = 8;%Hours
+recording_time = 3;%Hours
 time_cycle = 300;%second (5 mins)
 reciever_gmail = 'nghdavid123@gmail.com';
 %reciever_gmail = 'llincooi@gmail.com';
@@ -26,7 +26,7 @@ props = java.lang.System.getProperties;
 props.setProperty('mail.smtp.auth','true');
 props.setProperty('mail.smtp.socketFactory.class', 'javax.net.ssl.SSLSocketFactory');
 props.setProperty('mail.smtp.socketFactory.port','465');
-
+props.setProperty( 'mail.smtp.starttls.enable', 'true' );
 time = 0;%Counting time
 num = 1;%Counting numbers
 %% Run a cycle until time is up
@@ -49,7 +49,15 @@ while time < recording_time*3600%Check time is up
     filename = [name,ext];
 
     %%  Send the email
-    sendmail(reciever_gmail,'Mc_rack recording screen shot',['Time is ',all_file(n_file).date],filename);
+    myflag = true;
+    while myflag
+        try
+           sendmail(reciever_gmail,'Mc_rack recording screen shot',['Time is ',datestr(datetime('now'))],[num2str(n_file),'.jpeg']);
+           myflag = false;
+        catch
+            pause(60)%Wait for one minute
+        end
+    end
     pause(time_cycle)%Wait for five minutes
     time = time + time_cycle;
     num = num + 1;

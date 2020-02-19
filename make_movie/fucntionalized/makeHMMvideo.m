@@ -1,51 +1,73 @@
-function makeHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, seed_date,date,mins)
+function makeHMMvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, seed_date,date,calibration_date,mins,G_list,Length,Dark)
+%% This code can produce moving bar video whose trajectory is made of HMM process
+%It can make four kinds version of moving bar: Long and Bright, Long and Dark, Short and Bright, Short and Dark
+%makemovie_folder is where you put your code
+%theta means how much degree you want to rotate. 0 means RL, 1/4pi means UL_DR, 1/2pi means UD, 3/4pi means UR_DL
+%video_folder is where you want to save your video
+%videoworkspace_folder is where you want to save your videoworkspace
+%seed_date is which seed you want to use(0421,0809,0810)
+%date is which day produce video
+%mins is how long your stimulus is
+%calibration_date is which day you calibrate
+%G_list is a list of gamma value you want to use
+%Length is to decide long or short. 'Long' represent longer version, 'Short' represent shorter version,
+%Dark is to decide Bright or Dark. 'Bright' represent Bright version, 'Dark' represent Dark version,
+%% Load boundary_set.mat
+load(['C:\calibration\',calibration_date,'\boundary_set.mat'])
+%% Setup matrix_folder
+if strcmp(Length,'Long')%Longer bar and bigger range
+    if theta == 3*pi/4||theta==pi/4
+        disp('Long bar cannot be 45 or 135 degrees')%Because it will exceed boundary
+        return
+    end
+    if strcmp(Dark,'Dark')%Dark bar
+        matrix_folder = 'C:\1208DarkLongBar_matrix\';
+    elseif strcmp(Dark,'Bright')%Bright bar
+        matrix_folder = 'C:\1208LongBar_matrix\';
+    else
+        disp('There is error about contrast')
+        return
+    end
+elseif strcmp(Length,'Short')%Shorter bar and smaller range
+    if strcmp(Dark,'Dark')%Dark bar
+        matrix_folder = 'C:\1208DarkBar_matrix\';
+    elseif strcmp(Dark,'Bright')%Bright bar
+        matrix_folder = 'C:\1119Bar_matrix\';
+    else
+        disp('There is error about contrast')
+        return
+    end
+else
+    disp('There is error about bar length')
+    return
+end
 
-%% HMM base from RL motion
-
-
-G_list=[ 2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];  %list of Gamma value
-
-
-
-countt=1;
-
-load('calibrate_pt.mat')%Load dotPositionMatrix
-load('screen_brightness.mat')%Load screen_brightness
-load('boundary_set.mat')
+%% video parameter
+list = [2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];%Gamma value complete list
 seed_directory_name = [seed_date,' new video Br50\rn_workspace'];
-cd(seed_directory_name);%New seed for HMM movie
-all_file = dir('*.mat');
-
+cd(['C:\',seed_directory_name]);%New seed for HMM movie
+all_file = dir('*.mat');%Load random seed
 fps =60;  %freq of the screen flipping
 T=mins*60; %second
 dt=1/fps;
 T=dt:dt:T;
-
-screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
-screen_brightness(screen_brightness>1)=1;
-screen_brightness(screen_brightness<0)=0;
-
-%%rotation theta = 0 for RL theta
-%theta must between [0,pi)
-R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
-
+%% Run each many Gamma value
 for Gvalue=G_list
-    cd([makemovie_folder, '\',seed_directory_name]);
-    G_HMM =Gvalue; % damping / only G will influence correlation time
-    D_HMM = 2700000; %dynamical range
-    omega =G_HMM/2.12;   % omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
-    %for randon number files ( I specifically choose some certain random seed series
+    %% HMM parameter and video name
     
-    file = all_file(countt).name ;
-    [pathstr, name, ext] = fileparts(file);
-    directory = [pathstr,'\'];
+    G_HMM =Gvalue; %damping / only G will influence correlation time
+    D_HMM = 2700000; %dynamical range
+    omega =G_HMM/2.12; %omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
+    %Random number files ( I specifically choose some certain random seed series)
+    file = all_file(find(list==Gvalue)).name;
+    [~, name, ext] = fileparts(file);
     filename = [name,ext];
-    load([filename]);
+    load(['C:\',seed_directory_name,'\',filename]);
     name=[name];
     name
     Gvalue
-    countt=countt+1;
     
+    %% HMM trajectory 
     Xarray = zeros(1,length(T));
     Xarray(1,1)=0; % since the mean value of damped eq is zero
     Vx = zeros(1,length(T));
@@ -54,139 +76,46 @@ for Gvalue=G_list
         Xarray(t+1) = Xarray(t) + Vx(t)*dt;
         Vx(t+1) = (1-G_HMM*dt)*Vx(t) - omega^2*Xarray(t)*dt + sqrt(dt*D_HMM)*rntest(t);
     end
-    % Normalize to proper moving range
-    nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(Xarray)-min(Xarray)));
-    Xarray2=Xarray*nrx;
-    Xarray3=Xarray2+leftx_bar+bar_wid-min(Xarray2);%rearrange the boundary values
+    %% Normalize to proper moving range and video name
+    if strcmp(Length,'Long')%Longer bar and bigger range
+        nrx=abs((rightx_bd-leftx_bd-2*bar_wid)/(max(Xarray)-min(Xarray)));
+        Xarray2=Xarray*nrx;
+        Xarray3=Xarray2+leftx_bd+bar_wid-min(Xarray2);%rearrange the boundary values
+        if strcmp(Dark,'Dark')
+            name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100_Long'];
+        elseif strcmp(Dark,'Bright')
+            name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100_Long'];
+        end
+    else
+        nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(Xarray)-min(Xarray)));
+        Xarray2=Xarray*nrx;
+        Xarray3=Xarray2+leftx_bar+bar_wid-min(Xarray2);%rearrange the boundary values
+        if strcmp(Dark,'Dark')
+           name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100'];
+        elseif strcmp(Dark,'Bright')
+           name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100'];
+        end
+    end
     newXarray=round(Xarray3);
-    Y =meaCenter_y;
     cd (video_folder)
-    %video frame file
-    name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100'];
     name
-    
-    
-    %video setting
-    Time=T; %sec
+    %% Video setting
     video_fps=fps;
     writerObj = VideoWriter([name,'.avi']);  %change video name here!
     writerObj.FrameRate = video_fps;
     writerObj.Quality = 100;
     open(writerObj);
-    %start part: dark adaptation
+    %% Start part: dark adaptation
     for mm=1:fps*20
         img=zeros(1024,1280);
         writeVideo(writerObj,img);
     end
     
-    
-    
-    %%draw moving bar
+    %% Draw moving bar
     for kk =1:length(T)
-        a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
-        
-        %HMM RL bar trajectory
-        X=newXarray(kk);
-        barX=X-round(leftx_bd);
-        barY=round(Y)-round(lefty_bd);
-        
-        Vertex = cell(2);
-        Vertex{1} = [barX-bar_wid  barY-bar_le];  %V1  V4
-        Vertex{2} = [barX-bar_wid  barY+bar_le];  %V2  V3
-        Vertex{3} = [barX+bar_wid  barY+bar_le];
-        Vertex{4} = [barX+bar_wid  barY-bar_le];
-        %ratation
-        for i = 1:4
-            Vertex{i} = R_matrix*(Vertex{i}-[(mea_size_bm+1)/2  (mea_size_bm+1)/2])'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]';
-        end
-        
-        if theta == 0 || theta == pi/2  % vertical case
-            for y = round(Vertex{1}(2)) : round(Vertex{3}(2))
-                for x = round(Vertex{2}(1)):round(Vertex{4}(1))
-                    cal_x = dotPositionMatrix{y,x}(1);
-                    cal_y = dotPositionMatrix{y,x}(2);
-                    cal_lum = screen_brightness(y,x);
-                    a(cal_y,cal_x) = cal_lum;
-                end
-            end
-            
-        else
-            if theta > pi/2
-                newVertex = Vertex{1};
-                for i = 1:3
-                    Vertex{i} = Vertex{i+1};
-                end
-                Vertex{4} = newVertex;
-            end
-            %stupid way
-            %         for y = 1:mea_size_bm %floor(Vertex{1}(2)) : ceil(Vertex{3}(2))
-            %             for x = 1:mea_size_bm %floor(Vertex{2}(2)) : ceil(Vertex{4}(2))
-            %                 if (y-Vertex{1}(2)) - (Vertex{1}(1)-Vertex{2}(1))/(Vertex{1}(2)-Vertex{2}(2)) * (x-Vertex{1}(2)) >= 0 && (y-Vertex{4}(2)) - (Vertex{4}(1)-Vertex{3}(1))/(Vertex{4}(2)-Vertex{3}(2)) * (x-Vertex{4}(2)) <= 0
-            %                     if (y-Vertex{1}(2)) - (Vertex{1}(1)-Vertex{4}(1))/(Vertex{1}(2)-Vertex{4}(2)) * (x-Vertex{1}(2)) >= 0 && (y-Vertex{2}(2)) - (Vertex{2}(1)-Vertex{3}(1))/(Vertex{2}(2)-Vertex{3}(2)) * (x-Vertex{2}(2)) <= 0
-            %                         cal_x = dotPositionMatrix{y,x}(1);
-            %                         cal_y = dotPositionMatrix{y,x}(2);
-            %                         cal_lum = screen_brightness(y,x);
-            %                         a(cal_y,cal_x) = cal_lum;
-            %                     end
-            %                 end
-            %             end
-            %         end
-            
-            %better way
-            %pervent out of rnage
-            if Vertex{2}(1) < 1
-                min_x = 1;
-            else
-                min_x = Vertex{2}(1);
-            end
-            if Vertex{4}(1) > mea_size_bm
-                max_x = mea_size_bm;
-            else
-                max_x = Vertex{4}(1);
-            end
-            
-            for x = floor(min_x) : ceil(max_x)
-                % find bar region
-                if x < Vertex{1}(1)
-                    lower_y = Vertex{1}(2) + (Vertex{1}(2)-Vertex{2}(2))/(Vertex{1}(1)-Vertex{2}(1)) * (x-Vertex{1}(1));
-                else
-                    lower_y = Vertex{1}(2) + (Vertex{1}(2)-Vertex{4}(2))/(Vertex{1}(1)-Vertex{4}(1)) * (x-Vertex{1}(1));
-                end
-                if x < Vertex{3}(1)
-                    upper_y = Vertex{3}(2) + (Vertex{3}(2)-Vertex{2}(2))/(Vertex{3}(1)-Vertex{2}(1)) * (x-Vertex{3}(1));
-                else
-                    upper_y = Vertex{3}(2) + (Vertex{3}(2)-Vertex{4}(2))/(Vertex{3}(1)-Vertex{4}(1)) * (x-Vertex{3}(1));
-                end
-                
-                %pervent out of rnage
-                if lower_y < 1
-                    lower_y = 1;
-                end
-                if upper_y > mea_size_bm
-                    upper_y = mea_size_bm;
-                end
-                
-                for y = floor(lower_y) : ceil(upper_y)
-                    cal_x = dotPositionMatrix{y,x}(1);
-                    cal_y = dotPositionMatrix{y,x}(2);
-                    cal_lum = screen_brightness(y,x);
-                    a(cal_y,cal_x) = cal_lum;
-                end
-            end
-        end
-        %expandind theta
-        
-        %         if Vertex{1}(2) < 1
-        %             min_y = 1;
-        %         else
-        %             min_y = Vertex{1}(2);
-        %         end
-        %         if Vertex{3}(2) > mea_size_bm
-        %             max_y = 1;
-        %         else
-        %             max_y = Vertex{3}(2);
-        %         end
-        %square_flicker
+        X=newXarray(kk);%Get bar center position
+        load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
+        %% Square_flicker
         if mod(kk,3)==1 %odd number
             a(500-35:500+35,1230:1280)=1; % white square
         elseif mod(kk,3)==2
@@ -194,12 +123,10 @@ for Gvalue=G_list
         else
             a(500-35:500+35,1230:1280)=0; % dark
         end
-%         percentage = kk/length(T)*100;
-%         percentage
         writeVideo(writerObj,a);
     end
     
-    %end part video
+    %% End part video for detection of ending
     for mm=1:10
         img=zeros(1024,1280);
         img(500-35:500+35,1230:1280)=0.2; %gray
@@ -207,13 +134,10 @@ for Gvalue=G_list
     end
     img=zeros(1024,1280);
     writeVideo(writerObj,img);
-    
     close(writerObj);
     cd(videoworkspace_folder)
-    %save parameters needed
-    save([date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Br50_Q100','.mat'],'newXarray')
-    
+    %% Save parameters needed
+    save([name,'.mat'],'newXarray')  
 end
 cd(makemovie_folder)
-
 end
