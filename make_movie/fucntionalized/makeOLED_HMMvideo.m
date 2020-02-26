@@ -64,7 +64,7 @@ for Gvalue=G_list
     Xarray2=Xarray*nrx;
     Xarray3=Xarray2+leftx_bar+bar_wid-min(Xarray2);%rearrange the boundary values
     if strcmp(Dark,'Dark')
-        name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(100-contrast*100),'%'];
+        name=[date,'_HMM_Dark_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(100-contrast*100)];
     elseif strcmp(Dark,'Bright')
         name=[date,'_HMM_',direction,'_G',num2str(G_HMM) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
     end
