@@ -61,7 +61,7 @@ def play_movie(f,movie,time):
 #Make all batches
 #Record spontaneous
 f.write(sleep)
-f.write('3000')
+f.write('1800')
 f.write('\n')
 
 f.write(play)#Make screens all black
