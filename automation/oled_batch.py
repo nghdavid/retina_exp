@@ -50,17 +50,6 @@ def play_movie(f,movie,time):
 
     f.write(end)#End recording
     f.write('\n')
-
-##    f.write(serve_down)#Pull down board
-##    f.write('\n')
-    
-##    f.write(matlab)#Diode
-##    f.write(dot)
-##    f.write(movie[:-4])#stimulation name
-##    f.write(dot)
-##    f.write(' ')#space
-##    f.write(str(time+25))#Add 25 sec to prevent record too short
-##    f.write('\n')
     
     f.write(sleep)#Force procedure to stop 40 sec
     f.write('300')#Time for retina to rest
