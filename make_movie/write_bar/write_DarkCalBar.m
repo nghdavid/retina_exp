@@ -1,10 +1,8 @@
-function a = write_DarkCalBar(a, Vertex, theta,  mea_size_bm,calibration_date)
-load(['C:\calibration\',calibration_date,'\calibrate_pt.mat'])%Load dotPositionMatrix
-load(['C:\calibration\',calibration_date,'\screen_brightness.mat'])%Load screen_brightness
-screen_brightness=screen_brightness./255; %make it to 0-1 range for double (due to imwrite format)
-screen_brightness(screen_brightness>1)=1;
-screen_brightness(screen_brightness<0)=0;
-
+function a = write_DarkCalBar(a, Vertex, theta,  mea_size_bm,calibration_date,monitor_dark_lum)
+%Rotation is degree that bar rotate
+%monitor_dark_lum is luminance of dark bar
+load(['C:\calibration\',calibration_date,'oled_calibration\calibration.mat'])
+load(['C:\calibration\',calibration_date,'oled_calibration\oled_boundary_set.mat']);
 if theta == 0 || theta == pi/2  % vertical case
     if Vertex{2}(1) < 1
         min_x = 1;
@@ -28,9 +26,7 @@ if theta == 0 || theta == pi/2  % vertical case
     end
     for x = floor(min_x) : ceil(max_x)
         for y = floor(lower_y) : ceil(upper_y)
-            cal_x = dotPositionMatrix{y,x}(1);
-            cal_y = dotPositionMatrix{y,x}(2);
-            a(cal_y,cal_x) = 0;
+            a(y+lefty_bd-1,x+leftx_bd-1) = monitor_dark_lum;
         end
     end
     
@@ -77,9 +73,7 @@ else
         end
         
         for y = floor(lower_y) : ceil(upper_y)
-            cal_x = dotPositionMatrix{y,x}(1);
-            cal_y = dotPositionMatrix{y,x}(2);
-            a(cal_y,cal_x) = 0;
+            a(y+lefty_bd-1,x+leftx_bd-1) = monitor_dark_lum;
         end
     end
 end
