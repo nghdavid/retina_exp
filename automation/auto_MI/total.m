@@ -1,37 +1,38 @@
 clear all;
+videoworkspace_folder = '\\192.168.1.100\Experiment\Retina\2020Videos\0219v\videoworkspace';
 code_folder = pwd;
-exp_folder = 'F:\test';
+exp_folder ='C:\Users\hydrolab_Retina\Desktop\auto_MI';
 cd(exp_folder)
 mkdir merge
 cd data
 all_file = dir('*.mcd') ; % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ; 
 for m = 1:n_file
-    clearvars -except all_file n_file m code_folder exp_folder
+    clearvars -except all_file n_file m code_folder exp_folder videoworkspace_folder
     file = all_file(m).name ;
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
     filename = [name,ext];
-    
-    [Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([exp_folder,'\data\',filename],1,'','david','all');%%If your ram is enough, run this line
+    if ~isfile([name,'.mat'])
+        [Spikes,TimeStamps,a_data,Infos] = analyze_MEA_data([exp_folder,'\data\',filename],1,'','david','all');%%If your ram is enough, run this line
+    else
+        continue
+    end
 end
 all_file = dir('*.mat') ; % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ; 
 
-
 for m = 1:n_file
-    
     file = all_file(m).name ;
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
     filename = [name,ext];
-    pass = reconstruct(exp_folder,'HMM',name,name);
+    pass = reconstruct(exp_folder,name,name,videoworkspace_folder);
     if pass
         disp([name,'  passes'])
     else
         disp([name,'not passes'])
     end
-
 end
 
 cd(exp_folder);
@@ -41,7 +42,7 @@ mkdir unsort
 cd ([exp_folder,'\merge'])
 all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ;
-
+ 
 for z =1:n_file %choose file
     Mutual_infos = cell(1,60);
     Mutual_shuffle_infos = cell(1,60);
