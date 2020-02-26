@@ -27,7 +27,7 @@ for m = 1:n_file
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
     filename = [name,ext];
-    pass = reconstruct(exp_folder,name,name,videoworkspace_folder);
+    pass = reconstruct(exp_folder,name,videoworkspace_folder);
     if pass
         disp([name,'  passes'])
     else

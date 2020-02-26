@@ -1,13 +1,12 @@
-function pass = reconstruct(exp_folder,data_name,workspace_name,videoworkspace_folder)
+function pass = reconstruct(exp_folder,data_name,videoworkspace_folder)
 %% Load data
 pass = 1;
 data = [exp_folder,'\data\',data_name,'.mat'];
-complete_name =[videoworkspace_folder,'\' ,workspace_name,'.mat'];
+complete_name =[videoworkspace_folder,'\' ,data_name,'.mat'];
 load(complete_name)
 load(data)
 idealStimuli=newXarray;
 %% Reconstruct
-lumin=[];
 lumin=a_data(3,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
 plateau_n=200;  %least number of point for plateau
 last_gray = max(lumin)*0.25+min(lumin)*0.75;
@@ -52,7 +51,7 @@ off_ends_lumin(diode_end+1-(diode_start-1):end)=[]; %clear numbers after the dio
 %time of stimulation from diode measurement
 totalTime=vpa(length(off_ends_lumin)/ Samplingrate,30);
 if abs(totalTime-idealTime)>3
-    disp([workspace_name,'The end is not normal, needed to be done again'])
+    disp([data_name,'The end is not normal, needed to be done again'])
     pass = 0;
     return
 end
