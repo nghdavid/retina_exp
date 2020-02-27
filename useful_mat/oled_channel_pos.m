@@ -1,3 +1,4 @@
+clear all;
 oled_channel_pos = zeros(60,2);
 load('oled_boundary_set.mat')
 for i = 1:6
@@ -32,3 +33,4 @@ for i = 1:6
     oled_channel_pos(i+54,1) = meaCenter_x - 3.5*200/micro_per_pixel;
     oled_channel_pos(i+54,2) = meaCenter_y + (i+1-4.5)*200/micro_per_pixel;
 end
+save('oled_channel_pos.mat')
