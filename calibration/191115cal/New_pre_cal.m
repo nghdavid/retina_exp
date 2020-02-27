@@ -19,28 +19,28 @@ yCenter=460;
 centeredRect = CenterRectOnPointd(baseRect, xCenter, yCenter);
 brightness = 1;
 Screen('FillRect', w,  brightness*255,centeredRect); %255 is the luminance value
-% Screen('Flip', w);
+%Screen('Flip', w);
 
 
-baseRect = [0 0 150 150];
-xCenter=700; 
-yCenter=600; 
+baseRect = [0 0 100 100];
+xCenter=400; 
+yCenter=300; 
 centeredRect = CenterRectOnPointd(baseRect, xCenter, yCenter);
 Screen('FillRect', w, 0, centeredRect);
 Screen('Flip', w);
 
 
 %% decide mea region on LED screen
-mea_size=461; %use odd number!
+mea_size=200; %use odd number!
 % mea_size = 493;
 %small_mea_size= 73;
 cal_size = 529;%Calibration cal_size
 N = 7;%
 baseRect = [0 0 mea_size mea_size];  %use odd number!
-meaCenter_x=714;
-meaCenter_y=629;
+meaCenter_x=400;
+meaCenter_y=300;
 centeredRect = CenterRectOnPointd(baseRect, meaCenter_x, meaCenter_y);
-brightness = 0.25;
+brightness = 1;
 Screen('FillRect', w, brightness*255, centeredRect);
 Screen('Flip', w);
 
