@@ -1,29 +1,17 @@
 %load mat file first
 % clear all;
 % close all;
-% 
-function pass = reconstruct(exp_folder,type,data_name,workspace_name)
+
+function pass = reconstruct(pwd,type,data_name,workspace_name,videoworkspace, delay_correction)
 
 pass = 1;
-data = [exp_folder,'\data\',data_name,'.mat'];
-if strcmp(type,'HMM')
-    complete_name =[ 'D:\0930v\videoworkspace\',type,'\' ,workspace_name,'.mat'];
-    load(complete_name)
-    load(data)
-    idealStimuli=newXarray;
-elseif strcmp(type,'OU')
-    complete_name =[ 'D:\0930v\videoworkspace\',type,'\' ,workspace_name,'.mat'];
-    load(complete_name)
-    load(data)
-    idealStimuli=newXarray;
-else
-    complete_name =[ 'D:\0930v\videoworkspace\',workspace_name,'.mat'];
-    load(complete_name)
-    load(data)
-    idealStimuli=newXarray;
-    
-end
+data = [pwd,'\data\',data_name,'.mat'];
 
+complete_name =[videoworkspace,workspace_name,'.mat'];
+load(complete_name)
+load(data)
+idealStimuli=newXarray;
+    
 %%
 lumin=[];
 lumin=a_data(3,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
@@ -35,7 +23,7 @@ thre_up = max(lumin)*0.7+min(lumin)*0.3;
 thre_down = max(lumin)*0.2+min(lumin)*0.8;
 
 idealTime = length(idealStimuli)/60;
-
+plot(lumin)
 % Find when it starts
 for i = 1:length(lumin)
     
@@ -56,6 +44,8 @@ for i = 1:length(lumin)
     end
     
 end
+% diode_end = lumin(end);
+% is_complete = 1;
 if is_complete == 0
     disp('There are no normal signal')
     pass = 0;
@@ -67,19 +57,20 @@ Samplingrate=20000; %fps of diode in A3
 
 
 TimeStamps=zeros(1,2);
-TimeStamps(1,1)=diode_start/Samplingrate;
-TimeStamps(1,2)=diode_end/Samplingrate;
+TimeStamps(1,1)=diode_start/Samplingrate - delay_correction;
+TimeStamps(1,2)=diode_end/Samplingrate- delay_correction;
 
 
 % delete before and after of the lumin series
 
 off_ends_lumin=lumin;
+off_ends_lumin(diode_end+1:end)=[]; %clear numbers after the diode_end
 off_ends_lumin(1:diode_start-1)=[]; %clear numbers before the diode_start
-off_ends_lumin(diode_end+1-(diode_start-1):end)=[]; %clear numbers after the diode_end
+%off_ends_lumin(diode_end+1-(diode_start-1):end)=[]; %clear numbers after the diode_end
 %time of stimulation from diode measurement
 totalTime=vpa(length(off_ends_lumin)/ Samplingrate,30);
 if abs(totalTime-idealTime)>3
-    disp([workspace_name,'The end is not normal, needed to be done again'])
+    disp('The end is not normal, needed to be done again')
     pass = 0;
     return
 end
@@ -176,6 +167,7 @@ else
         Ptbefore=lumin_state(uu-1);
         Pt=lumin_state(uu);
         if Pt-Ptbefore == 0  %if they are the same state
+            Fcount=Fcount;
             stimuli_pos(uu)=idealStimuli(Fcount);
         elseif Pt-Ptbefore == -1 || Pt-Ptbefore==2 %normal transition
             Fcount=Fcount+1;
@@ -378,9 +370,9 @@ for j = 1:length(Spikes)    %running through each channel
 end
 
 %% Saving
+% clearvars -except bin_pos diode_BT BinningInterval a_data Spikes reconstruct_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
+save([pwd,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
 
-save([exp_folder,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
 
-
-%     
+    
 end
