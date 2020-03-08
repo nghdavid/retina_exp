@@ -20,12 +20,14 @@ if sorted
     mkdir FIG\cSTA sort
     cd sort_merge_spike
     load(['sort_merge_', name, '.mat'])
+    analyze_spikes = get_multi_unit(exp_folder,sorted_spikes,unit);
 else
     sort_directory = 'unsort';
     mkdir Analyzed_data unsort
     mkdir FIG\cSTA unsort
     cd merge
     load(['merge_', name, '.mat'])
+    analyze_spikes = get_multi_unit(exp_folder,sorted_spikes,unit);
 end
 
 %% BinningSpike
@@ -36,7 +38,6 @@ BinningTime =diode_BT;
 bin=BinningInterval*10^3; %ms
 TheStimuli=bin_pos;  %Gaussian noise
 stimulus_length = TimeStamps(2)-TimeStamps(1);
-analyze_spikes = reconstruct_spikes;
 %% Calculate STA
 sum_n = zeros(1,60);
 cSTA = zeros(60,forward+backward+1);
@@ -74,9 +75,9 @@ end
 plot_all_channel(type,save_photo,time(round(size(cSTA,2)/2):end),cSTA(:,round(size(cSTA,2)/2):end),useful_channelnumber,exp_folder,sorted,name);
 %% Calculate OnOff Index and dSTA/dt
 tau = zeros(1,60);
-OnOff_Index = ones(1,60)*-10000000;
+Flicker_OnOff_Index = ones(1,60)*-10000000;
 for channelnumber=useful_channelnumber
-    OnOff_Index(channelnumber) = sum(cSTA(channelnumber,round(length(cSTA)/2)-200/bin:round(length(cSTA)/2))) / sum(abs(cSTA(channelnumber, round(length(cSTA)/2)-200/bin:round(length(cSTA)/2))));
+    Flicker_OnOff_Index(channelnumber) = sum(cSTA(channelnumber,round(length(cSTA)/2)-200/bin:round(length(cSTA)/2))) / sum(abs(cSTA(channelnumber, round(length(cSTA)/2)-200/bin:round(length(cSTA)/2))));
     diff_smooth_cSTA = diff(smooth(cSTA(channelnumber,:)));
     for l = fliplr(2:length(diff_smooth_cSTA))
         if diff_smooth_cSTA(l)*diff_smooth_cSTA(l-1) <= 0
@@ -86,13 +87,13 @@ for channelnumber=useful_channelnumber
         end
     end
 end
-OnOff_Index(find(OnOff_Index == -10000000)) = NaN;
+Flicker_OnOff_Index(find(Flicker_OnOff_Index == -10000000)) = NaN;
 %% Histogram of on off index
 figure;
-hist(OnOff_Index(useful_channelnumber));
+hist(Flicker_OnOff_Index(useful_channelnumber));
 xlim([-1 1])
 if save_photo
-    save([exp_folder,'\Analyzed_data\',sort_directory,'\',name,'.mat'],'time','cSTA', 'dcSTA', 'OnOff_Index', 'tau')
+    save([exp_folder,'\Analyzed_data\',sort_directory,'\',name,'.mat'],'time','cSTA', 'dcSTA', 'Flicker_OnOff_Index', 'tau')
 end
 
 cd (code_folder)
