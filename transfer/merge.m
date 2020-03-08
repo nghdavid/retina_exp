@@ -1,15 +1,14 @@
 clear all;
 close all;
 
-lelay_correction = 0.0071;
+delay_correction = 0.0071;
 
 code_folder = pwd;
-exp_folder = 'D:\Leo\0225';
+exp_folder = 'E:\20200302';
 videoworkspace = '\\192.168.0.100\Experiment\Retina\2020Videos\0219v\videoworkspace\';
 cd(exp_folder)
 cd playmovie
 fileID = fopen('playmovie/list.txt','r');
-formatSpec = '%c';
 txt = textscan(fileID,'%s','delimiter','\n'); 
 num_files = length(txt{1});
 
@@ -27,6 +26,22 @@ for m = 1:num_files
         disp([name,' has an error or it is spontaneous'])
         continue;
     end
+    if length(name)>13
+        if strcmp(name(9:13),'ONOFF')
+            disp([name,' is onoff'])
+            continue;
+        elseif strcmp(name(6:12),'Grating')
+            disp([name,' is grating'])
+            continue;
+        end
+    end
+    if length(name)>17
+        if strcmp(name(14:18),'OnOff')
+            disp([name,' is onoff'])
+            continue;
+        end
+    end
+    
     if strcmp(name(6),'H')
         type = 'HMM';
         
@@ -39,13 +54,16 @@ for m = 1:num_files
         type = 'Reveral';
     elseif strcmp(name(6),'C') || strcmp(name(1),'t')
         type = 'Checker';
+    elseif strcmp(name(9:end),'saccade')
+        type = 'saccade';
     else
         type = 'else';
+        disp([name,' is else'])
     end
     
     pass = 0;
     cd(code_folder)
-    pass = reconstruct(exp_folder,type,name,workspace_name,videoworkspace, lelay_correction);
+    pass = reconstruct(exp_folder,type,name,workspace_name,videoworkspace, delay_correction);
     if pass
         disp([name,'  passes'])
     else

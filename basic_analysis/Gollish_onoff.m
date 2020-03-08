@@ -4,24 +4,28 @@ clear all;
 close all;
 load('rr.mat');
 code_folder = pwd;
-exp_folder =  'E:\20190916';
+exp_folder =  'E:\20200306';
 save_photo =1;%0 is no save on off photo and data, 1 is save
 cd(exp_folder)
-broken_channel = 31;
 p_channel = [];%Green is predictive
 np_channel = [];%Purple is non-predictive
 %load('predictive_channel\0602_HMM_RL_5G_7min_Br50_Q100_1.mat')
-name = '0821_Gollish_OnOff_movie_5min_Br50_Q100_0.8_re';%Name that used to save photo and data
+name = '0224_Gollish_OnOff_movie_5min_Br50_Q100_6.5mW_re';%Name that used to save photo and data
 Samplingrate=20000; %fps of diode in A3
-%% For unsorted spikes
-load(['data\',name,'.mat'])
 sorted = 0;
 %% For sorted spikes
-% load(['sort\',name,'.mat'])
-% sorted = 1;
-
+if sorted
+load(['data\',name,'.mat'])
+load(['sort\',name,'.mat'])
+sort_directory = 'sort';
+else
+%% For unsorted spikes
+load(['data\',name,'.mat'])
+sort_directory = 'unsort';
+end
+Spikes{31} = [0];
 num_cycle =40;
-lumin=a_data(3,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
+lumin=a_data(3,:);%Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
 
 %% Create directory
 if save_photo
@@ -47,7 +51,6 @@ for i = 1:length(lumin)-700
     end
 end
 useful_lumin = lumin(1:diode_end);
-
 %% Calculate threhold
 plateau_n=200;  %least number of point for plateau
 last_gray = max(lumin)*0.25+min(lumin)*0.75;
@@ -87,7 +90,7 @@ if length(diode_off_start) ~= num_cycle
 end
 %% Plot when on off start
 figure(2);plot(useful_lumin)
-hold on; plot(diode_on_start(1:end-1),useful_lumin(diode_on_start(1:end-1)),'g*');
+hold on; plot(diode_on_start(1:end),useful_lumin(diode_on_start(1:end)),'g*');
 hold on; plot(diode_off_start,useful_lumin(diode_off_start),'r*');
 xlabel('time')
 ylabel('lumin')
@@ -152,9 +155,7 @@ off_spikes = zeros(1,60);%It stores sum of off response spike
 on_off_index = ones(1,60)*-10000000;
 useless_channel = [];
 for channelnumber=1:60
-    if channelnumber == broken_channel
-        continue
-    end
+    
     on_ss = cut_onspikes{channelnumber};
     off_ss = cut_offspikes{channelnumber};
     %Exclude channels that mean firing rate is lower than one
@@ -191,9 +192,7 @@ ha = tight_subplot(8,8,[.04 .02],[0.07 0.02],[.02 .02]);
 
 
 for channelnumber=1:60
-    if channelnumber == broken_channel
-        continue
-    end
+    
     axes(ha(rr(channelnumber))); 
     if ~ismember(channelnumber,useless_channel)%If spikes are not enough
         plot(onBinningTime,onBinningSpike(channelnumber,:),'b');hold on;%Blue is on
@@ -214,7 +213,7 @@ for channelnumber=1:60
           title([int2str(channelnumber),'ON'])
       elseif on_off_index(channelnumber)<-0.3
           title([int2str(channelnumber),'OFF'])
-      elseif on_off_index(channelnumber)>0
+      elseif on_off_index(channelnumber)>=0
           title([int2str(channelnumber),'ON-OFF'])
       elseif on_off_index(channelnumber)<0
           title([int2str(channelnumber),'OFF-ON'])
@@ -225,15 +224,9 @@ set(gcf,'units','normalized','outerposition',[0 0 1 1])
 fig = gcf;
 fig.PaperPositionMode = 'auto';
 if save_photo
-    if sorted
-        saveas(fig,[exp_folder, '\FIG\ONOFF\','\sort\', name,'.tiff'])
-        saveas(fig,[exp_folder, '\FIG\ONOFF\','\sort\', name,'.fig'])
-        cd([exp_folder, '\FIG\ONOFF\','\sort'])
-    else
-        saveas(fig,[exp_folder, '\FIG\ONOFF\','\unsort\', name,'.tiff'])
-        saveas(fig,[exp_folder, '\FIG\ONOFF\','\unsort\', name,'.fig'])
-        cd([exp_folder, '\FIG\ONOFF\','\unsort'])
-    end
+    saveas(fig,[exp_folder, '\FIG\ONOFF\',sort_directory,'\', name,'.tiff'])
+    saveas(fig,[exp_folder, '\FIG\ONOFF\',sort_directory,'\', name,'.fig'])
+    cd([exp_folder, '\FIG\ONOFF\','\',sort_directory])
     save([exp_folder,'\Analyzed_data\',name,'.mat'],'on_off_index','onBinningSpike','offBinningSpike','onBinningTime','offBinningTime')
 end
 

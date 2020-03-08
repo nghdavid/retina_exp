@@ -14,7 +14,9 @@ righty_bd=meaCenter_y+(mea_size_bm-1)/2;
 bar_le=floor((mea_size-1)/2); %half of bar length / pixel number on LCD /total length = mea_size = 1919 um
 bar_wid=8; %half of bar width / total length = 8*2+1=17 pixels =  129um
 re_bar_wid=16;
-leftx_bar=ceil(meaCenter_x-(mea_size_bm-1)/2/sqrt(2)); %Left boundary of bar
-rightx_bar=floor(meaCenter_x+(mea_size_bm-1)/2/sqrt(2)); %Right boundary of bar
+leftx_bar=ceil(meaCenter_x-(mea_size-1)/2);%Left boundary of bar
+rightx_bar=floor(meaCenter_x+(mea_size-1)/2); %Right boundary of bar
+lefty_bar=ceil(meaCenter_y-(mea_size-1)/2);%Up boundary of bar
+righty_bar=floor(meaCenter_y+(mea_size-1)/2); %down boundary of bar
 micro_per_pixel = 1430/188;
 save([folder,'oled_boundary_set']);

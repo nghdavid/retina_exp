@@ -353,25 +353,27 @@ end
 if length(find(same_len_pos~=0)) ~=  0
     disp('ratio3/ problem points: ')
     disp('2 states Error')
-    pass = 0;
-    return
+%     pass = 0;
+%     return
 end
-
-reconstruct_spikes=[];
-for j = 1:length(Spikes)    %running through each channel
-    ss = Spikes{j};
-    ss(ss<TimeStamps(1,1)) = [];  %delete the spikes before TimeStamps(1)
-    ss(ss>TimeStamps(1,2))=[];
-    
-    for i = 1:length(ss)
-        ss(i) = ss(i)-TimeStamps(1,1);
+if strcmp(type,'saccade')    
+    disp('Saccade!!!!!!!!!!');
+    save([pwd,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','diode_BT','BinningInterval');
+else
+    reconstruct_spikes=[];
+    for j = 1:length(Spikes)    %running through each channel
+        ss = Spikes{j};
+        ss(ss<TimeStamps(1,1)) = [];  %delete the spikes before TimeStamps(1)
+        ss(ss>TimeStamps(1,2))=[];
+        
+        for i = 1:length(ss)
+            ss(i) = ss(i)-TimeStamps(1,1);
+        end
+        reconstruct_spikes{j} = ss;
     end
-    reconstruct_spikes{j} = ss;
-end
+    save([pwd,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
 
-%% Saving
-% clearvars -except bin_pos diode_BT BinningInterval a_data Spikes reconstruct_spikes TimeStamps  start_lum thre_up thre_down Samplingrate idealStimuli plateau_n name file
-save([pwd,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
+end
 
 
     
