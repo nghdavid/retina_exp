@@ -50,6 +50,20 @@ make_OLED_short_HMMvideo(makemovie_folder, pi/4, 'UL_DR', movie_folder, videowor
 make_OLED_short_HMMvideo(makemovie_folder,  3*pi/4, 'UR_DL', movie_folder, videoworkspace_folder,seed_date,date,calibration_date,'Dark',mean_lumin,0);
 make_Intensity_short_HMMvideo(makemovie_folder, movie_folder, videoworkspace_folder,date,calibration_date,mean_lumin)
 
+%% HMM edge part
+makeOLED_Edge_video(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], videoworkspace_folder,'HMM', seed_date,date,calibration_date,HMM_time,G_HMM,0,mean_lumin);
+makeOLED_Edge_video(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'], videoworkspace_folder,'HMM', seed_date,date,calibration_date,HMM_time,G_HMM,0,mean_lumin);
+makeOLED_Edge_video(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], videoworkspace_folder,'HMM', seed_date,date,calibration_date,HMM_time,G_HMM,1,mean_lumin);
+makeOLED_Edge_video(makemovie_folder,pi/2, 'UD', [movie_folder,'HMM'], videoworkspace_folder,'HMM', seed_date,date,calibration_date,HMM_time,G_HMM,1,mean_lumin);
+
+makeOLED_Edge_video(makemovie_folder,3*pi/4, 'UR_DL', [movie_folder,'HMM'], videoworkspace_folder,'HMM', seed_date,date,calibration_date,HMM_time,G_HMM,0,mean_lumin);
+
+%% OU edge part
+makeOLED_Edge_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OU', seed_date,date,calibration_date,HMM_time,G_HMM,0,mean_lumin);
+makeOLED_Edge_video(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OU', seed_date,date,calibration_date,HMM_time,G_HMM,0,mean_lumin);
+makeOLED_Edge_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OU', seed_date,date,calibration_date,HMM_time,G_HMM,1,mean_lumin);
+makeOLED_Edge_video(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OU', seed_date,date,calibration_date,HMM_time,G_HMM,1,mean_lumin);
+
 %% Checkerboard
 oled_checkerboard(makemovie_folder,movie_folder, videoworkspace_folder,30,27,date,5,calibration_date, mean_lumin)
 oled_checkerboard(makemovie_folder,movie_folder, videoworkspace_folder,20,27,date,5,calibration_date, mean_lumin)
