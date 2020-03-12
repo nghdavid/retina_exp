@@ -7,12 +7,12 @@ dat=[];informationp=[];temp=backward+2;
         dat{i}=[x,y];
         norm=BinningInterval;
 
-        N=hist3(dat{i},[length(unique(Neurons)),length(unique(isi2))]); %20:dividing firing rate  6:# of stim
+        N=hist3(dat{i},[max(Neurons) max(isi2)]); %20:dividing firing rate  6:# of stim
         py=sum(N,1)/sum(N, 'all'); 
         px=sum(N,2)/sum(N, 'all'); 
         pxy=N/sum(N, 'all'); 
         temp2=[];
-        for j = unique(Neurons)
+        for j = 1:length(unique(Neurons))
             for k = unique(isi2)
               temp2(j,k)=pxy(j,k)*log( pxy(j,k)/ (py(k)*px(j)) )/log(2)/norm;
             end
@@ -27,7 +27,7 @@ dat=[];informationp=[];temp=backward+2;
         dat{i}=[x,y];
         norm=BinningInterval;
 
-        N=hist3(dat{i},[max(Neurons)+1,max(isi2)]); %20:dividing firing rate  6:# of stim
+        N=hist3(dat{i}, [max(Neurons) max(isi2)]); %20:dividing firing rate  6:# of stim
         py=sum(N,1)/sum(N, 'all'); 
         px=sum(N,2)/sum(N, 'all');
         pxy=N/sum(sum(N));
