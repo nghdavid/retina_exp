@@ -1,11 +1,16 @@
 clear all;
 code_folder = pwd;
-exp_folder = 'D:\Leo\0823exp';
+%exp_folder = 'D:\Leo\1012exp';
+exp_folder_cell = {'D:\Leo\0229', 'D:\Leo\1219exp' ,'D:\Leo\1017exp'};
+type_folder_cell = {'pos', 'v', 'pos&v'};%'abs', 'pos', 'v', 'pos&v'.
+for ttt = 1
+for eee = 1
+exp_folder = exp_folder_cell{eee};
 cd(exp_folder);
 mkdir MI
 cd MI
-type = 'pos&v'; %'abs', 'pos', 'v', 'pos&v'.
-sorted = 1;
+type = type_folder_cell{ttt}; 
+sorted = 0;
 unit = 0; %unit = 0 means using 'unit_a' which is writen down while picking waveform in Analyzed_data.
 
 
@@ -16,7 +21,6 @@ if sorted
     n_file = length(all_file) ;
 else
     mkdir unsort
-    
     cd ([exp_folder,'\merge'])
     all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir.
     n_file = length(all_file) ;
@@ -49,22 +53,22 @@ for z =1:n_file %choose file
     elseif strcmp(type,'pos')
         TheStimuli=bin_pos;
     elseif strcmp(type,'v')
-        TheStimuli=diff(bin_pos);
-        TheStimuli = ([0 TheStimuli] + [TheStimuli 0]) /2;
+        x=diff(bin_pos);
+        TheStimuli = [ 0 x 0 0 0 0 0 0 0]-9*[0 0 x 0 0 0 0 0 0]+45*[0 0 0 x 0 0 0 0 0]-45*[0 0 0 0 0 x 0 0 0]+9*[0 0 0 0 0 0 x 0 0]-1*[0 0 0 0 0 0 0 x 0];
     end
     
     % Binning
     bin=BinningInterval*10^3; %ms
     BinningTime =diode_BT;
     
-    StimuSN=30; %number of stimulus states
+    StimuSN=9; %number of stimulus states
     if strcmp(type,'abs')
         nX=sort(TheStimuli,2);
         abin=length(nX)/StimuSN;
         isi2 = zeros(60,length(TheStimuli));
         for k = 1:60
             if sum(absolute_pos(k,:))>0
-                intervals=[nX(k,1:abin:end) inf]; % inf: the last term: for all rested values
+                intervals=[nX(k,abin:abin:end) inf]; % inf: the last term: for all rested values
                 for jj=1:length(TheStimuli)
                     isi2(k,jj) = find(TheStimuli(k,jj)<=intervals,1);
                 end
@@ -73,68 +77,35 @@ for z =1:n_file %choose file
     elseif strcmp(type,'pos') || strcmp(type,'v')
         nX=sort(TheStimuli);
         abin=length(nX)/StimuSN;
-        intervals=[nX(1:abin:end) inf]; % inf: the last term: for all rested values
+        intervals=[nX(abin:abin:end) inf]; % inf: the last term: for all rested values
         temp=0; isi2=[];
         for jj=1:length(TheStimuli)
             isi2(jj) = find(TheStimuli(jj)<=intervals,1);
         end
-    else
-    end
-    
-    if strcmp(type,'pos&v')
+    elseif strcmp(type,'pos&v')
         TheStimuli = zeros(2, length(bin_pos));
         TheStimuli(1,:)=bin_pos;
-        TheStimuli(2,:) = ([0 diff(bin_pos)] + [diff(bin_pos) 0]) /2;
+        x = TheStimuli(1,:);
+        TheStimuli(2,:) = [ 0 x 0 0 0 0 0 0 0]-9*[0 0 x 0 0 0 0 0 0]+45*[0 0 0 x 0 0 0 0 0]-45*[0 0 0 0 0 x 0 0 0]+9*[0 0 0 0 0 0 x 0 0]-1*[0 0 0 0 0 0 0 x 0];
         nX1=sort(TheStimuli(1,:));
         nX2=sort(TheStimuli(2,:));
-        sqrtStimuSN = 5;
-        StimuSN = 25;
-        abin=length(nX1)/sqrtStimuSN;
-        intervals1=[nX1(1:abin:end) inf]; % inf: the last term: for all rested values
-        abin=length(nX2)/sqrtStimuSN;
-        intervals2=[nX2(1:abin:end) inf]; % inf: the last term: for all rested values
+        abin=length(nX1)/StimuSN;
+        intervals1=[nX1(abin:abin:end) inf]; % inf: the last term: for all rested values
+        abin=length(nX2)/StimuSN;
+        intervals2=[nX2(abin:abin:end) inf]; % inf: the last term: for all rested values
         temp=0; isi3=[]; isi2=[];
         for jj=1:length(TheStimuli)
-            isi3(1,jj) = find(TheStimuli(1,jj)<intervals1,1);
-            isi3(2,jj) = find(TheStimuli(2,jj)<intervals2,1);
+            isi3(1,jj) = find(TheStimuli(1,jj)<=intervals1,1);
+            isi3(2,jj) = find(TheStimuli(2,jj)<=intervals2,1);
         end
-        isi2 = 5*(isi3(1,:)-2) + (isi3(2,:)-2) + 1;
+        isi2 = StimuSN*(isi3(1,:)-1) + isi3(2,:);
     end
-
-    
-    
     
     %% BinningSpike
     BinningSpike = zeros(60,length(BinningTime));
     analyze_spikes = cell(1,60);
     if sorted
-        complex_channel = [];
-        if unit == 0
-            fileID = fopen([exp_folder, '\Analyzed_data\unit_a.txt'],'r');
-            formatSpec = '%c';
-            txt = textscan(fileID,'%s','delimiter','\n');
-            for m = 1:size(txt{1}, 1)
-                complex_channel = [complex_channel str2num(txt{1}{m}(1:2))];
-            end
-        end
-        for i = 1:60  % i is the channel number
-            analyze_spikes{i} =[];
-            if unit == 0
-                if any(complex_channel == i)
-                    unit_a = str2num(txt{1}{find(complex_channel==i)}(3:end));
-                    for u = unit_a
-                        analyze_spikes{i} = [analyze_spikes{i} sorted_spikes{u,i}'];
-                    end
-                else
-                    analyze_spikes{i} = [analyze_spikes{i} sorted_spikes{1,i}'];
-                end
-            else
-                for u = unit
-                    analyze_spikes{i} = [analyze_spikes{i} sorted_spikes{u,i}'];
-                end
-            end
-            analyze_spikes{i} = sort(analyze_spikes{i});
-        end
+        analyze_spikes = get_multi_unit(exp_folder,sorted_spikes,unit);
     else
         analyze_spikes = reconstruct_spikes;
     end
@@ -215,4 +186,7 @@ for z =1:n_file %choose file
     end
     
     
+end
+
+end
 end
