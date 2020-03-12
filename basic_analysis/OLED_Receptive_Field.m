@@ -4,7 +4,7 @@ code_folder = pwd;
 load('oled_channel_pos.mat')
 load('oled_boundary_set.mat')
 
-displaychannel = 18;%1:60;%Choose which channel to display
+displaychannel = 1:60;%Choose which channel to display
 save_photo =1;%0 is no save RF photo, 1 is save
 save_svd =1;%0 is no save svd photo, 1 is save
 
@@ -13,7 +13,7 @@ num_shift = 0.05;%50ms
 exp_folder = 'D:\Leo\0229';
 cd(exp_folder)
 try
-    load('Analyzed_data\csta')
+    load('Analyzed_data\unsort\0224_cSTA_wf_3min_Q100.mat')
 catch
     Filker_OnOff_Index = zeros(1,60);
     mkdir Analyzed_data
@@ -93,7 +93,7 @@ for k =displaychannel
         reshape_RF(:,i) = reshape(gauss_RF{i,k},[side_length^2,1]);
     end
     [U,S,V] = svd(reshape_RF');%U is temporal filter, V is one dimensional spatial filter, S are singular values
-    if (U(1,2) >= 0 && Filker_OnOff_Index(k) <= 0) || (U(1,2) < 0 && Filker_OnOff_Index(k) > 0) % asume that all channel are fast-OFF-slow-ON if there is no csta file.
+    if (U(1,2)*cSTA(k,end-round(num_shift/BinningInterval)) < 0) % asume that all channel are fast-OFF-slow-ON if there is no csta file.
         U(:,2) = -U(:,2);
         V(:,2) = -V(:,2);
     end
