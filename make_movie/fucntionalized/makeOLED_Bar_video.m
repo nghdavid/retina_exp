@@ -1,4 +1,4 @@
-function makeOLED_Bar_video(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type,seed_date,date,calibration_date,mins,G_list,Dark,mean_lumin,contrast)
+function makeOLED_Bar_video(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type,seed_date,date,calibration_date,mins,G_list,Dark,mean_lumin,contrast,cutOffFreq)
 %% This code can produce moving bar video whose trajectory is made of HMM or OU process
 %It can make four kinds version of moving bar: Long and Bright, Long and Dark, Short and Bright, Short and Dark
 %makemovie_folder is where you put your code
@@ -45,7 +45,7 @@ all_file = dir('*.mat');%Load random seed
 fps =60;  %freq of the screen flipping
 T=mins*60; %second
 dt=1/fps;
-T=dt:dt:T;
+Time=dt:dt:T;
 %% Run each many Gamma value
 for Gvalue=G_list
     %% HMM or OU parameter and video name
@@ -55,26 +55,28 @@ for Gvalue=G_list
     filename = [name,ext];
     load(['C:\',seed_directory_name,'\',filename]);
     name=[name];
+    if strcmp(Dark,'Dark')
+        name=[date,'_',type,'_Dark_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(100-contrast*100)];
+    elseif strcmp(Dark,'Bright')
+        name=[date,'_',type,'_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
+    end
     %% HMM trajectory
     if strcmp(type,'HMM')
         Xarray = HMM_generator(T,dt,Gvalue,rntest);
     elseif strcmp(type,'OU')
         Xarray = OU_generator(T,dt,Gvalue,rntest);
     elseif strcmp(type,'sOU')%Smooth OU
-        Xarray = OU_generator(T,dt,Gvalue,rntest);
+        Xarray = Smooth_OU_generator(T,dt,Gvalue,rntest,cutOffFreq);
+        name = [name,'_',num2str(cutOffFreq),'Hz'];
     end
+    name
     %% Normalize to proper moving range and video name
     nrx=abs((rightx_bar-leftx_bar-2*bar_wid)/(max(Xarray)-min(Xarray)));
     Xarray2=Xarray*nrx;
     Xarray3=Xarray2+leftx_bar+bar_wid-min(Xarray2);%rearrange the boundary values
-    if strcmp(Dark,'Dark')
-        name=[date,'_',type,'_Dark_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(100-contrast*100)];
-    elseif strcmp(Dark,'Bright')
-        name=[date,'_',type,'_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
-    end
     newXarray=round(Xarray3);
     cd (video_folder)
-    name
+    
     %% Video setting
     video_fps=fps;
     writerObj = VideoWriter([name,'.avi']);  %change video name here!
@@ -91,7 +93,7 @@ for Gvalue=G_list
     end
     
     %% Draw moving bar
-    for kk =1:length(T)
+    for kk =1:length(Time)
         X=newXarray(kk);%Get bar center position
         load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
         %% Square_flicker

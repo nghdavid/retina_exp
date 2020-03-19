@@ -91,11 +91,11 @@ x = linspace(-1.0, 1.0, size_curve);
 curve = -0.1*x.*x+1;
 On_temporal(On_delay:On_delay+size_curve-1) = On_temporal(On_delay:On_delay+size_curve-1)+curve;
 Off_temporal(Off_delay:Off_delay+size_curve-1) = Off_temporal(Off_delay:Off_delay+size_curve-1)+curve;
-% figure(3)
-% plot(1:integration_time,On_temporal);hold on
-% plot(1:integration_time,Off_temporal);hold off
-% xlabel('time before spike')
-% ylabel('weight')
+figure(3)
+plot(1:integration_time,On_temporal);hold on
+plot(1:integration_time,Off_temporal);hold off
+xlabel('time before spike')
+ylabel('weight')
 
 
 %% Convolution of stimulus and receptive field

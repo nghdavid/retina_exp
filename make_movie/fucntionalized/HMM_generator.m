@@ -1,4 +1,5 @@
 function Xarray = HMM_generator(T,dt,Gvalue,rntest)
+    T=dt:dt:T;
     %Gvalue is damping / only G will influence correlation time
     D = 2700000;%dynamical range
     omega =Gvalue/2.12; %omega = G/(2w)=1.06; follow Bielak's overdamped dynamics/ 2015PNAS
