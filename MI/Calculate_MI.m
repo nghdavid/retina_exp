@@ -3,7 +3,7 @@ code_folder = pwd;
 %exp_folder = 'D:\Leo\1012exp';
 exp_folder_cell = {'D:\Leo\0229', 'D:\Leo\1219exp' ,'D:\Leo\1017exp'};
 type_folder_cell = {'pos', 'v', 'pos&v'};%'abs', 'pos', 'v', 'pos&v'.
-for ttt = 2:3
+for ttt = 1:3
 for eee = 1
 exp_folder = exp_folder_cell{eee};
 cd(exp_folder);
@@ -54,15 +54,14 @@ for z =1:n_file %choose file
         TheStimuli=bin_pos;
     elseif strcmp(type,'v')
         x=bin_pos;
-        TheStimuli = [ 0 x 0 0 0 0 0 0 0]-9*[0 0 x 0 0 0 0 0 0]+45*[0 0 0 x 0 0 0 0 0]-45*[0 0 0 0 0 x 0 0 0]+9*[0 0 0 0 0 0 x 0 0]-1*[0 0 0 0 0 0 0 x 0];
-        TheStimuli = TheStimuli(5:end-4);
+        TheStimuli = finite_diff(x ,4);
     end
     
     % Binning
     bin=BinningInterval*10^3; %ms
     BinningTime =diode_BT;
     
-    StimuSN=9; %number of stimulus states
+    StimuSN=6; %number of stimulus states
     if strcmp(type,'abs')
         nX=sort(TheStimuli,2);
         abin=length(nX)/StimuSN;
@@ -86,9 +85,8 @@ for z =1:n_file %choose file
     elseif strcmp(type,'pos&v')
         TheStimuli = zeros(2, length(bin_pos));
         TheStimuli(1,:)=bin_pos;
-        x = bin_pos;
-        v = [ 0 x 0 0 0 0 0 0 0]-9*[0 0 x 0 0 0 0 0 0]+45*[0 0 0 x 0 0 0 0 0]-45*[0 0 0 0 0 x 0 0 0]+9*[0 0 0 0 0 0 x 0 0]-1*[0 0 0 0 0 0 0 x 0];
-        TheStimuli(2,:) = v(5:end-4);
+        x = TheStimuli(1,:);
+        TheStimuli(2,:) = finite_diff(x ,4);
         nX1=sort(TheStimuli(1,:));
         nX2=sort(TheStimuli(2,:));
         abin=length(nX1)/StimuSN;
