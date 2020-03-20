@@ -7,5 +7,4 @@ function Xarray = OU_generator(T,dt,Gvalue,rntest)
     for uu = 1:length(T)-1
           Xarray(uu+1) = (1-dt*Gvalue/(2.12)^2)*Xarray(uu)+sqrt(dt*D)*rntest(uu);
     end
-    
 end

@@ -1,6 +1,6 @@
 function Smooth_Xarray = Smooth_OU_generator(T,dt,Gvalue,rntest,cutOffFreq)
     close all;
-    buff_time = 0.5;%Buffer for delay correction
+    buff_time = 1;%Buffer for delay correction
     T=T+buff_time;
     T=dt:dt:T;
     %Gvalue is damping / only G will influence correlation time
