@@ -38,10 +38,10 @@ function Smooth_Xarray = Smooth_OU_generator(T,dt,Gvalue,rntest,cutOffFreq)
     disp(['After correction, the delay is  ',num2str(after_correction*dt) ,' sec'])
     %% Correction time
     acf = autocorr(Xarray,100);
-    corr_time = find(abs(acf-0.5) ==min(abs(acf-0.5)))*dt;
+    corr_time = interp1(acf,1:length(acf),0.5,'linear')*dt;
     disp(['Original correlation time is ',num2str(corr_time),' second'])
     
     acf = autocorr(Smooth_Xarray,100);
-    corr_time = find(abs(acf-0.5) ==min(abs(acf-0.5)))*dt;
+    corr_time = interp1(acf,1:length(acf),0.5,'linear')*dt;
     disp(['Smooth correlation time is ',num2str(corr_time),' second'])
 end

@@ -178,7 +178,7 @@ for z =1:n_file %choose file
         end
     end
     acf = autocorr(bin_pos,100);
-    corr_time = find(abs(acf-0.5) == min(abs(acf-0.5)))/60;
+    corr_time = interp1(acf,1:length(acf),0.5,'linear')*dt;
     if sorted
         save([exp_folder,'\MI\sort\', type,'_',name(12:end),'.mat'],'time','Mutual_infos','Mutual_shuffle_infos','P_channel','N_channel','peak_times', 'MI_peak', 'corr_time')
     else
