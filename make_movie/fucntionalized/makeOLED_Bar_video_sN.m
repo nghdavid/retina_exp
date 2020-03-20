@@ -103,7 +103,9 @@ for Gvalue=G_list
         X=newXarray(kk);%Get bar center position
         load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
         sN_iC = Spatial_Noise_generator(mea_range, num_dot);
-        a(sN_iC{1}(:,1)', sN_iC{1}(:,2)') = dot_lumin;
+        for i = 1:length(sN_iC{2})
+            img(sN_iC{2}(i,1)-16:sN_iC{2}(i,1)+16, sN_iC{2}(i,2)-16:sN_iC{2}(i,2)+16) = dot_lumin;
+        end
         %% Square_flicker
         if mod(kk,3)==1 %odd number
             a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=1; % white square
