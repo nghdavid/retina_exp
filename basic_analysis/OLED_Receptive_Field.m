@@ -3,16 +3,36 @@ clear all;
 code_folder = pwd;
 load('oled_channel_pos.mat')
 load('oled_boundary_set.mat')
-
+exp_folder = 'E:\20200302';
+sorted = 1;
 displaychannel = 1:60;%Choose which channel to display
+date = '0224';
+fps = 20;
+second_time = 0;
 save_photo =1;%0 is no save RF photo, 1 is save
 save_svd =1;%0 is no save svd photo, 1 is save
-
-
-exp_folder = 'D:\Leo\0229';
+save_data = 0;%Save RFcenter.mat
+name = [num2str(fps),'Hz_27_RF'];%Directory name
 cd(exp_folder)
+stimulus_name = [date,'_Checkerboard_',name(1:7),'_5min_Br50_Q100'];
+if second_time
+    stimulus_name = [stimulus_name,'_re'];
+    name = [name,'_re'];
+end
+if sorted
+    unit = 1;
+    load(['sort_merge_spike\sort_merge_',stimulus_name,'.mat'])
+    sort_directory = 'sort';
+    analyze_spikes = get_multi_unit(exp_folder,sorted_spikes,unit);
+else
+%% For unsorted spikes
+    load(['merge\merge_',stimulus_name,'.mat'])
+    analyze_spikes = reconstruct_spikes;
+    sort_directory = 'unsort';
+end
+
 try
-    load('Analyzed_data\unsort\0224_cSTA_wf_3min_Q100.mat')
+    load('Analyzed_data\sort\0224_cSTA_wf_3min_Q100.mat')
 catch
     Filker_OnOff_Index = zeros(1,60);
     mkdir Analyzed_data
@@ -20,7 +40,6 @@ catch
     mkdir Analyzed_data unsort
 end
 
-name = '30Hz_27_RF';%Directory name
 time_shift = 1:9;%for -50ms:-300ms
 N = length(time_shift);
 if  mod(sqrt(N),1) == 0 %if N is a perfact square
@@ -30,16 +49,6 @@ else
     N_middle_factor = K(find(rem(N,K)==0));
 end
 num_shift = 1/30;%50ms
-%% For unsorted spikes
-load('merge\merge_0224_Checkerboard_30Hz_27_5min_Br50_Q100.mat')
-analyze_spikes = reconstruct_spikes;
-sorted = 0;
-%% For sorted spikes
-% load('sort_merge_spike\sort_merge_0224_Checkerboard_20Hz_27_5min_Br50_Q100.mat')
-% unit = 1;
-% complex_channel = [];
-% analyze_spikes = get_multi_unit(exp_folder,sorted_spikes,unit);
-% sorted = 1;
 
 
 %% Create directory
@@ -64,9 +73,7 @@ for j = 1:length(displaychannel)
     end
 end
 disp(['useless channels are ',num2str(null_channel)])
-
 displaychannel (null_channel) = [];
-
 
 %% calculate RF
 RF = cell(length(time_shift), 60);
@@ -122,11 +129,7 @@ for k =displaychannel
     fig = gcf;
     fig.PaperPositionMode = 'auto';
     if save_svd
-        if sorted
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\sort','\temporal_svd_channel_', num2str(k)  '.tiff'])
-        else
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\unsort','\temporal_svd_channel_', num2str(k)  '.tiff'])
-        end
+            saveas(fig,[exp_folder, '\FIG\RF\', name,'\',sort_directory,'\temporal_svd_channel_', num2str(k)  '.tiff'])
         close(fig);
     end
     
@@ -149,22 +152,16 @@ for k =displaychannel
     colormap(gray);
     colorbar;
     scatter(electrode_x(k),electrode_y(k), 50, 'r','filled');
-    if num_spike /stimulus_length > 1
+    if num_spike /stimulus_length > 0.3
         scatter(closest_extrema(1,k),closest_extrema(2,k), 100, 'b' ,'o','filled')
     end
     set(gcf,'units','normalized','outerposition',[0 0 1 1])
     fig = gcf;
     fig.PaperPositionMode = 'auto';
     if save_svd
-        if sorted
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\sort','\spatial_svd_channel', num2str(k)  '.tiff'])
-        else
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\unsort','\spatial_svd_channel', num2str(k)  '.tiff'])
-        end
+        saveas(fig,[exp_folder, '\FIG\RF\', name,'\',sort_directory,'\spatial_svd_channel', num2str(k)  '.tiff'])
         close(fig);
     end
-    
-    
 end
 
 
@@ -182,36 +179,27 @@ for k =displaychannel
         scatter(electrode_x(k),electrode_y(k), 10, 'r','filled');
         if num_spike /stimulus_length > 1
             scatter(closest_extrema(1,k),closest_extrema(2,k), 50, 'b' ,'o','filled')
-        end
-        
+        end   
     end
-    
     set(gcf,'units','normalized','outerposition',[0 0 1 1])
     fig = gcf;
     fig.PaperPositionMode = 'auto';
     if save_photo
-        if sorted
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\sort','\channel', num2str(k)  '.tiff'])
-        else
-            saveas(fig,[exp_folder, '\FIG\RF\', name,'\unsort','\channel', num2str(k)  '.tiff'])
-        end
+        saveas(fig,[exp_folder, '\FIG\RF\', name,'\',sort_directory,'\channel', num2str(k)  '.tiff'])
         close(fig);
     end
-   
-    
 end
 RFcenter = zeros(60,2);
 for k = displaychannel
     RFcenter(k,1) = (closest_extrema(1,k) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_x;
     RFcenter(k,2) = (closest_extrema(2,k) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_y;
 end
-if sorted
-    save([exp_folder,'\Analyzed_data\sort\RFcenter.mat'],'RFcenter');
-else
-    save([exp_folder,'\Analyzed_data\unsort\RFcenter.mat'],'RFcenter');
-end
 % titles and checkerboard size
 RF_pixel_size = mea_size_bm/side_length*micro_per_pixel %mircometer
+if save_data
+    save([exp_folder,'\Analyzed_data\',sort_directory,'\RFcenter.mat'],'RFcenter','RF_pixel_size');
+end
+
 
 
 cd(code_folder)
