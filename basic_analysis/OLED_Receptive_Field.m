@@ -4,7 +4,7 @@ code_folder = pwd;
 load('oled_channel_pos.mat')
 load('oled_boundary_set.mat')
 
-displaychannel = 1:60;%Choose which channel to display
+displaychannel =1:60;%Choose which channel to display
 save_photo =1;%0 is no save RF photo, 1 is save
 save_svd =1;%0 is no save svd photo, 1 is save
 
@@ -20,8 +20,8 @@ catch
     mkdir Analyzed_data unsort
 end
 
-name = '30Hz_27_RF';%Directory name
-time_shift = 1:9;%for -50ms:-300ms
+name = '20Hz_27_RF';%Directory name
+time_shift = 1:6;%for -50ms:-300ms
 N = length(time_shift);
 if  mod(sqrt(N),1) == 0 %if N is a perfact square
     N_middle_factor = [sqrt(N) sqrt(N)];
@@ -29,9 +29,9 @@ else
     K = flip(1:ceil(N/2));
     N_middle_factor = K(find(rem(N,K)==0));
 end
-num_shift = 1/30;%50ms
+num_shift = 1/20;%50ms
 %% For unsorted spikes
-load('merge\merge_0224_Checkerboard_30Hz_27_5min_Br50_Q100.mat')
+load('merge\merge_0224_Checkerboard_20Hz_27_5min_Br50_Q100.mat')
 analyze_spikes = reconstruct_spikes;
 sorted = 0;
 %% For sorted spikes
@@ -91,8 +91,7 @@ side_length = length(sum_checkerboard);%length of checkerboard
 %% calculate SVD and plot SVD
 electrode_x = zeros(1,60);%x positions of electrode
 electrode_y = zeros(1,60);%y positions of electrode
-closest_extrema = zeros(2,60);%closest positions of RF center to position of electrode
-
+RF_properties = zeros(60,6); %find RF_center by 2D GaussianFit['Amplitude',' X-Coordinate', 'X-Width','Y-Coordinate','Y-Width','Angle'];
 for k =displaychannel
     %calculate SVD
     reshape_RF = zeros(side_length^2,length(time_shift));
@@ -100,10 +99,10 @@ for k =displaychannel
         reshape_RF(:,i) = reshape(gauss_RF{i,k},[side_length^2,1]);
     end
     [U,S,V] = svd(reshape_RF');%U is temporal filter, V is one dimensional spatial filter, S are singular values
-    if (U(1,2)*cSTA(k,end-round(num_shift/BinningInterval)) < 0) % asume that all channel are fast-OFF-slow-ON if there is no csta file.
-        U(:,2) = -U(:,2);
-        V(:,2) = -V(:,2);
-    end
+%     if (U(1,2)*cSTA(k,end-round(num_shift/BinningInterval)) < 0) % asume that all channel are fast-OFF-slow-ON if there is no csta file.
+%         U(:,2) = -U(:,2);
+%         V(:,2) = -V(:,2);
+%     end
     space = reshape(V(:,2),[side_length,side_length]);%Reshape one dimensional spatial filter to two dimensional spatial filter
     
     %Calculate first component percentage
@@ -136,8 +135,7 @@ for k =displaychannel
     num_spike =  length(analyze_spikes{k});
     if num_spike /stimulus_length > 0.3
         max_value  = max(space, [], 'all');
-        closest_extrema(1,k) = ceil(find(space == max_value)/side_length);
-        closest_extrema(2,k) = mod(find(space == max_value)-1, side_length)+1;
+        RF_properties(k,:) = RF_finder(space); %['Amplitude',' X-Coordinate', 'X-Width','Y-Coordinate','Y-Width','Angle'];
     end
     
     
@@ -150,8 +148,19 @@ for k =displaychannel
     colorbar;
     scatter(electrode_x(k),electrode_y(k), 50, 'r','filled');
     if num_spike /stimulus_length > 1
-        scatter(closest_extrema(1,k),closest_extrema(2,k), 100, 'b' ,'o','filled')
+        scatter( RF_properties(k,2), RF_properties(k,4), 50, 'b' ,'o','filled')
     end
+    
+    %plot RF_ellipse
+    t=-pi:0.01:pi;
+    e_x=RF_properties(k,3)*cos(t);
+    e_y=RF_properties(k,5)*sin(t);
+    R_matrix = [cos(RF_properties(k,6)) sin(RF_properties(k,6)) ; -sin(RF_properties(k,6)) cos(RF_properties(k,6))];
+    ellipse = R_matrix*[e_x;e_y];
+    e_x=RF_properties(k,2)+ellipse(1,:);
+    e_y=RF_properties(k,4)+ellipse(2,:);
+    plot(e_x,e_y, 'LineWidth', 2)
+
     set(gcf,'units','normalized','outerposition',[0 0 1 1])
     fig = gcf;
     fig.PaperPositionMode = 'auto';
@@ -181,7 +190,7 @@ for k =displaychannel
         colorbar;
         scatter(electrode_x(k),electrode_y(k), 10, 'r','filled');
         if num_spike /stimulus_length > 1
-            scatter(closest_extrema(1,k),closest_extrema(2,k), 50, 'b' ,'o','filled')
+            scatter( RF_properties(k,2), RF_properties(k,4), 50, 'b' ,'o','filled')
         end
         
     end
@@ -200,18 +209,19 @@ for k =displaychannel
    
     
 end
-RFcenter = zeros(60,2);
+
 for k = displaychannel
-    RFcenter(k,1) = (closest_extrema(1,k) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_x;
-    RFcenter(k,2) = (closest_extrema(2,k) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_y;
-end
-if sorted
-    save([exp_folder,'\Analyzed_data\sort\RFcenter.mat'],'RFcenter');
-else
-    save([exp_folder,'\Analyzed_data\unsort\RFcenter.mat'],'RFcenter');
+    RF_properties(k,2) = ( RF_properties(k,2) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_x;
+    RF_properties(k,4) = ( RF_properties(k,4) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_y;
 end
 % titles and checkerboard size
 RF_pixel_size = mea_size_bm/side_length*micro_per_pixel %mircometer
+RF_properties(:,[3 5]) =  RF_properties(:,[3 5])*RF_pixel_size;
+if sorted
+    save([exp_folder,'\Analyzed_data\sort\RF_properties.mat'],'RF_properties');
+else
+    save([exp_folder,'\Analyzed_data\unsort\RF_properties.mat'],'RF_properties');
+end
 
 
 cd(code_folder)
