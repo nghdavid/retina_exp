@@ -1,4 +1,4 @@
-function makeOLED_Bar_video_sN(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type, seed_date, date, calibration_date, mins, G_list, Dark, mean_lumin, contrast, cutOffFreq)
+function makeOLED_Bar_video_sN(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type, seed_date, date, calibration_date, mins, G_list, Dark, mean_lumin, contrast, cutOffFreq, num_dot)
 %% This code can produce moving bar video whose trajectory is made of HMM or OU process
 %It can make kinds version of moving bar in several pattern: Bright or Dark, by HMM, OU, or smoothed_OU.
 %sN means Spatial Noise.
@@ -19,9 +19,11 @@ function makeOLED_Bar_video_sN(makemovie_folder, theta, direction, video_folder,
 %A dot is set to be a 33^2 pixel square with 50% mean_lumin
 %                           ~ 251^2 micro ~ 3% of mea_area
 %num_pot is the numder of dots, which is the only tuneable parameter of Spatial Noise.
+covered_area = 0.03*num_dot;
 %% Load boundary_set.mat and calibration.mat
 load(['C:\calibration\',calibration_date,'oled_calibration\calibration.mat'])
 load(['C:\calibration\',calibration_date,'oled_calibration\oled_boundary_set.mat']);
+mea_range = [leftx_bar rightx_bar meaCenter_y-floor(mea_size/2) meaCenter_y+floor(mea_size/2) mea_size];
 %% Setup matrix_folder and make matrix
 rotation = theta*4/pi;
 if strcmp(Dark,'Dark')%Dark bar
@@ -62,7 +64,7 @@ for Gvalue=G_list
     load(['C:\',seed_directory_name,'\',filename]);
     name=[name];
     if strcmp(Dark,'Dark')
-        name=[date,'_',type,'_Dark_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(100-contrast*100)];
+        name=[date,'_',type,'_Dark_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
     elseif strcmp(Dark,'Bright')
         name=[date,'_',type,'_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
     end
@@ -73,7 +75,7 @@ for Gvalue=G_list
         Xarray = OU_generator(T,dt,Gvalue,rntest);
     elseif strcmp(type,'OUsmooth')%Smooth OU
         Xarray = Smooth_OU_generator(T,dt,Gvalue,rntest,cutOffFreq);
-        name = [name,'_',num2str(cutOffFreq),'Hz'];
+        name = [name,'_',num2str(cutOffFreq),'Hz_', num2str(covered_area), 'covered'];
     end
     name
     %% Normalize to proper moving range and video name
@@ -96,9 +98,14 @@ for Gvalue=G_list
     end
     
     %% Draw moving bar
+    dot_lumin  =  interp1(real_lum,lum,mean_lumin/2,'linear');
     for kk =1:length(Time)
         X=newXarray(kk);%Get bar center position
         load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
+        sN_iC = Spatial_Noise_generator(mea_range, num_dot);
+        for i = 1:length(sN_iC{2})
+            img(sN_iC{2}(i,1)-16:sN_iC{2}(i,1)+16, sN_iC{2}(i,2)-16:sN_iC{2}(i,2)+16) = dot_lumin;
+        end
         %% Square_flicker
         if mod(kk,3)==1 %odd number
             a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=1; % white square
@@ -125,5 +132,3 @@ for Gvalue=G_list
 end
 cd(makemovie_folder)
 end
-
-function Spatial_Noise_generator = Spatial_Noise_generator(mea_range, num_dot)
