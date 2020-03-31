@@ -99,10 +99,10 @@ for k =displaychannel
         reshape_RF(:,i) = reshape(gauss_RF{i,k},[side_length^2,1]);
     end
     [U,S,V] = svd(reshape_RF');%U is temporal filter, V is one dimensional spatial filter, S are singular values
-%     if (U(1,2)*cSTA(k,end-round(num_shift/BinningInterval)) < 0) % asume that all channel are fast-OFF-slow-ON if there is no csta file.
-%         U(:,2) = -U(:,2);
-%         V(:,2) = -V(:,2);
-%     end
+    if (U(1,2)*cSTA(k,end-round(num_shift/BinningInterval)) < 0) % asume that all channel are fast-OFF-slow-ON if there is no csta file.
+        U(:,2) = -U(:,2);
+        V(:,2) = -V(:,2);
+    end
     space = reshape(V(:,2),[side_length,side_length]);%Reshape one dimensional spatial filter to two dimensional spatial filter
     
     %Calculate first component percentage
@@ -210,13 +210,16 @@ for k =displaychannel
     
 end
 
+%Change coordinates and units of RF_properties
 for k = displaychannel
     RF_properties(k,2) = ( RF_properties(k,2) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_x;
     RF_properties(k,4) = ( RF_properties(k,4) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_y;
 end
 % titles and checkerboard size
 RF_pixel_size = mea_size_bm/side_length*micro_per_pixel %mircometer
-RF_properties(:,[3 5]) =  RF_properties(:,[3 5])*RF_pixel_size;
+RF_properties(:,[3 5]) =  1.5*RF_properties(:,[3 5])*RF_pixel_size; %%mm %%1.5*sdv accroding to Gollisch
+
+
 if sorted
     save([exp_folder,'\Analyzed_data\sort\RF_properties.mat'],'RF_properties');
 else
