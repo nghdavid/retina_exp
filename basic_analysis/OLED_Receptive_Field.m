@@ -153,8 +153,8 @@ for k =displaychannel
     
     %plot RF_ellipse
     t=-pi:0.01:pi;
-    e_x=RF_properties(k,3)*cos(t);
-    e_y=RF_properties(k,5)*sin(t);
+    e_x=RF_properties(k,3)*cos(t)*1.5;%1.5*stv accroding to Gollisch
+    e_y=RF_properties(k,5)*sin(t)*1.5;
     R_matrix = [cos(RF_properties(k,6)) sin(RF_properties(k,6)) ; -sin(RF_properties(k,6)) cos(RF_properties(k,6))];
     ellipse = R_matrix*[e_x;e_y];
     e_x=RF_properties(k,2)+ellipse(1,:);
@@ -217,7 +217,7 @@ for k = displaychannel
 end
 % titles and checkerboard size
 RF_pixel_size = mea_size_bm/side_length*micro_per_pixel %mircometer
-RF_properties(:,[3 5]) =  1.5*RF_properties(:,[3 5])*RF_pixel_size; %%mm %%1.5*sdv accroding to Gollisch
+RF_properties(:,[3 5]) =  1.5*RF_properties(:,[3 5])*RF_pixel_size; %%mm %%1.5*stv accroding to Gollisch
 
 
 if sorted
