@@ -9,12 +9,13 @@ save_photo =1;%0 is no save RF photo, 1 is save
 save_svd =1;%0 is no save svd photo, 1 is save
 
 
-exp_folder = 'D:\Leo\0229';
+exp_folder = 'C:\Users\llinc\OneDrive\Documents\GitHub\retina_personal\0229';
 cd(exp_folder)
 try
     load('Analyzed_data\unsort\0224_cSTA_wf_3min_Q100.mat')
 catch
     Filker_OnOff_Index = zeros(1,60);
+    cSTA = zeros(60,61);
     mkdir Analyzed_data
     mkdir Analyzed_data sort
     mkdir Analyzed_data unsort
@@ -59,7 +60,7 @@ stimulus_length = TimeStamps(2)-TimeStamps(1);
 
 for j = 1:length(displaychannel)
     num_spike =  length(analyze_spikes{displaychannel (j)});
-    if num_spike /stimulus_length <0.3%Cells with a low firing rate for checkerbox(<0.3HZ) were not considered
+    if num_spike /stimulus_length < 0.3 %Cells with a low firing rate for checkerbox(<1HZ) were not considered
         null_channel = [null_channel j];
     end
 end
@@ -218,7 +219,7 @@ end
 % titles and checkerboard size
 RF_pixel_size = mea_size_bm/side_length*micro_per_pixel %mircometer
 RF_properties(:,[3 5]) =  1.5*RF_properties(:,[3 5])*RF_pixel_size; %%mm %%1.5*sdv accroding to Gollisch
-
+RF_properties = [RF_properties sqrt(RF_properties(:,3).*RF_properties(:,5)) ];
 
 if sorted
     save([exp_folder,'\Analyzed_data\sort\RF_properties.mat'],'RF_properties');
