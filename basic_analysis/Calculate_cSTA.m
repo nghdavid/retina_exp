@@ -62,7 +62,7 @@ cSTA = cSTA-mean_lumin;
 useful_channelnumber = [];
 for i = 1:60
     number_spike = length(analyze_spikes{i});
-    if number_spike/(stimulus_length) <= 1%Firing rate is smaller than zero
+    if number_spike/(stimulus_length) < 0.3%Cells with a low firing rate for checkerbox(<1HZ) were not considered
         cSTA(i,:) = NaN;
     elseif isempty(find( abs(cSTA(i,round(length(cSTA)/2):end))>= 7*std(cSTA(i,1:round(length(cSTA)/2)))))
         cSTA(i,:) = NaN;

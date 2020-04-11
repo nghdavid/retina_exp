@@ -159,7 +159,7 @@ for channelnumber=1:60
     on_ss = cut_onspikes{channelnumber};
     off_ss = cut_offspikes{channelnumber};
     %Exclude channels that mean firing rate is lower than one
-    if (length(on_ss)+length(off_ss))/(onDataTime*num_cycle*2) < 1
+    if (length(on_ss)+length(off_ss))/(onDataTime*num_cycle*2) < 1%Cells with a low firing rate for checkerbox(<1HZ) were not considered
         useless_channel = [useless_channel channelnumber];
         %disp(['Channel ',int2str(channelnumber),'  mean firing rate is lower than one'])
         continue
