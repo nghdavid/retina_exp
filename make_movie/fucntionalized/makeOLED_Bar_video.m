@@ -125,5 +125,3 @@ for Gvalue=G_list
 end
 cd(makemovie_folder)
 end
-
-function Spatial_Noise_generator = Spatial_Noise_generator(mea_range, num_dot)
