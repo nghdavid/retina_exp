@@ -4,24 +4,34 @@ code_folder = pwd;
 load('oled_channel_pos.mat')
 load('oled_boundary_set.mat')
 
-displaychannel =1:60;%Choose which channel to display
+displaychannel =1%60;%Choose which channel to display
 save_photo =1;%0 is no save RF photo, 1 is save
 save_svd =1;%0 is no save svd photo, 1 is save
 
-
-exp_folder = 'D:\Leo\0229';
+name = '30Hz_27_RF';%Directory name
+exp_folder = 'D:\Leo\0409';
 cd(exp_folder)
 try
     load('Analyzed_data\unsort\0224_cSTA_wf_3min_Q100.mat')
+    cd Analyzed_data
+    mkdir(name)
+    cd(name)
+    mkdir sort
+    mkdir unsort
 catch
     Filker_OnOff_Index = zeros(1,60);
+    cSTA = zeros(60,61);
     mkdir Analyzed_data
-    mkdir Analyzed_data sort
-    mkdir Analyzed_data unsort
+    cd Analyzed_data
+    mkdir(name)
+    cd(name)
+    mkdir sort
+    mkdir unsort
+    disp('highly recommand to analyze cSTA first')
+    pause
 end
 
-name = '20Hz_27_RF';%Directory name
-time_shift = 1:6;%for -50ms:-300ms
+time_shift = 1:9;%for -50ms:-300ms
 N = length(time_shift);
 if  mod(sqrt(N),1) == 0 %if N is a perfact square
     N_middle_factor = [sqrt(N) sqrt(N)];
@@ -29,9 +39,10 @@ else
     K = flip(1:ceil(N/2));
     N_middle_factor = K(find(rem(N,K)==0));
 end
-num_shift = 1/20;%50ms
+num_shift = 1/30;%50ms
+cd(exp_folder)
 %% For unsorted spikes
-load('merge\merge_0224_Checkerboard_20Hz_27_5min_Br50_Q100.mat')
+load('merge\merge_0224_Checkerboard_30Hz_27_15min_Br50_Q100.mat')
 analyze_spikes = reconstruct_spikes;
 sorted = 0;
 %% For sorted spikes
@@ -59,7 +70,7 @@ stimulus_length = TimeStamps(2)-TimeStamps(1);
 
 for j = 1:length(displaychannel)
     num_spike =  length(analyze_spikes{displaychannel (j)});
-    if num_spike /stimulus_length <0.3%Cells with a low firing rate for checkerbox(<0.3HZ) were not considered
+    if num_spike /stimulus_length < 0.3 || isnan(cSTA(j,1)) %Cells with a low firing rate for checkerbox(<1HZ) were not considered
         null_channel = [null_channel j];
     end
 end
@@ -99,7 +110,7 @@ for k =displaychannel
         reshape_RF(:,i) = reshape(gauss_RF{i,k},[side_length^2,1]);
     end
     [U,S,V] = svd(reshape_RF');%U is temporal filter, V is one dimensional spatial filter, S are singular values
-    if (U(1,2)*cSTA(k,end-round(num_shift/BinningInterval)) < 0) % asume that all channel are fast-OFF-slow-ON if there is no csta file.
+    if (U(1,2)*sum(cSTA(k,end-round(0.066/BinningInterval):end)) < 0) % asume that all channel are fast-OFF-slow-ON if there is no csta file.
         U(:,2) = -U(:,2);
         V(:,2) = -V(:,2);
     end
@@ -133,11 +144,8 @@ for k =displaychannel
     electrode_x(k) = (oled_channel_pos(k,1)-meaCenter_x)*side_length/mea_size_bm + (side_length+1)/2;
     electrode_y(k) = (oled_channel_pos(k,2)-meaCenter_y)*side_length/mea_size_bm + (side_length+1)/2;
     num_spike =  length(analyze_spikes{k});
-    if num_spike /stimulus_length > 0.3
-        max_value  = max(space, [], 'all');
-        RF_properties(k,:) = RF_finder(space); %['Amplitude',' X-Coordinate', 'X-Width','Y-Coordinate','Y-Width','Angle'];
-    end
-    
+    max_value  = max(space, [], 'all');
+    RF_properties(k,:) = RF_finder(space); %['Amplitude',' X-Coordinate', 'X-Width','Y-Coordinate','Y-Width','Angle'];   
     
     %Plot spatial SVD
     figure(k+60)
@@ -153,8 +161,8 @@ for k =displaychannel
     
     %plot RF_ellipse
     t=-pi:0.01:pi;
-    e_x=RF_properties(k,3)*cos(t)*1.5;%1.5*stv accroding to Gollisch
-    e_y=RF_properties(k,5)*sin(t)*1.5;
+    e_x=RF_properties(k,3)*cos(t);
+    e_y=RF_properties(k,5)*sin(t);
     R_matrix = [cos(RF_properties(k,6)) sin(RF_properties(k,6)) ; -sin(RF_properties(k,6)) cos(RF_properties(k,6))];
     ellipse = R_matrix*[e_x;e_y];
     e_x=RF_properties(k,2)+ellipse(1,:);
@@ -178,7 +186,7 @@ end
 
 
 %% plot RF & electrode position & RF center
-for k =displaychannel
+for k = displaychannel
     %plot RF & electrode position & RF center
     figure(k);
     num_spike =  length(analyze_spikes{k});
@@ -210,20 +218,28 @@ for k =displaychannel
     
 end
 
-%Change coordinates and units of RF_properties
+%Change coordinates, reunit and redefine RF_properties => ['Amplitude',' X-Coordinate', 'Long-axis','Y-Coordinate','short-axis','Angle(Long-axis)','RF-"radius"'];
 for k = displaychannel
     RF_properties(k,2) = ( RF_properties(k,2) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_x;
     RF_properties(k,4) = ( RF_properties(k,4) - (side_length+1)/2)/(side_length/mea_size_bm)+meaCenter_y;
 end
-% titles and checkerboard size
 RF_pixel_size = mea_size_bm/side_length*micro_per_pixel %mircometer
-RF_properties(:,[3 5]) =  1.5*RF_properties(:,[3 5])*RF_pixel_size; %%mm %%1.5*stv accroding to Gollisch
+RF_properties(:,[3 5]) =  1.5*RF_properties(:,[3 5])*RF_pixel_size; %%mm %%1.5*sdv accroding to Gollisch
+RF_properties = [RF_properties sqrt(RF_properties(:,3).*RF_properties(:,5))];%RF_properties[7] == RF-"radius" == (a*b)^0.5
+for i = find(RF_properties(:,3)<RF_properties(:,5))'
+    RF_properties(i,[3 5]) = RF_properties(i,[5 3]);
+    if RF_properties(i,6) > 0
+        RF_properties(i,6) = RF_properties(i,6) - pi/2;
+    else
+        RF_properties(i,6) = RF_properties(i,6) + pi/2;
+    end
+end
 
 
 if sorted
-    save([exp_folder,'\Analyzed_data\sort\RF_properties.mat'],'RF_properties');
+    save([exp_folder,'\Analyzed_data\', name, '\sort\RF_properties.mat'],'RF_properties');
 else
-    save([exp_folder,'\Analyzed_data\unsort\RF_properties.mat'],'RF_properties');
+    save([exp_folder,'\Analyzed_data\', name, '\unsort\RF_properties.mat'],'RF_properties');
 end
 
 
