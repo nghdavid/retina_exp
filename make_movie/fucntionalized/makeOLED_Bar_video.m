@@ -1,4 +1,4 @@
-function makeOLED_Bar_video_sN(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type, seed_date, date, calibration_date, mins, G_list, Dark, mean_lumin, contrast, cutOffFreq)
+function makeOLED_Bar_video(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type, seed_date, date, calibration_date, mins, G_list, Dark, mean_lumin, contrast, cutOffFreq)
 %% This code can produce moving bar video whose trajectory is made of HMM or OU process
 %It can make kinds version of moving bar in several pattern: Bright or Dark, by HMM, OU, or smoothed_OU.
 %sN means Spatial Noise.
@@ -125,5 +125,3 @@ for Gvalue=G_list
 end
 cd(makemovie_folder)
 end
-
-function Spatial_Noise_generator = Spatial_Noise_generator(mea_range, num_dot)
