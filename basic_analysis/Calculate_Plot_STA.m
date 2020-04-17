@@ -3,8 +3,6 @@ close all;
 clear all;
 code_folder = pwd;
 exp_folder = 'E:\20200302';
-predicitive_or_Not = 1;
-save_photo = 1;
 cd(exp_folder);
 load('different_G.mat')
 load(['predictive_channel\bright_bar.mat'])
@@ -13,16 +11,11 @@ cd sort_merge_spike\MI
 all_file = subdir('*.mat');% change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file);
 unit = 1;
-
 forward = 90;%90 bins before spikes for calculating STA
 backward = 90;%90 bins after spikes for calculating STA
-if predicitive_or_Not
-    roi = p_channel;
-else
-    roi = np_channel;
-end
+roi = [p_channel np_channel];
 %  roi = 15;
-for z = 1:n_file
+for z = 12:n_file
     %choose file
     file = all_file(z).name ;
     [pathstr, name, ext] = fileparts(file);
@@ -49,7 +42,7 @@ for z = 1:n_file
        %%  Binning
     bin=BinningInterval*10^3; %ms
     
-    time=[-forward :backward]*BinningInterval;
+    STA_time=[-forward :backward]*BinningInterval;
     %% BinningSpike and calculate STA
     
     analyze_spikes = get_multi_unit(exp_folder,sorted_spikes,unit);
@@ -77,53 +70,56 @@ for z = 1:n_file
         %% K means clustering
         score1 = score(:,1);
         score2 = score(:,2);
-        cluster_data = [score1,score2];%Merge PCA1 and PCA2
-        idx = kmeans(cluster_data,2);%Results of which clusters(1 or 2), and clustered into 2 groups
+        idx = zeros(1,length(score));
+        idx(find(score1<0)) = 1;
+        idx(find(score1>=0)) = 2;
+%         cluster_data = [score1,score2];%Merge PCA1 and PCA2
+%         idx = kmeans(cluster_data,2);%Results of which clusters(1 or 2), and clustered into 2 groups
         idxs{i} = idx;
-        figure('units','normalized','outerposition',[0 0 1 1])
-        ha = tight_subplot(1,3,[.04 .04],[0.09 0.02],[.04 .04]);
-        set(ha, 'Visible', 'off');
-        set(gcf,'units','normalized','outerposition',[0 0 1 1])
-        fig =gcf;
-        fig.PaperPositionMode = 'auto';
-        fig.InvertHardcopy = 'off';
-        axes(ha(1))
-        
-        %Red represents group 1, blue represents group 2
-        scatter(score1(find(idx==1)),score2(find(idx==1)),'r');hold on
-        scatter(score1(find(idx==2)),score2(find(idx==2)),'b');
-        xlabel('Stimulus*PCA1')
-        ylabel('Stimulus*PCA2')
-        title('Results of two cluster')
-        axes(ha(2)); 
+%         figure('units','normalized','outerposition',[0 0 1 1])
+%         ha = tight_subplot(1,3,[.04 .04],[0.09 0.02],[.04 .04]);
+%         set(ha, 'Visible', 'off');
+%         set(gcf,'units','normalized','outerposition',[0 0 1 1])
+%         fig =gcf;
+%         fig.PaperPositionMode = 'auto';
+%         fig.InvertHardcopy = 'off';
+%         axes(ha(1))
+%         
+%         %Red represents group 1, blue represents group 2
+%         scatter(score1(find(idx==1)),score2(find(idx==1)),'r');hold on
+%         scatter(score1(find(idx==2)),score2(find(idx==2)),'b');
+%         xlabel('Stimulus*PCA1')
+%         ylabel('Stimulus*PCA2')
+%         title('Results of two cluster')
+%         axes(ha(2)); 
         positive_PCA = PCA_STA(find(idx==1),:);
         positive_PCAs{i} = positive_PCA;
         negative_PCA= PCA_STA(find(idx==2),:);
         negative_PCAs{i} = negative_PCA;
-        plot(time,mean(positive_PCA,1),'r');hold on%Red is positive_PCA
-        plot(time,mean(negative_PCA,1),'b');%Blue is negative_PCA
-        xlabel('time before spike(sec)')
-        ylabel('STA from two kinds of clusters')
-        title('STA of two different clusters using k means')
-        xline(0)
-        axes(ha(3)); 
-        plot(time,dis_STA(i,:));
-        xlabel('time before spike(sec)')
-        ylabel('STA of bar')
-        xline(0)
-        if predicitive_or_Not
-            title(['p',int2str(i)])
-        else
-            title(['np',int2str(i)])
-        end
-        legend([num2str(corr_time),' sec'])
+%         plot(time,mean(positive_PCA,1),'r');hold on%Red is positive_PCA
+%         plot(time,mean(negative_PCA,1),'b');%Blue is negative_PCA
+%         xlabel('time before spike(sec)')
+%         ylabel('STA from two kinds of clusters')
+%         title('STA of two different clusters using k means')
+%         xline(0)
+%         axes(ha(3)); 
+%         plot(time,dis_STA(i,:));
+%         xlabel('time before spike(sec)')
+%         ylabel('STA of bar')
+%         xline(0)
+%         if predicitive_or_Not
+%             title(['p',int2str(i)])
+%         else
+%             title(['np',int2str(i)])
+%         end
+%         legend([num2str(corr_time),' sec'])
 %         scatter(score1(find(score1>0)),score2(find(score1>0)),'r');hold on
 %         scatter(score1(find(score1<0)),score2(find(score1<0)),'b');
-        if save_photo
-            saveas(fig,[exp_folder,'\STA\FIG\',name(12:end),'_ch',int2str(i),'.tif'])
-        end
+%         if save_photo
+%             saveas(fig,[exp_folder,'\STA\FIG\',name(12:end),'_ch',int2str(i),'.tif'])
+%         end
         end
     end
-    save([exp_folder,'\STA\',name(12:end),'.mat'],'time','dis_STA','bin_pos','corr_time','idxs','PCA_STAs','positive_PCAs','negative_PCAs','BinningSpike','TheStimuli','BinningTime','forward','backward','bin','BinningInterval')
+    save([exp_folder,'\STA\',name(12:end),'.mat'],'STA_time','dis_STA','bin_pos','corr_time','idxs','PCA_STAs','positive_PCAs','negative_PCAs','BinningSpike','TheStimuli','BinningTime','forward','backward','bin','BinningInterval','score1','score2')
 end
 
