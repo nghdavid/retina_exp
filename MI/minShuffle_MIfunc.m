@@ -1,5 +1,14 @@
 function information = minShuffle_MIfunc(Neurons,isi2,BinningInterval,backward,forward)
-Neurons = Neurons +1 -1*min(Neurons);
+state = 1;
+for j = unique(Neurons)
+    Neurons(find(Neurons==j))= state;
+    state = state + 1;
+end
+state = 1;
+for j = unique(isi2)
+    isi2(find(isi2==j))= state;
+    state = state + 1;
+end
 dat=[];informationp=[];temp=backward+2;
     for i=1:backward+1 %past(t<0)
         x = Neurons((i-1)+forward+1:length(Neurons)-backward+(i-1))';
@@ -22,8 +31,8 @@ dat=[];informationp=[];temp=backward+2;
 
     dat=[];informationf=[];temp=0;sdat=[];
     for i=1:forward
-        x =Neurons(forward+1-i:length(Neurons)-backward-i)';
-        y = isi2(forward+1:length(isi2)-backward)';
+        y =Neurons(forward+1-i:length(Neurons)-backward-i)';
+        x = isi2(forward+1:length(isi2)-backward)';
         dat{i}=find_serie_with_min_entropy(x', y')';
         norm=BinningInterval;
 
