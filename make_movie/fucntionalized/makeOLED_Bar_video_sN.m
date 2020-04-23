@@ -34,7 +34,7 @@ if strcmp(Dark,'Dark')%Dark bar
         disp('Already have produced matrix')
     end
 elseif strcmp(Dark,'Bright')%Bright bar
-    matrix_folder = ['C:\',calibration_date,'Bar_matrix_',num2str(mean_lumin),'mW_\', num2str(theta*4/pi)];
+    matrix_folder = ['C:\',calibration_date,'Bar_matrix_',num2str(mean_lumin),'mW\', num2str(theta*4/pi)];
     if exist(matrix_folder) == 0
         make_bar_matrix(calibration_date,mean_lumin,rotation);
     else
@@ -103,7 +103,7 @@ for Gvalue=G_list
         X=newXarray(kk);%Get bar center position
         load([matrix_folder,'\',num2str(X),'.mat']);% Load picture matrix
         sN_iC = Spatial_Noise_generator(mea_range, num_dot);
-        for i = 1:length(sN_iC{2})
+        for i = 1:size(sN_iC{2},1)
             a(sN_iC{2}(i,2)-16:sN_iC{2}(i,2)+16, sN_iC{2}(i,1)-16:sN_iC{2}(i,1)+16) = dot_lumin;
         end
         %% Square_flicker
