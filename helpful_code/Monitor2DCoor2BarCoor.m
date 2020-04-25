@@ -1,6 +1,6 @@
 function newXpos = Monitor2DCoor2BarCoor(x,y,bar_direction,monitor_type)
 if strcmp(monitor_type, 'LCD')
-    load('boundary_set.mat')
+    load('C:\calibration\20190817\boundary_set.mat')
 elseif strcmp(monitor_type, 'OLED')
     load('oled_boundary_set.mat')
 end
