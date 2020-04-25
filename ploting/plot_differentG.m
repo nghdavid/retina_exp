@@ -2,65 +2,43 @@ close all;
 clear all;
 load('rr.mat')
 code_folder = pwd;
-exp_folder = 'E:\20200306';
+exp_folder = 'E:\20200418';
 cd(exp_folder)
 load('different_G.mat')
 type = 'pos';
-order = '0';%First or second experiment
-HMM_date = '0225';%Date of movie
+order = '1';%First or second experiment
 sorted=1;
 save_photo = 1;
-OU_or_Not = 0;%Plot OU or not
+HMM_or_Not = 0;
+sOU_or_Not = 1;
+frequency = 1;
+OU_or_Not = 1;%Plot OU or not
 all_or_Not = 1;%Plot all channels or not
-% roi = [2,9,17,18,28,33,34,42,50];
-HMM_former_name = [type,'_',HMM_date,'_HMM_',direction,'_G'];
-if order == '0'
-    HMM_post_name = ['_',num2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
-else
-    HMM_post_name = ['_',num2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',order];
-end
-HMM_filename =  [type,'_',HMM_date,'_HMM_',direction,'_',num2str(length(HMM_different_G )),'G_',num2str(mins),'min_Br50_Q100_',order,'_ch']; %Filename used to save(Plot HMM only)   
-OU_filename =  [type,'_',HMM_date,'_HMMandOU_',direction,'_',num2str(length(HMM_different_G )),'G_',num2str(mins),'min_Br50_Q100_',order,'_ch'];%Filename used to save(Plot HMM and OU)   
-OU_former_name = [type,'_',OU_date,'_OU_',direction,'_G'];
-OU_post_name = ['_5min_Q100_',num2str(mean_lumin),'mW'];%Load calculated MI first(Need to run Calculate_MI.m first to get)
+roi = [9,17,24,25,33,40,41,43,49,50,51,52,57,58,59];
 if sorted
     sort_directory = 'sort';
-    cd MI\sort
 else
     sort_directory = 'unsort';
-    cd MI\unsort
 end
-
+MI_directory = [exp_folder,'\MI\',sort_directory];
 %% Load data
-allchannellegend = cell(1,length(HMM_different_G));%Save which G
-corr_t_legend = cell(1,length(HMM_different_G));%Save HMM correlation time
-all_corr_t_legend = cell(1,length(HMM_different_G)+length(OU_different_G));%Save HMM and OU correlation time
-
 %Load HMM MI data and correlation time
-HMM_MI =[];
-HMM_MI_shuffle = [];
-HMM_peaks = [];
-for G =1:length(HMM_different_G) 
-    load([HMM_former_name,num2str(HMM_different_G(G)),HMM_post_name ,'.mat'])
-    HMM_peaks = [HMM_peaks;peak_times];
-    HMM_MI = [HMM_MI;Mutual_infos];
-    HMM_MI_shuffle = [HMM_MI_shuffle ;Mutual_shuffle_infos];
-    allchannellegend{G} = ['G', num2str(HMM_different_G(G))];
-    all_corr_t_legend{G} = [num2str(corr_time),' sec'];
-    corr_t_legend{G} = [num2str(corr_time),' sec'];
+if HMM_or_Not
+    [HMM_former_name,HMM_post_name,HMM_filename] = Get_HMM_OU_name(exp_folder,'HMM',type,order,0);
+    [MI,MI_shuffle,peaks,corr_t_legend,time] = Read_different_G(MI_directory,'HMM',HMM_different_G,HMM_former_name,HMM_post_name);
+    filename = HMM_filename;
+end
+if sOU_or_Not
+    [sOU_former_name,sOU_post_name,sOU_filename] = Get_HMM_OU_name(exp_folder,'OUsmooth',type,order,frequency);
+    [MI,MI_shuffle,peaks,corr_t_legend,time] = Read_different_G(MI_directory,'OUsmooth',OUsmooth_different_G,sOU_former_name,sOU_post_name);
+    filename = sOU_filename;
 end
 %Load OU MI data and correlation time
 if OU_or_Not
-    OU_MI =[];
-    OU_MI_shuffle = [];
-    for     G =1:length(OU_different_G) 
-        load([OU_former_name,num2str(OU_different_G(G)),OU_post_name ,'.mat'])
-
-        OU_MI = [OU_MI;Mutual_infos];
-        OU_MI_shuffle = [OU_MI_shuffle ;Mutual_shuffle_infos];
-        all_corr_t_legend{G+length(HMM_different_G)} = ['OU-', num2str(corr_time),' sec'];
-    end
+    [OU_former_name,OU_post_name,OU_filename] = Get_HMM_OU_name(exp_folder,'OU',type,order,0);
+    [OU_MI,OU_MI_shuffle,OU_peaks,OU_corr_t_legend,time] = Read_different_G(MI_directory,'OU',OU_different_G,OU_former_name,OU_post_name);
 end
+all_corr_t_legend = [corr_t_legend,OU_corr_t_legend];
 
 %% Plot all channels
 if all_or_Not
@@ -70,17 +48,16 @@ if all_or_Not
         axes(ha(rr(channelnumber)));
         %Plot HMM
         for G =1:length(HMM_different_G)
-            mean_MI_shuffle = mean(cell2mat(HMM_MI_shuffle(G,channelnumber)));
-            mutual_information = cell2mat(HMM_MI (G,channelnumber));
+            mean_MI_shuffle = mean(cell2mat(MI_shuffle(G,channelnumber)));
+            mutual_information = cell2mat(MI(G,channelnumber));
             if channelnumber~=31
             if max(mutual_information-mean_MI_shuffle)<0.1
                 continue;
             end
             else
-                plot(time,mutual_information-mean_MI_shuffle); hold on; %,'color',cc(z,:));hold on
-                xlim([ -2300 1300])
-                ylim([0 100])
-                continue;
+                lgd =legend(corr_t_legend,'Location','northwest');
+                lgd.FontSize = 11;
+                legend('boxoff')
             end
             plot(time,mutual_information-mean_MI_shuffle); hold on; %,'color',cc(z,:));hold on
             xlim([ -2300 1300])
@@ -102,12 +79,7 @@ if all_or_Not
     fig.PaperPositionMode = 'auto';
     fig.InvertHardcopy = 'off';
     if save_photo
-        if OU_or_Not
-            saveas(fig,[exp_folder,'\FIG\',sort_directory,'\',OU_filename(1:end-5),'.tif'])
-        else
-            saveas(fig,[exp_folder,'\FIG\',sort_directory,'\',HMM_filename(1:end-5),'.tif'])
-            
-        end
+        saveas(fig,[exp_folder,'\FIG\',sort_directory,'\',filename(1:end-5),'.tif'])
     end
 end
 
@@ -117,9 +89,9 @@ mean_peaks = zeros(length(HMM_different_G),length(roi));
 for channelnumber= roi 
      figure(channelnumber)
      for   G =1:length(HMM_different_G)
-        mean_peaks(G,find(roi==channelnumber)) = HMM_peaks(G,channelnumber);
-        mean_MI_shuffle = mean(cell2mat(HMM_MI_shuffle(G,channelnumber)));
-        mutual_information = cell2mat(HMM_MI (G,channelnumber));hold on;
+        mean_peaks(G,find(roi==channelnumber)) = peaks(G,channelnumber);
+        mean_MI_shuffle = mean(cell2mat(MI_shuffle(G,channelnumber)));
+        mutual_information = cell2mat(MI (G,channelnumber));hold on;
         %Plot HMM with different line
         if G >=4
             plot(time,smooth(mutual_information-mean_MI_shuffle)); 
@@ -133,7 +105,7 @@ for channelnumber= roi
      end
      %Plot OU
      if OU_or_Not
-         for   G =1:length(OU_different_G)
+         for   G =[1,5]%1:length(OU_different_G)
             mean_MI_shuffle = mean(cell2mat(OU_MI_shuffle(G,channelnumber)));
             mutual_information = cell2mat(OU_MI (G,channelnumber));hold on;
             plot(time,smooth(mutual_information-mean_MI_shuffle),'-.'); 
@@ -144,19 +116,16 @@ for channelnumber= roi
      grid on
      
      if OU_or_Not
-       lgd =legend(all_corr_t_legend,'Location','northwest');
+       all_t_legend = {all_corr_t_legend{1:6},all_corr_t_legend{10}};
+       lgd =legend(all_t_legend,'Location','northwest');
      else
-       lgd =legend(corr_t_legend,'Location','northwest');
+       lgd =legend(HMM_corr_t_legend,'Location','northwest');
      end
      lgd.FontSize = 11;
      legend('boxoff')
      hold off;
      if save_photo
-         if OU_or_Not
-             saveas(gcf,[exp_folder,'\FIG\',sort_directory,'\',OU_filename,int2str(channelnumber),'.tif'])
-         else
-             saveas(gcf,[exp_folder,'\FIG\',sort_directory,'\',HMM_filename,int2str(channelnumber),'.tif'])
-         end
+         saveas(gcf,[exp_folder,'\FIG\',sort_directory,'\',filename,int2str(channelnumber),'.tif'])
      end
 end
 % figure(100)
