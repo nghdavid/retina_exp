@@ -27,15 +27,15 @@ for z = 6%1:n_file %choose file
         num_spike = 1;
         idx = idxs{i};
         if ~isempty(idx)
-        for time_shift = forward+1:length(BinningTime)-backward
-            for x = 1:BinningSpike(i,time_shift)
-                if idx(num_spike) == 1
-                    %Red is 1, Blue is 2
-                    BinningSpike(i,time_shift) = BinningSpike(i,time_shift) -1;
+            for time_shift = forward+1:length(BinningTime)-backward
+                for x = 1:BinningSpike(i,time_shift)
+                    if idx(num_spike) == 1
+                        %Red is 1, Blue is 2
+                        BinningSpike(i,time_shift) = BinningSpike(i,time_shift) -1;
+                    end
+                    num_spike = num_spike+1;
                 end
-                num_spike = num_spike+1;
             end
-        end
         end
     end
     % Binning
