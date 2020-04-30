@@ -13,10 +13,10 @@ cd(exp_folder);
 mkdir linear_decoding
 load(['predictive_channel\bright_bar.mat'])
 cd ([exp_folder,'\sort_merge_spike\MI'])
-all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir.
+all_file = subdir('*.mat'); % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ;
 roi = [p_channel,np_channel];
-for z =1:n_file %choose file
+for z =20%1:n_file %choose file
     file = all_file(z).name ;
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
@@ -52,12 +52,12 @@ for z =1:n_file %choose file
     cc = mean((reconstrFrames-mean(reconstrFrames)).*(stimFrames(reconstrStimBins)-mean(stimFrames(reconstrStimBins)))/(std(stimFrames(reconstrStimBins))*std(reconstrFrames)));
     
     fullfig
-    takeFrames = 5000:7000;
+    takeFrames = 7000:9000;
     plot(BinningTime(reconstrStimBins(takeFrames)), reconstrFrames(takeFrames), 'k', 'linewidth', 1.5);hold on
     plot(BinningTime(reconstrStimBins(takeFrames)), stimFrames(reconstrStimBins(takeFrames)),'color', [.7, .7, .7]);
     xlim([min(BinningTime(reconstrStimBins(takeFrames))),max(BinningTime(reconstrStimBins(takeFrames)))])
     title(['Cross correlation is ',num2str(cc)])
-%     saveas(gcf,[exp_folder,'\linear_decoding\',name(12:end),'.tif'])
+    saveas(gcf,[exp_folder,'\linear_decoding\',name(12:end),'.tif'])
   %%
   
     %% Mutual information between trajectory and reconstruction of trajectory in different frequency
