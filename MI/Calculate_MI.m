@@ -1,22 +1,21 @@
 clear all;
 code_folder = pwd;
-%exp_folder = 'D:\Leo\1012exp';
-exp_folder_cell = {'D:\Leo\0229', 'D:\Leo\1219exp' ,'D:\Leo\1017exp'};
+exp_folder_cell = {'E:\20200412'};
 type_folder_cell = {'pos', 'v', 'pos&v'};%'abs', 'pos', 'v', 'pos&v'.
-for ttt = 1:3
+for ttt = 2
 for eee = 1
 exp_folder = exp_folder_cell{eee};
 cd(exp_folder);
 mkdir MI
 cd MI
 type = type_folder_cell{ttt}; 
-sorted = 0;
-unit = 0; %unit = 0 means using 'unit_a' which is writen down while picking waveform in Analyzed_data.
+sorted = 1;
+unit = 1; %unit = 0 means using 'unit_a' which is writen down while picking waveform in Analyzed_data.
 
 
 if sorted
     mkdir sort
-    cd ([exp_folder,'\sort_merge_spike'])
+    cd ([exp_folder,'\sort_merge_spike\MI'])
     all_file = subdir('*.mat') ; % change the type of the files which you want to select, subdir or dir.
     n_file = length(all_file) ;
 else
@@ -39,68 +38,15 @@ for z =1:n_file %choose file
     else
         continue
     end
-    
     load([directory,filename]);
-    
     name=[name];
     z
     name
-    
-    
-    % put your stimulus here!!
-    if strcmp(type,'abs')
-        TheStimuli=absolute_pos;  %recalculated bar position
-    elseif strcmp(type,'pos')
-        TheStimuli=bin_pos;
-    elseif strcmp(type,'v')
-        x=bin_pos;
-        TheStimuli = finite_diff(x ,4);
-    end
-    
     % Binning
-    bin=BinningInterval*10^3; %ms
+    
     BinningTime =diode_BT;
-    
     StimuSN=6; %number of stimulus states
-    if strcmp(type,'abs')
-        nX=sort(TheStimuli,2);
-        abin=length(nX)/StimuSN;
-        isi2 = zeros(60,length(TheStimuli));
-        for k = 1:60
-            if sum(absolute_pos(k,:))>0
-                intervals=[nX(k,abin:abin:end) inf]; % inf: the last term: for all rested values
-                for jj=1:length(TheStimuli)
-                    isi2(k,jj) = find(TheStimuli(k,jj)<=intervals,1);
-                end
-            end
-        end
-    elseif strcmp(type,'pos') || strcmp(type,'v')
-        nX=sort(TheStimuli);
-        abin=length(nX)/StimuSN;
-        intervals=[nX(abin:abin:end) inf]; % inf: the last term: for all rested values
-        temp=0; isi2=[];
-        for jj=1:length(TheStimuli)
-            isi2(jj) = find(TheStimuli(jj)<=intervals,1);
-        end
-    elseif strcmp(type,'pos&v')
-        TheStimuli = zeros(2, length(bin_pos));
-        TheStimuli(1,:)=bin_pos;
-        x = TheStimuli(1,:);
-        TheStimuli(2,:) = finite_diff(x ,4);
-        nX1=sort(TheStimuli(1,:));
-        nX2=sort(TheStimuli(2,:));
-        abin=length(nX1)/StimuSN;
-        intervals1=[nX1(abin:abin:end) inf]; % inf: the last term: for all rested values
-        abin=length(nX2)/StimuSN;
-        intervals2=[nX2(abin:abin:end) inf]; % inf: the last term: for all rested values
-        temp=0; isi3=[]; isi2=[];
-        for jj=1:length(TheStimuli)
-            isi3(1,jj) = find(TheStimuli(1,jj)<=intervals1,1);
-            isi3(2,jj) = find(TheStimuli(2,jj)<=intervals2,1);
-        end
-        isi2 = StimuSN*(isi3(1,:)-1) + isi3(2,:);
-    end
-    
+    isi2 = binning(bin_pos,type,StimuSN);
     %% BinningSpike
     BinningSpike = zeros(60,length(BinningTime));
     analyze_spikes = cell(1,60);
@@ -113,7 +59,8 @@ for z =1:n_file %choose file
         [n,~] = hist(analyze_spikes{i},BinningTime) ;  %yk_spikes is the spike train made from"Merge_rePos_spikes"
         BinningSpike(i,:) = n ;
     end
-    %% Predictive information & find peak of MI
+%% Predictive information & find peak of MI
+    bin=BinningInterval*10^3; %ms
     backward=ceil(15000/bin);
     forward=ceil(15000/bin);
     time=[-backward*bin:bin:forward*bin];
@@ -123,7 +70,6 @@ for z =1:n_file %choose file
     P_channel = [];
     N_channel = [];
     for channelnumber=1:60
-        
         Neurons = BinningSpike(channelnumber,:);  %for single channel
         if strcmp(type,'abs')
             if sum(absolute_pos(channelnumber,:))>0
@@ -178,7 +124,7 @@ for z =1:n_file %choose file
         end
     end
     acf = autocorr(bin_pos,100);
-    corr_time = interp1(acf,1:length(acf),0.5,'linear')*dt;
+    corr_time = interp1(acf,1:length(acf),0.5,'linear')/60;
     if sorted
         save([exp_folder,'\MI\sort\', type,'_',name(12:end),'.mat'],'time','Mutual_infos','Mutual_shuffle_infos','P_channel','N_channel','peak_times', 'MI_peak', 'corr_time')
     else
@@ -187,6 +133,5 @@ for z =1:n_file %choose file
     
     
 end
-
 end
 end

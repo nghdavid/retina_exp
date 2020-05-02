@@ -6,6 +6,7 @@ classdef RGC
        flicker_onoff_index%cSTA result
        onoff_index%Gollisch result
        center_RF
+       RF_size
        bright_bar_predictive
        dark_bar_predictive
        edge_predictive

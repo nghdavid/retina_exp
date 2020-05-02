@@ -9,5 +9,9 @@ function [MI,MI_shuffle,peaks,corr_t_legend,time] = Read_different_G(exp_folder,
     peaks = [peaks;peak_times];
     MI = [MI;Mutual_infos];
     MI_shuffle = [MI_shuffle ;Mutual_shuffle_infos];
-    corr_t_legend{G} = [stimulus,'-',num2str(corr_time),' sec'];
+    if strcmp(stimulus,'OUsmooth')
+         corr_t_legend{G} = ['sOU-',num2str(corr_time),' sec'];
+    else
+        corr_t_legend{G} = [stimulus,'-',num2str(corr_time),' sec'];
+    end
 end
