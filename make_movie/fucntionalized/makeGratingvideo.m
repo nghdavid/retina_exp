@@ -27,8 +27,8 @@ for l = 1:60*10
 end
 
 cd(makemovie_folder)
-for bar_real_width = 300%[300,600]%Number of repeat
-    for temporal_frequency = 0.375%[0.375 0.75,1.5]%Number of repeat
+for bar_real_width = [300,600]%Number of repeat
+    for temporal_frequency = [0.375 0.75,1.5]%Number of repeat
         bar_wid = bar_real_width/ micro_per_pixel/2%unit of bar_real_width is micro
         bar_interval = bar_wid*4;%The distance between bar and bar
     for reversal = [0 1]%For opposite direction
@@ -51,7 +51,6 @@ for bar_real_width = 300%[300,600]%Number of repeat
             if temporal_frequency == 0.375
                 num_move = num_move*2;
             end
-            R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
             xarray = zeros(num_bar,num_move);%Array that store each bar postion(each row store each bar postions)
             xarray(1,1) = 1;%leftx_bd+bar_wid+1;%Left bar first position
             for i = 2:num_move
@@ -71,7 +70,7 @@ for bar_real_width = 300%[300,600]%Number of repeat
             for kk =1:length(xarray)
                 temp = zeros(1024,1280);%Initialize each frame
                 for i = 1:num_bar%Plot each bar
-                    X=floor(xarray(i,kk));
+                    X=round(xarray(i,kk));
                     load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
                     temp = temp + a;
                 end
