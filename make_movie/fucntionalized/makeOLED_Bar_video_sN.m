@@ -45,6 +45,13 @@ else
     return
 end
 
+Noise_matrix_folder = ['C:\',calibration_date,'Spatial_Noise_matrix_',num2str(mean_lumin/2),'mW\', num2str(num_dot)];
+if ~exist(matrix_folder)
+    make_Spatial_Noise_matrix(calibration_date, mean_lumin/2, num_dot);
+else
+    disp('Already have produced matrix')
+end
+
 %% Video parameter
 list = [2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];%Gamma value complete list
 seed_directory_name = [seed_date,' new video Br50\rn_workspace'];
@@ -102,10 +109,10 @@ for Gvalue=G_list
     for kk =1:length(Time)
         X=newXarray(kk);%Get bar center position
         load([matrix_folder,'\',num2str(X),'.mat']);% Load picture matrix
-        sN_iC = Spatial_Noise_generator(mea_range, num_dot);
-        for i = 1:size(sN_iC{2},1)
-            a(sN_iC{2}(i,2)-16:sN_iC{2}(i,2)+16, sN_iC{2}(i,1)-16:sN_iC{2}(i,1)+16) = dot_lumin;
-        end
+        temp = a;
+        load([Noise_matrix_folder,'\',num2str(500),'.mat']);% Load picture matrix
+        temp(find(a~=0)) = 0;
+        a = temp+a;
         %% Square_flicker
         if mod(kk,3)==1 %odd number
             a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=1; % white square

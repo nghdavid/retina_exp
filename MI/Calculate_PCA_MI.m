@@ -2,8 +2,9 @@ clear all;
 code_folder = pwd;
 sorted =1;
 exp_folder = 'E:\20200418';
+exp_folder = 'D:\Leo\0409';
 cd(exp_folder);
-load('predictive_channel\bright_bar.mat')
+%load('predictive_channel\bright_bar.mat')
 mkdir STA
 cd ([exp_folder,'\STA'])
 mkdir MI
@@ -11,7 +12,8 @@ all_file = subdir('*.mat') ; % change the type of the files which you want to se
 n_file = length(all_file) ;
 sort_directory = 'sort';
 cd(code_folder);
-roi = [p_channel,np_channel];
+%roi = [p_channel,np_channel];
+roi = 11;
 type_folder_cell = {'pos', 'v'};%'abs', 'pos', 'v', 'pos&v'.
 for z = 1:n_file %choose file
     PCA_Mutual_infos = cell(6,60);
@@ -78,7 +80,7 @@ for z = 1:n_file %choose file
             PCA_Mutual_shuffle_infos{1+3*(ttt-1),channelnumber} = Blue_information_shuffle;
             PCA_Mutual_infos{2+3*(ttt-1),channelnumber} = Red_information;
             PCA_Mutual_shuffle_infos{2+3*(ttt-1),channelnumber} = Red_information_shuffle;
-            load([exp_folder,'\MI\sort\',type,'_',name,'.mat'])
+            load([exp_folder,'\MI\unsort\',type,'_',name,'.mat'])
             PCA_Mutual_infos{3+3*(ttt-1),channelnumber} = Mutual_infos{channelnumber}';
             PCA_Mutual_shuffle_infos{3+3*(ttt-1),channelnumber} = Mutual_shuffle_infos{channelnumber}';
         end

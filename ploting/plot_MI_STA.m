@@ -3,13 +3,14 @@ clear all;
 % set(0,'DefaultFigureVisible','off')
 code_folder = pwd;
 exp_folder = 'E:\20200418';
+exp_folder = 'D:\Leo\0409';
 save_photo = 1;
 cd(exp_folder);
 load('oled_boundary_set.mat')
 % load('C:\calibration\20190817\boundary_set.mat')
 load('RGC.mat')
-load('different_G.mat')
-load('predictive_channel\bright_bar.mat')
+%load('different_G.mat')
+%load('predictive_channel\bright_bar.mat')
 mkdir STA\FIG
 cd STA\MI
 all_file = subdir('*.mat');% change the type of the files which you want to select, subdir or dir.
@@ -17,8 +18,8 @@ n_file = length(all_file);
 unit = 1;
 forward = 90;%90 bins before spikes for calculating STA
 backward = 90;%90 bins after spikes for calculating STA
-roi = [p_channel,np_channel];
-%  roi = 1;
+%roi = [p_channel,np_channel];
+roi = 11;
 for z = 1:n_file
     %choose file
     file = all_file(z).name ;
@@ -70,11 +71,11 @@ for z = 1:n_file
         xlabel('time before spike(sec)')
         ylabel('STA of bar')
         xline(0)
-        if ismember(i,p_channel)
-            title(['p',int2str(i)])
-        elseif ismember(i,np_channel)
-            title(['np',int2str(i)])
-        end
+%         if ismember(i,p_channel)
+%             title(['p',int2str(i)])
+%         elseif ismember(i,np_channel)
+%             title(['np',int2str(i)])
+%         end
         legend([num2str(corr_time),' sec'])
         axes(ha(3));
         plot(time,smooth(PCA_Mutual_infos{1,i}-mean(PCA_Mutual_shuffle_infos{1,i})),'b');hold on
