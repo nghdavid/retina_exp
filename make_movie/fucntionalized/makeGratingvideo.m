@@ -29,39 +29,41 @@ end
 cd(makemovie_folder)
 for bar_real_width = [300,600]%Number of repeat
     for temporal_frequency = [0.375 0.75,1.5]%Number of repeat
-        bar_wid = bar_real_width/ micro_per_pixel/2%unit of bar_real_width is micro
-        bar_interval = bar_wid*4;%The distance between bar and bar
+        bar_wid = (bar_real_width/ micro_per_pixel-1)/2%unit of bar_real_width is micro
+        bar_interval = bar_wid*4+2 ;%The distance between bar and bar
     for reversal = [0 1]%For opposite direction
         for theta = [0 pi/4 pi/2 pi*3/4]%Direction of moving bar
             %% Check each grating matrix have calculated or not 
             matrix_folder = ['C:\',calibration_date,'grating_matrix_',num2str(mean_lumin),'mW_',num2str(bar_real_width) ,'micro_',num2str(temporal_frequency),'HZ\'];
             if exist([matrix_folder,num2str(theta*4/pi)]) == 0
+                disp('Does not have matrix yet')
                 make_grating_matrix(calibration_date,mean_lumin,theta*4/pi,bar_real_width,temporal_frequency)
             end
             
             %% Calculate each bar
             if pi/4 <= theta && pi*3/4 >= theta
-                longest_dis = mea_size_bm/sin(theta); %the distance a bar would travel
+                longest_dis = mea_size_bm/sin(theta)+bar_interval;%the distance a bar would travel
             else
-                longest_dis = abs(mea_size_bm/cos(theta));
+                longest_dis = abs(mea_size_bm/cos(theta))+bar_interval;
             end
-            bar_le = longest_dis/2;
-            num_bar = ceil(longest_dis/bar_interval)+1;%number of bar in movie
+            bar_le = ceil(longest_dis/2);
+            num_bar = ceil(longest_dis/bar_interval);%number of bar in movie
             num_move = 400; %Number of steps that move %6.67s
-            if temporal_frequency == 0.375
+            if temporal_frequency <= 0.375
                 num_move = num_move*2;
             end
             xarray = zeros(num_bar,num_move);%Array that store each bar postion(each row store each bar postions)
-            xarray(1,1) = 1;%leftx_bd+bar_wid+1;%Left bar first position
+            xarray(1,1) = 0;%leftx_bd+bar_wid+1;%Left bar first position
             for i = 2:num_move
-                xarray(1,i) = xarray(1,i-1)+temporal_frequency*bar_real_width/micro_per_pixel/60*2;
+                xarray(1,i) = xarray(1,i-1)+temporal_frequency*bar_interval/60;
             end
             if num_bar > 1
                 for i = 2:num_bar%Calculate other bar
                     xarray(i,:) = xarray(i-1,:)+bar_interval;
                 end
             end
-            xarray = mod(xarray-1 , num_bar*bar_interval) +1-bar_wid; % set all xarray into mea region
+            xarray = mod(xarray , num_bar*bar_interval); % set all xarray into mea region
+            
             if reversal
                 xarray = fliplr(xarray);%For reverse direction
             end
