@@ -16,7 +16,7 @@ unit = 1;
 forward = 90;%90 bins before spikes for calculating STA
 backward = 90;%90 bins after spikes for calculating STA
 %roi = [p_channel np_channel];
-  roi = 11;
+roi = 11;
 for z = 1:n_file
     %choose file
     file = all_file(z).name ;
