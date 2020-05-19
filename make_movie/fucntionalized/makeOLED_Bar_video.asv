@@ -72,8 +72,6 @@ for Gvalue=G_list
         name=[date,'_',type,'_Dark_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(100-contrast*100)];
     elseif strcmp(Dark,'Bright')
         name=[date,'_',type,'_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
-    elseif strcmp(Dark,'2nd')
-        name=[date,'_',type,'_2nd_Order',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
     end
     %% HMM trajectory
     if strcmp(type,'HMM')
@@ -100,9 +98,7 @@ for Gvalue=G_list
         img=zeros(screen_y,screen_x);
         if strcmp(Dark,'Dark')%Set to mean luminance
             img(lefty_bd:righty_bd,leftx_bd:rightx_bd) = interp1(real_lum,lum,mean_lumin,'linear');
-        elseif strcmp(Dark,'2nd')
-            load([matrix_folder,'\',folder_name,'\',num2str(o),'\origin.mat']);% Load the origin noisy picture matrix
-        end
+        end    
         writeVideo(writerObj,img);
     end
     

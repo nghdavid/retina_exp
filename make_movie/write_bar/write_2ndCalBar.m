@@ -1,4 +1,4 @@
-function a = write_CalBar(a, Vertex, theta,  mea_size_bm,calibration_date,monitor_mean_lumin)
+function a = write_2ndCalBar(a, Vertex, theta,  mea_size_bm,calibration_date,monitor_mean_lumin)
 %Rotation is degree that bar rotate
 load(['C:\calibration\',calibration_date,'oled_calibration\calibration.mat'])
 load(['C:\calibration\',calibration_date,'oled_calibration\oled_boundary_set.mat']);
