@@ -1,4 +1,4 @@
-function [theBarIndexX, theBarIndexY] = write_2ndCalBar(img, Vertex_matrix, theta,  mea_size_bm,calibration_date,monitor_mean_lumin)
+function a = write_2ndCalBar(img, Vertex_matrix, theta,  mea_size_bm,calibration_date,monitor_mean_lumin)
 Vertex = cell(2);
 Vertex{1} = Vertex_matrix(1,:);  %V1  V4
 Vertex{2} = Vertex_matrix(2,:);  %V2  V3
@@ -7,8 +7,7 @@ Vertex{4} = Vertex_matrix(4,:);
 %Rotation is degree that bar rotate
 load(['C:\calibration\',calibration_date,'oled_calibration\calibration.mat'])
 load(['C:\calibration\',calibration_date,'oled_calibration\oled_boundary_set.mat']);
-theBarIndexX = [];
-theBarIndexY = [];
+
 %pervent out of rnage
 if Vertex{2}(1) < 1
     min_x = 1;
@@ -43,8 +42,8 @@ for x = floor(min_x) : ceil(max_x)
     end
     
     for y = floor(lower_y) : ceil(upper_y)
-        theBarIndexX = [theBarIndexX x+leftx_bd-1];
-        theBarIndexY = [theBarIndexY y+lefty_bd-1];
+        
+        a(y+lefty_bd-1,x+leftx_bd-1) = monitor_mean_lumin;
     end
 end
 end

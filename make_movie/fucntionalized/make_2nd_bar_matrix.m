@@ -23,7 +23,6 @@ function make_2nd_bar_matrix(calibration_date,mean_lumin,rotation)
         mkdir ([matrix_folder,folder_name],num2str(o))
         theta = o*pi/4;
         R_matrix = [cos(theta) -sin(theta) ; sin(theta) cos(theta)];
-        
         %find the moving bar
         Vertex = zeros(4,2);
         Vertex(1,:) = [-bar_wid  -bar_le];  %V1  V4
@@ -41,33 +40,14 @@ function make_2nd_bar_matrix(calibration_date,mean_lumin,rotation)
         if o == 0 || o == 2
             theBarIndexX = round(Vertex(1,1):Vertex(1,3))+meaCenter_x;
             theBarIndexY = round(Vertex(2,1):Vertex(2,3))+meaCenter_y;
-            theBar = img(theBarIndexX, theBarIndexY);
         else
-            theBarIndexX = [];
-            theBarIndexY = [];
-            for x = min(Vertex(1,:)):max(Vertex(1,:))
-                for y = min(Vertex(2,:)):max(Vertex(2,:))
-                    
-                end
-            end
+            [theBarIndexX, theBarIndexY] = write_2ndCalBar(img,Vertex,theta,mea_size_bm,calibration_date,monitor_mean_lumin); %a = the bar
         end
-            
-        
-        
+
         for X = ceil(leftx_bar+bar_wid):floor(rightx_bar-bar_wid)
-            a = zeros(screen_y,screen_x);
-            barX=X-round(leftx_bd);
-            barY=meaCenter_y-round(lefty_bd);
-            Vertex = cell(2);
-            Vertex(1,:,:) = [barX-bar_wid  barY-bar_le];  %V1  V4
-            Vertex(2,:,:) = [barX-bar_wid  barY+bar_le];  %V2  V3
-            Vertex(3,:,:) = [barX+bar_wid  barY+bar_le];
-            Vertex(4,:,:) = [barX+bar_wid  barY-bar_le];
-            %rotation
-            for i = 1:4
-                Vertex{i} = R_matrix*(Vertex{i}-[(mea_size_bm+1)/2  (mea_size_bm+1)/2])'+[(mea_size_bm+1)/2  (mea_size_bm+1)/2]';
-            end
-            a = write_CalBar(a,Vertex,theta,mea_size_bm,calibration_date,monitor_mean_lumin); %a = the bar
+            a = img;
+            barCenter = round(R_matrix*[X-meaCenter_x;0]) + [meaCenter_x;meaCenter_y];
+            a(theBarIndexY+barCenter(2), theBarIndexX+barCenter(1)) = img(theBarIndexY, theBarIndexX)
             save([matrix_folder,'\',folder_name,'\',num2str(o),'\',num2str(X),'.mat'],'a');
         end
     end
