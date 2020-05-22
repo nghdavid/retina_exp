@@ -101,7 +101,7 @@ for Gvalue=G_list
         if strcmp(Dark,'Dark')%Set to mean luminance
             img(lefty_bd:righty_bd,leftx_bd:rightx_bd) = interp1(real_lum,lum,mean_lumin,'linear');
         elseif strcmp(Dark,'2nd')
-            load([matrix_folder,'\',folder_name,'\',num2str(o),'\origin.mat']);% Load the origin noisy picture matrix
+            load([matrix_folder,'\',folder_name,'\origin.mat']);% Load the origin noisy picture matrix
         end
         writeVideo(writerObj,img);
     end
