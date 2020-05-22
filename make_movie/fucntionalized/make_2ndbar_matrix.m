@@ -1,11 +1,11 @@
-function make_2nd_bar_matrix(calibration_date,mean_lumin,rotation)
+function make_2ndbar_matrix(calibration_date,mean_lumin,rotation)
 %Rotation is degree that bar rotate
 %mean_lumin is luminance of bar
 matrix_folder = 'C:\';
 load(['C:\calibration\',calibration_date,'oled_calibration\calibration.mat'])
 load(['C:\calibration\',calibration_date,'oled_calibration\oled_boundary_set.mat']);
 monitor_mean_lumin = interp1(real_lum,lum,mean_lumin,'linear');
-folder_name = [calibration_date,'Bar_matrix_',num2str(mean_lumin),'mW'];
+folder_name = [calibration_date,'2ndBar_matrix_',num2str(mean_lumin),'mW'];
 mkdir ([matrix_folder,folder_name])
 %rotation theta = 0 for RL theta
 %theta must between [0,pi]
