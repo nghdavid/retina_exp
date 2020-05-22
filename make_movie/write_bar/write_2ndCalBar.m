@@ -1,9 +1,9 @@
 function a = write_2ndCalBar(img, theBarVertex_matrix,barsShift, theta,  mea_size_bm,calibration_date)
 Vertex = cell(2);
-Vertex{1} = theBarVertex_matrix(1,:);  %V1  V4
-Vertex{2} = theBarVertex_matrix(2,:);  %V2  V3
-Vertex{3} = theBarVertex_matrix(3,:);
-Vertex{4} = theBarVertex_matrix(4,:);
+Vertex{1} = theBarVertex_matrix(:,1);  %V1  V4
+Vertex{2} = theBarVertex_matrix(:,2);  %V2  V3
+Vertex{3} = theBarVertex_matrix(:,3);
+Vertex{4} = theBarVertex_matrix(:,4);
 %Rotation is degree that bar rotate
 load(['C:\calibration\',calibration_date,'oled_calibration\calibration.mat'])
 load(['C:\calibration\',calibration_date,'oled_calibration\oled_boundary_set.mat']);
@@ -42,7 +42,7 @@ for x = floor(min_x) : ceil(max_x)
     end
     
     for y = floor(lower_y) : ceil(upper_y)
-        b(lefty_bd-1+barCenter(2), x+leftx_bd-1+barCenter(1)) = img(lefty_bd-1, x+leftx_bd-1)
+        b(lefty_bd-1+barsShift(2), x+leftx_bd-1+barsShift(1)) = img(lefty_bd-1, x+leftx_bd-1);
     end
 end
 a = zeros(screen_y,screen_x);
