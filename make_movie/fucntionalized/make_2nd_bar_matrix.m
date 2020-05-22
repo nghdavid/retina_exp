@@ -37,17 +37,10 @@ function make_2nd_bar_matrix(calibration_date,mean_lumin,rotation)
             end
             Vertex(:,4) = newVertex;
         end
-        if o == 0 || o == 2
-            theBarIndexX = round(Vertex(1,1):Vertex(1,3))+meaCenter_x;
-            theBarIndexY = round(Vertex(2,1):Vertex(2,3))+meaCenter_y;
-        else
-            [theBarIndexX, theBarIndexY] = write_2ndCalBar(img,Vertex,theta,mea_size_bm,calibration_date,monitor_mean_lumin); %a = the bar
-        end
 
         for X = ceil(leftx_bar+bar_wid):floor(rightx_bar-bar_wid)
-            a = img;
-            barCenter = round(R_matrix*[X-meaCenter_x;0]) + [meaCenter_x;meaCenter_y];
-            a(theBarIndexY+barCenter(2), theBarIndexX+barCenter(1)) = img(theBarIndexY, theBarIndexX)
+            barsShift = round(R_matrix*[X-meaCenter_x;0]) ;
+            a = write_2ndCalBar(img,Vertex,barsShift,theta,mea_size_bm,calibration_date,monitor_mean_lumin);
             save([matrix_folder,'\',folder_name,'\',num2str(o),'\',num2str(X),'.mat'],'a');
         end
     end
