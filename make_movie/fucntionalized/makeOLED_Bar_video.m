@@ -40,7 +40,7 @@ elseif strcmp(Dark,'Bright')%Bright bar
     end
 elseif strcmp(Dark,'2nd')%Bright bar
     matrix_folder = ['C:\',calibration_date,'2ndBar_matrix_',num2str(mean_lumin),'mW\'];
-    if exist(matrix_folder) == 0
+    if exist([matrix_folder '\',num2str(rotation)]) == 0
         make_2ndbar_matrix(calibration_date,mean_lumin,rotation);
     else
         disp('Already have produced matrix')

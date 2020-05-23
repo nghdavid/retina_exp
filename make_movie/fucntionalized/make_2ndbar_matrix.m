@@ -10,10 +10,10 @@ mkdir ([matrix_folder,folder_name])
 %rotation theta = 0 for RL theta
 %theta must between [0,pi]
 for o = rotation
+    mkdir ([matrix_folder,folder_name, '\', num2str(o)])
     try
         load([matrix_folder,'\',folder_name,'\origin.mat'])
     catch
-        mkdir ([matrix_folder,folder_name],num2str(o))
         img=zeros(screen_y,screen_x);
         temp_img = [zeros(1, floor(mea_size_bm^2/2)) ones(1, ceil(mea_size_bm^2/2))];
         temp_img = temp_img(randperm(mea_size_bm^2));
