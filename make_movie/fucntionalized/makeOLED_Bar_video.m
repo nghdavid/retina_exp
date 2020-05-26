@@ -73,7 +73,7 @@ for Gvalue=G_list
     elseif strcmp(Dark,'Bright')
         name=[date,'_',type,'_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
     elseif strcmp(Dark,'2nd')
-        name=[date,'_',type,'_2nd_Order',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
+        name=[date,'_',type,'_2nd_Order_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
     end
     %% HMM trajectory
     if strcmp(type,'HMM')
