@@ -1,4 +1,4 @@
-function makeOLED_Bar_video_sN(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type, seed_date, date, calibration_date, mins, G_list, Dark, mean_lumin, contrast, cutOffFreq, num_dot)
+function makeOLED_Bar_video_sN(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type, seed_date, date, calibration_date, mins, G_list, Dark, mean_lumin, cutOffFreq, num_dot)
 %% This code can produce moving bar video whose trajectory is made of HMM or OU process
 %It can make kinds version of moving bar in several pattern: Bright or Dark, by HMM, OU, or smoothed_OU.
 %sN means Spatial Noise.
@@ -27,14 +27,14 @@ mea_range = [leftx_bar rightx_bar meaCenter_y-floor(mea_size/2) meaCenter_y+floo
 %% Setup matrix_folder and make matrix
 rotation = theta*4/pi;
 if strcmp(Dark,'Dark')%Dark bar
-    matrix_folder = ['C:\',calibration_date,'DarkBar_matrix_',num2str(mean_lumin),'mW_',num2str(contrast*100),'%\'];
+    matrix_folder = ['C:\',calibration_date,'DarkBar_matrix_',num2str(mean_lumin),'mW_0%\', num2str(theta*4/pi)];
     if exist(matrix_folder) == 0
-        make_Darkbar_matrix(calibration_date,mean_lumin,contrast,rotation);
+        make_Darkbar_matrix(calibration_date,mean_lumin,0,rotation);
     else
         disp('Already have produced matrix')
     end
 elseif strcmp(Dark,'Bright')%Bright bar
-    matrix_folder = ['C:\',calibration_date,'Bar_matrix_',num2str(mean_lumin),'mW\'];
+    matrix_folder = ['C:\',calibration_date,'Bar_matrix_',num2str(mean_lumin),'mW\', num2str(theta*4/pi)];
     if exist(matrix_folder) == 0
         make_bar_matrix(calibration_date,mean_lumin,rotation);
     else
@@ -43,6 +43,13 @@ elseif strcmp(Dark,'Bright')%Bright bar
 else
     disp('There is error about contrast')
     return
+end
+
+Noise_matrix_folder = ['C:\',calibration_date,'Spatial_Noise_matrix_',num2str(mean_lumin/2),'mW\', num2str(num_dot)];
+if ~exist(matrix_folder)
+    make_Spatial_Noise_matrix(calibration_date, mean_lumin/2, num_dot);
+else
+    disp('Already have produced matrix')
 end
 
 %% Video parameter
@@ -101,11 +108,11 @@ for Gvalue=G_list
     dot_lumin  =  interp1(real_lum,lum,mean_lumin/2,'linear');
     for kk =1:length(Time)
         X=newXarray(kk);%Get bar center position
-        load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
-        sN_iC = Spatial_Noise_generator(mea_range, num_dot);
-        for i = 1:length(sN_iC{2})
-            a(sN_iC{2}(i,2)-16:sN_iC{2}(i,2)+16, sN_iC{2}(i,1)-16:sN_iC{2}(i,1)+16) = dot_lumin;
-        end
+        load([matrix_folder,'\',num2str(X),'.mat']);% Load picture matrix
+        temp = a;
+        load([Noise_matrix_folder,'\',num2str(500),'.mat']);% Load picture matrix
+        temp(find(a~=0)) = 0;
+        a = temp+a;
         %% Square_flicker
         if mod(kk,3)==1 %odd number
             a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=1; % white square

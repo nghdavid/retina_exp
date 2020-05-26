@@ -1,5 +1,4 @@
 function isi2 = binning(bin_pos,type,StimuSN)
-   
     if strcmp(type,'pos')
         TheStimuli=bin_pos;
     elseif strcmp(type,'v')
@@ -7,7 +6,7 @@ function isi2 = binning(bin_pos,type,StimuSN)
         TheStimuli = finite_diff(x ,4);
     end
     
-    if strcmp(type,'abs')
+    if strcmp(type,'abs')  
         nX=sort(TheStimuli,2);
         abin=length(nX)/StimuSN;
         isi2 = zeros(60,length(TheStimuli));

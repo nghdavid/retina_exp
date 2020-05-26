@@ -2,6 +2,7 @@ function a = write_CalBar(a, Vertex, theta,  mea_size_bm,calibration_date,monito
 %Rotation is degree that bar rotate
 load(['C:\calibration\',calibration_date,'oled_calibration\calibration.mat'])
 load(['C:\calibration\',calibration_date,'oled_calibration\oled_boundary_set.mat']);
+load()
 if theta == 0 || theta == pi/2  % vertical case
     if Vertex{2}(1) < 1
         min_x = 1;

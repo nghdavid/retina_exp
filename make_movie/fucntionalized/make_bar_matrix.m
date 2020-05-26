@@ -29,4 +29,5 @@ function make_bar_matrix(calibration_date,mean_lumin,rotation)
             a = write_CalBar(a,Vertex,theta,mea_size_bm,calibration_date,monitor_mean_lumin); %a = the bar
             save([matrix_folder,'\',folder_name,'\',num2str(o),'\',num2str(X),'.mat'],'a');
         end
+    end
 end
