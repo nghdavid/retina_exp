@@ -2,19 +2,22 @@ close all;
 clear all;
 load('rr.mat')
 code_folder = pwd;
-exp_folder = 'E:\20200418';
+exp_folder = 'E:\20200505';
 cd(exp_folder)
 load('different_G.mat')
 type = 'pos';
 order = '1';%First or second experiment
 sorted=1;
-save_photo = 1;
-HMM_or_Not = 0;
-sOU_or_Not = 1;
-frequency = 1;
+save_photo = 0;
+dark = 1;
+HMM_or_Not = 1;
+sOU_or_Not = 0;
+frequency = 0.5;
 OU_or_Not = 1;%Plot OU or not
 all_or_Not = 1;%Plot all channels or not
-roi = [9,17,24,25,33,40,41,43,49,50,51,52,57,58,59];
+% load('predictive_channel\bright_bar.mat')
+% roi = [p_channel,np_channel];
+roi = 1:60;
 if sorted
     sort_directory = 'sort';
 else
@@ -24,18 +27,18 @@ MI_directory = [exp_folder,'\MI\',sort_directory];
 %% Load data
 %Load HMM MI data and correlation time
 if HMM_or_Not
-    [HMM_former_name,HMM_post_name,HMM_filename] = Get_HMM_OU_name(exp_folder,'HMM',type,order,0);
+    [HMM_former_name,HMM_post_name,HMM_filename] = Get_HMM_OU_name(exp_folder,'HMM',type,order,0,dark);
     [MI,MI_shuffle,peaks,corr_t_legend,time] = Read_different_G(MI_directory,'HMM',HMM_different_G,HMM_former_name,HMM_post_name);
     filename = HMM_filename;
 end
 if sOU_or_Not
-    [sOU_former_name,sOU_post_name,sOU_filename] = Get_HMM_OU_name(exp_folder,'OUsmooth',type,order,frequency);
+    [sOU_former_name,sOU_post_name,sOU_filename] = Get_HMM_OU_name(exp_folder,'OUsmooth',type,order,frequency,dark);
     [MI,MI_shuffle,peaks,corr_t_legend,time] = Read_different_G(MI_directory,'OUsmooth',OUsmooth_different_G,sOU_former_name,sOU_post_name);
     filename = sOU_filename;
 end
 %Load OU MI data and correlation time
 if OU_or_Not
-    [OU_former_name,OU_post_name,OU_filename] = Get_HMM_OU_name(exp_folder,'OU',type,order,0);
+    [OU_former_name,OU_post_name,OU_filename] = Get_HMM_OU_name(exp_folder,'OU',type,order,0,dark);
     [OU_MI,OU_MI_shuffle,OU_peaks,OU_corr_t_legend,time] = Read_different_G(MI_directory,'OU',OU_different_G,OU_former_name,OU_post_name);
 end
 all_corr_t_legend = [corr_t_legend,OU_corr_t_legend];
