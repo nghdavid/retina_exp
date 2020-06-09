@@ -28,10 +28,10 @@ for o = rotation
         end
         Vertex(:,4) = newVertex;
     end
-    
     for X = ceil(leftx_bar+bar_wid):floor(rightx_bar-bar_wid)
-        barsShift = round(R_matrix*[X-meaCenter_x;0]) ;
-        a = ones(screen_y,screen_x)*background_lumin;%full screen pixel matrix %it's the LED screen size
+        barsShift = R_matrix*[X-meaCenter_x;0];
+        a = zeros(screen_y,screen_x);
+        a(lefty_bd:righty_bd, leftx_bd:rightx_bd) = background_lumin;%full screen pixel matrix %it's the LED screen size
         a = write_Bar(a, Vertex, barsShift, theta,  mea_size_bm, calibration_date, background_lumin, bar_lumin);%a = the bar
         save([matrix_folder,'\',folder_name,'\',num2str(o),'\',num2str(X),'.mat'],'a');
     end

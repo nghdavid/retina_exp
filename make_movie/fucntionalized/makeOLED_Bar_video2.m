@@ -31,12 +31,12 @@ if contrast == 0 %2nd_Oder_Motion bar
     else
         disp('Already have produced matrix')
     end
-elseif isnan(interp1(real_lum,lum,(contrast+1)*mean_lumin,'linear'))%Dark bar
+elseif isnan(interp1(real_lum,lum,(contrast+1)*mean_lumin,'linear'))
     disp('There is error about contrast')
     return
 else %contrast<0:Dark bar,  contrast>0:Bright bar
     matrix_folder = ['C:\',calibration_date,'Bar_matrix_',num2str(mean_lumin),'mW_',num2str(contrast*100),'%\'];
-    if exist(matrix_folder) == 0
+    if exist([matrix_folder '\',num2str(rotation)]) == 0
         make_bar_matrix(calibration_date,mean_lumin,contrast,rotation);
     else
         disp('Already have produced matrix')
@@ -64,7 +64,7 @@ for Gvalue=G_list
     if contrast == 0 %2nd_Oder_Motion bar
         name=[date,'_',type,'_2nd_Order_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
     else %contrast<0:Dark bar,  contrast>0:Bright bar
-        name=[date,'_',type,'_Dark_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(contrast*100)];
+        name=[date,'_',type,'_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(contrast*100)];
     end
     %% HMM trajectory
     if strcmp(type,'HMM')
@@ -127,7 +127,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %% Save parameters needed
-    save([name,'.mat'],'newXarray','type','direction', 'contrast', 'mean_lumin')
+    save([name,'.mat'],'newXarray','type','direction', 'contrast', 'mean_lumin', 'theta')
 end
 cd(makemovie_folder)
 end
