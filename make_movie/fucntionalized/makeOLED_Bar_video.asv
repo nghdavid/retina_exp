@@ -32,7 +32,7 @@ if strcmp(Dark,'Dark')%Dark bar
         disp('Already have produced matrix')
     end
 elseif strcmp(Dark,'Bright')%Bright bar
-    matrix_folder = ['C:\',calibration_date,'BrightBar_matrix_',num2str(mean_lumin),'mW\+',num2str(contrast*100),'%'];
+    matrix_folder = ['C:\',calibration_date,'Bar_matrix_',num2str(mean_lumin),'mW\'];
     if exist(matrix_folder) == 0
         make_bar_matrix(calibration_date,mean_lumin,rotation);
     else
@@ -69,9 +69,9 @@ for Gvalue=G_list
     load(['C:\',seed_directory_name,'\',filename]);
     name=[name];
     if strcmp(Dark,'Dark')
-        name=[date,'_',type,'_Dark_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_-',num2str(contrast*100)];
+        name=[date,'_',type,'_Dark_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(100-contrast*100)];
     elseif strcmp(Dark,'Bright')
-        name=[date,'_',type,'_Bright_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_+',num2str(contrast*100)];
+        name=[date,'_',type,'_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
     elseif strcmp(Dark,'2nd')
         name=[date,'_',type,'_2nd_Order_',direction,'_G',num2str(Gvalue) ,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW'];
     end
@@ -84,13 +84,7 @@ for Gvalue=G_list
         Xarray = Smooth_OU_generator(T,dt,Gvalue,rntest,cutOffFreq);
         name = [name,'_',num2str(cutOffFreq),'Hz'];
     elseif strcmp(type,'cSTA')%cSTA %30Hz
-        Xarray=randn(1,length(Time/2));%Gaussian noise with 30% std
-        Xarray = imresize(Xarray, [1 length(Time)], 'nearest'); %30Hz
-        if strcmp(Dark,'Dark')
-            name=[date,'_',type,'_Dark_',direction,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_-',num2str(contrast*100)];
-        elseif strcmp(Dark,'Bright')
-            name=[date,'_',type,'_Bright_',direction,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW+',num2str(contrast*100)];
-        end
+        newXarray=(randn(1,length(T/2)));%Gaussian noise with 30% std
     end
     name
     %% Normalize to proper moving range and video name
@@ -140,7 +134,7 @@ for Gvalue=G_list
     close(writerObj);
     cd(videoworkspace_folder)
     %% Save parameters needed
-    save([name,'.mat'],'newXarray','type','direction', 'Dark')
+    save([name,'.mat'],'newXarray')
 end
 cd(makemovie_folder)
 end
