@@ -77,7 +77,7 @@ for Gvalue=G_list
     %% HMM trajectory
     if strcmp(type,'OUsmooth')%Smooth OU
         Xarray = Smooth_OU_generator(T,dt,Gvalue,rntest,cutOffFreq);
-        name = [name,'_',num2str(cutOffFreq),'Hz_', num2str(covered_area), 'covered_', SNrefresh];
+        name = [name,'_',num2str(cutOffFreq),'Hz_', num2str(covered_area), 'covered_', num2str(SNrefresh)];
     else
         disp('Type must be OUsmooth')
         return
