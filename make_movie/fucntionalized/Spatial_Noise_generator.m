@@ -5,7 +5,7 @@ if num_dot == 1
     all_pos = cell(mea_size-32);
     for i = 1:mea_size-32
         for j = 1:mea_size-32
-            all_pos{i,j} = [mea_range(1)+16+i-1  mea_range(3)+16+j-1];
+            all_pos{i,j} = [mea_range(3)+16+j-1  mea_range(1)+16+i-1];  %(y,x)
         end
     end
     sN_indexnCentre{3} = all_pos(:)';
