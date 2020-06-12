@@ -22,7 +22,8 @@ if theta == 0 || theta == pi/2  % vertical case
     if upper_y > righty_bd, upper_y = righty_bd; end
     a(round(lower_y):round(upper_y), round(min_x):round(max_x)) = bar_lumin;
 else
-    for x = round(Vertex(1,2)) : round(Vertex(1,4)) %~min_x:man_x
+    for x = round(min_x):round(max_x) %~Vertex(1,2):Vertex(1,4)
+        x = x - meaCenter_x - barsShift(1);
         %define range of y
         if x < Vertex(1,1) 
             lower_y = Vertex(2,1) + (Vertex(2,1)-Vertex(2,2))/(Vertex(1,1)-Vertex(1,2)) * (x-Vertex(1,1)) + meaCenter_y + barsShift(2);
@@ -40,5 +41,6 @@ else
         x = round(x + meaCenter_x + barsShift(1));
         a(round(lower_y):round(upper_y), x) = bar_lumin;
     end
+    
 end
 end

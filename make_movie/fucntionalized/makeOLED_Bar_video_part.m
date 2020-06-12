@@ -1,4 +1,4 @@
-function makeOLED_Bar_video2(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type, seed_date, date, calibration_date, mins, G_list, mean_lumin, contrast, cutOffFreq)
+function makeOLED_Bar_video_part(makemovie_folder, theta, direction, video_folder, videoworkspace_folder, type, seed_date, date, calibration_date, mins, G_list, mean_lumin, contrast, cutOffFreq, part)
 %% This code can produce moving bar video whose trajectory is made of HMM or OU process
 %It can make kinds version of moving bar in several pattern: Bright or Dark, by HMM, OU, or smoothed_OU.
 %sN means Spatial Noise.
@@ -88,9 +88,15 @@ for Gvalue=G_list
         Xarray = imresize(Xarray, [1 length(Time)], 'nearest'); %30Hz
         name=[date,'_',type,'_',direction,'_',int2str(mins),'min_Q100_',num2str(mean_lumin),'mW_',num2str(contrast*100)];
     end
-    name
     %% Normalize to proper moving range and video name
-    newXarray = round(rescale(Xarray, leftx_bar+bar_wid, rightx_bar-bar_wid));
+    if strcmp(part,'left')
+        newXarray = round(rescale(Xarray, leftx_bar+bar_wid, rightx_bar-bar_wid) -leftx_bar+leftx_bd);
+        name = [name,'_left'];
+    elseif strcmp(part,'right')
+        newXarray = round(rescale(Xarray, leftx_bar+bar_wid, rightx_bar-bar_wid) +leftx_bar-leftx_bd);
+        name = [name,'_right'];
+    end
+    name
     cd (video_folder)
     
     %% Video setting
