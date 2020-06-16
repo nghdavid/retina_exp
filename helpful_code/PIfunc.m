@@ -45,7 +45,7 @@ for i=1:forward
     dat3{i}=[x,y3];
     norm=BinningInterval;
     
-    N2=hist3(dat2{i},[max(Neurons) max(isi2)]); %20:dividing firing rate  6:# of stim
+    N2= hist3(dat2{i},[max(Neurons) max(isi2)]); %20:dividing firing rate  6:# of stim
     N3 = hist3(dat3{i},[max(Neurons) max(isi3)]); %20:dividing firing rate  6:# of stim
     py2=sum(N2,1)/sum(N2, 'all');
     py3=sum(N3,1)/sum(N3, 'all');
