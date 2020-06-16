@@ -32,7 +32,7 @@ if contrast == 0 %2nd_Oder_Motion bar
         disp('Already have produced matrix')
     end
 elseif contrast == j
-    matrix_folder = ['C:\',calibration_date,'BrightBar_matrix_',num2str(mean_lumin),'mW'];
+    matrix_folder = ['C:\',calibration_date,'BrightBar_matrix_',num2str(mean_lumin),'mW\'];
     if exist([matrix_folder '\',num2str(rotation)]) == 0
         make_BrightBar_matrix(calibration_date,mean_lumin,rotation);
     else
@@ -91,7 +91,7 @@ for Gvalue=G_list
     name
     %% Normalize to proper moving range and video name
     newXarray = round(rescale(Xarray, leftx_bar+bar_wid, rightx_bar-bar_wid));
-    cd (video_folder)
+    cd(video_folder)
     
     %% Video setting
     video_fps=fps;
