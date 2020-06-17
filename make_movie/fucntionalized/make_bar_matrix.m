@@ -1,4 +1,4 @@
-function make_abtrirbar_matrix(calibration_date,mean_lumin,contrast,rotation)
+function make_bar_matrix(calibration_date,mean_lumin,contrast,rotation)
 %Rotation is degree that bar rotate
 %mean_lumin is luminance of bar
 matrix_folder = 'C:\';
