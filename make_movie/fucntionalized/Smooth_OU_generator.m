@@ -23,25 +23,25 @@ function Smooth_Xarray = Smooth_OU_generator(T,dt,Gvalue,rntest,cutOffFreq)
     x = xcorr(Xarray, Smooth_Xarray);
     [~,I]=max(x);
     delay_correction = length(Xarray)-I;
-    disp(['Before correction, the delay is ',num2str(delay_correction*dt),' sec'])
+    %disp(['Before correction, the delay is ',num2str(delay_correction*dt),' sec'])
     Xarray = Xarray(1:end-buff_time/dt);
     Smooth_Xarray = Smooth_Xarray(delay_correction+1:end-buff_time/dt+delay_correction);
     %% Plot Original array and Smooth array
-    figure(2)
-    plot(T(1:end-buff_time/dt),Xarray,'b');hold on
-    plot(T(1:end-buff_time/dt),Smooth_Xarray,'r')
-    xlim([0 30])
+%     figure(2)
+%     plot(T(1:end-buff_time/dt),Xarray,'b');hold on
+%     plot(T(1:end-buff_time/dt),Smooth_Xarray,'r')
+%     xlim([0 30])
     %% Check correction
     x = xcorr(Xarray, Smooth_Xarray);
     [~,I]=max(x);
     after_correction = length(Xarray)-I;
-    disp(['After correction, the delay is  ',num2str(after_correction*dt) ,' sec'])
+    %disp(['After correction, the delay is  ',num2str(after_correction*dt) ,' sec'])
     %% Correction time
     acf = autocorr(Xarray,100);
     corr_time = interp1(acf,1:length(acf),0.5,'linear')*dt;
-    disp(['Original correlation time is ',num2str(corr_time),' second'])
+    %disp(['Original correlation time is ',num2str(corr_time),' second'])
     
     acf = autocorr(Smooth_Xarray,100);
     corr_time = interp1(acf,1:length(acf),0.5,'linear')*dt;
-    disp(['Smooth correlation time is ',num2str(corr_time),' second'])
+    %disp(['Smooth correlation time is ',num2str(corr_time),' second'])
 end

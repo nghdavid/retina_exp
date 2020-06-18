@@ -9,11 +9,11 @@ rest_mean_lumin = interp1(real_lum,lum,(background_lumin+bar_lumin)/2,'linear');
 OLED_bar_lumin = interp1(real_lum,lum,bar_lumin,'linear');
 OLED_background_lumin = interp1(real_lum,lum,background_lumin,'linear');
 background = zeros(1024,1280);
-background(lefty_bd:righty_bd, leftx_bd:rightx_bd) = OLED_background_lumin;
+background(leftx_bd:rightx_bd, lefty_bd:righty_bd) = OLED_background_lumin;
 Y =meaCenter_y;
 cd (video_folder)
 %% video setting
-name=[date,'_Grating_', num2str(background_lumin),'-', num2str(bar_lumin), 'mW'];
+name=[date,'_Grating'];
 name
 video_fps=60;
 writerObj = VideoWriter([name,'.avi']);
@@ -25,7 +25,7 @@ open(writerObj);
 %% Pre adaptation
 for l = 1:60*10
     a = zeros(1024,1280);
-    a(lefty_bd:righty_bd, leftx_bd:rightx_bd) = rest_mean_lumin;%Gray frame
+    a(leftx_bd:rightx_bd, lefty_bd:righty_bd) = rest_mean_lumin;%Gray frame
     a(500-35:500+35,1230:1280)=0; % dark
     writeVideo(writerObj,a);
 end
@@ -50,7 +50,7 @@ while ~isempty(SET_I)
     if theta2pi >= pi
         theta = theta2pi-pi;
     else
-        theta = theta2pi;
+        theta = theta2pi-pi;
     end
     Order = [Order SET_I(ii)];
     SET_I(ii) = [];
@@ -78,7 +78,7 @@ while ~isempty(SET_I)
         num_move = num_move*2;
     end
     xarray = zeros(num_bar,num_move);%Array that store each bar postion(each row store each bar postions)
-    xarray(1,1) = randi(num_bar*bar_interval)-1;%leftx_bd+bar_wid+1;%Left bar first position %randomly 0~mea_size_bm-1
+    xarray(1,1) = randi(mea_size_bm)-1;%leftx_bd+bar_wid+1;%Left bar first position %randomly 0~mea_size_bm-1
     for i = 2:num_move
         xarray(1,i) = xarray(1,i-1)+temporal_frequency*bar_interval/60;
     end
@@ -93,7 +93,7 @@ while ~isempty(SET_I)
     for kk =1:length(xarray)
         temp = zeros(1024,1280);%Initialize each frame
         for i = 1:num_bar%Plot each bar
-            X=round(xarray(i,kk)+ meaCenter_x-longest_dis/2-bar_wid);
+            X=round(xarray(i,kk))+leftx_bd-bar_wid;
             load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
             temp = temp + a*(OLED_bar_lumin - OLED_background_lumin);
         end
@@ -104,7 +104,7 @@ while ~isempty(SET_I)
     %% Interval frame
     for l = 1:100 %1.67sec rest
         a = zeros(1024,1280);%Gray frame
-        a(lefty_bd:righty_bd, leftx_bd:rightx_bd) = rest_mean_lumin;%Gray frame
+        a(leftx_bd:rightx_bd, lefty_bd:righty_bd) = rest_mean_lumin;%Gray frame
         a(500-35:500+35,1230:1280)=0;% dark
         writeVideo(writerObj,a);
     end
