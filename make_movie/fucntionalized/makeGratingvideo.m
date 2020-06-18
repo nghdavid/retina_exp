@@ -27,8 +27,8 @@ for l = 1:60*10
 end
 
 cd(makemovie_folder)
-for bar_real_width = [300,600]%Number of repeat
-    for temporal_frequency = [0.375 0.75,1.5]%Number of repeat
+for bar_real_width = [130,300,600]%Number of repeat
+    for temporal_frequency = [3/16, 0.375, 0.75]%Number of repeat
         bar_wid = (bar_real_width/ micro_per_pixel-1)/2%unit of bar_real_width is micro
         bar_interval = bar_wid*4+2 ;%The distance between bar and bar
     for reversal = [0 1]%For opposite direction
@@ -49,7 +49,9 @@ for bar_real_width = [300,600]%Number of repeat
             bar_le = ceil(longest_dis/2);
             num_bar = ceil(longest_dis/bar_interval);%number of bar in movie
             num_move = 400; %Number of steps that move %6.67s
-            if temporal_frequency <= 0.375
+            if temporal_frequency <= 3/16
+                num_move = num_move*4;
+            elseif temporal_frequency <= 0.375
                 num_move = num_move*2;
             end
             xarray = zeros(num_bar,num_move);%Array that store each bar postion(each row store each bar postions)
