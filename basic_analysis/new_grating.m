@@ -9,7 +9,8 @@ width = 300;
 frequency = 0.375;
 bar_real_width = [300,600];
 temporal_frequency = [0.375 0.75,1.5];
-trial = (find(bar_real_width==width)-1)*3+find(temporal_frequency==frequency);
+%trial = (find(bar_real_width==width)-1)*3+find(temporal_frequency==frequency);
+trial =1:6;
 displaychannel = [1:60];%Choose which channel to display
 cd(exp_folder)
 direction_order = [0,7,6,5,4,3,2,1];%It will be multiplied by pi/4
@@ -177,7 +178,27 @@ for k = channel_number % k is the channel number
     end
 end
 end
+dsi = DSI(:,:,1)>=0.3;
 
+figure(); hold on;
+for ch = 1:60
+    for trial =1:6
+        ft = temporal_frequency(mod((trial-1),3)+1);
+        scatter(ft, DSI(trial,ch,2));
+    end
+end
+figure(); hold on;
+for ch = 1:60
+    for trial =1:6
+        wid = bar_real_width(floor((trial-1)/3)+1);
+        scatter(wid, DSI(trial,ch,2));
+    end
+end
+mean(DSI(1:3,:,2), 'all')
+mean(DSI(4:6,:,2), 'all')
+mean(DSI([1 4],:,2), 'all')/2
+mean(DSI([2 5],:,2), 'all')
+mean(DSI([3 6],:,2), 'all')
 cd(code_folder)
 
 
