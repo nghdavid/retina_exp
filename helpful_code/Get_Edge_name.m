@@ -2,7 +2,11 @@ function [former_name,post_name,filename] = Get_Edge_name(exp_folder,stimulus,ty
 cd(exp_folder)
 load('different_G.mat')
 if reverse
-    direction = [direction(4:5),'_',direction(1:2)];
+    if strcmp(direction,'RL') || strcmp(direction,'UD')
+        direction = flip(direction);
+    else
+        direction = [direction(4:5),'_',direction(1:2)];
+    end
 end
 if strcmp(stimulus,'HMM')
     former_name = [type,'_',HMM_date1,'_',stimulus,'_Edge_',direction,'_G'];
