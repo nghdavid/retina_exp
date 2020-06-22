@@ -1,4 +1,4 @@
-function makeREvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder,type,date,calibration_date,mean_lumin,speed,reveral)
+function makeREvideo(makemovie_folder, theta, direction, video_folder, videoworkspace_folder,type,date,calibration_date,mean_lumin,speed,reverse)
 %type is '1st' or '2nd'
 %speed is moving bar velocity(mm/s)
 %revesal represent change direction or not. 0 is not change, 1 is change.
@@ -38,7 +38,7 @@ end
 %% Setup trajectory
 Xarray = zeros(1,length(T));
 Xarray(1,1)=0; % since the mean value of damped eq is zero
-if ~reveral
+if ~reverse
     for i = 1:round(num_trial*(rest_T+pre_exist+post_exist+2*deltaT)*fps)
         if mod(i , (rest_T+pre_exist+post_exist+2*deltaT)*fps) < pre_exist*fps
             Xarray(i) = 0;
@@ -81,7 +81,7 @@ end
 newXarray(end) = -1;
 
 %% Video name
-if ~reveral
+if ~reverse
 name=[date,'_',type,'_Reversal_moving_',direction,'_',num2str(speed) ,'mm_Q100'];
 else
     if strcmp(direction,'RL') || strcmp(direction,'UD')
@@ -94,49 +94,49 @@ name
 
 cd (video_folder)
 %% Video setting
-Time=T; %sec
-video_fps=fps;
-writerObj = VideoWriter([name,'.avi']);  %change video name here!
-writerObj.FrameRate = video_fps;
-writerObj.Quality = 100;
-open(writerObj);
-
-%% Start part:dark adaptation
-
-for mm=1:fps*10
-    img=zeros(1024,1280);
-    writeVideo(writerObj,img);
-end
-
-%% Draw moving bar
-for kk =1:length(T)
-    cd(makemovie_folder)
-    a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
-    if mod(kk , fps*(rest_T+pre_exist+post_exist+2*deltaT))<(pre_exist+post_exist+2*deltaT)*fps && kk~=length(T)
-        X=newXarray(kk);
-        load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
-    end
-    if mod(kk,3)==1 %odd number
-        a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=1; % white square
-    elseif mod(kk,3)==2
-        a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0.2; %gray
-    else
-        a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0; % dark
-    end
-    writeVideo(writerObj,a);
-end
-
-%% End part video
-for mm=1:10
-    img=zeros(screen_y,screen_x);
-    img(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0.2; %gray
-    writeVideo(writerObj,img);
-end
-img=zeros(screen_y,screen_x);
-writeVideo(writerObj,img);
-close(writerObj);
+% Time=T; %sec
+% video_fps=fps;
+% writerObj = VideoWriter([name,'.avi']);  %change video name here!
+% writerObj.FrameRate = video_fps;
+% writerObj.Quality = 100;
+% open(writerObj);
+% 
+% %% Start part:dark adaptation
+% 
+% for mm=1:fps*10
+%     img=zeros(1024,1280);
+%     writeVideo(writerObj,img);
+% end
+% 
+% %% Draw moving bar
+% for kk =1:length(T)
+%     cd(makemovie_folder)
+%     a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
+%     if mod(kk , fps*(rest_T+pre_exist+post_exist+2*deltaT))<(pre_exist+post_exist+2*deltaT)*fps && kk~=length(T)
+%         X=newXarray(kk);
+%         load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
+%     end
+%     if mod(kk,3)==1 %odd number
+%         a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=1; % white square
+%     elseif mod(kk,3)==2
+%         a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0.2; %gray
+%     else
+%         a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0; % dark
+%     end
+%     writeVideo(writerObj,a);
+% end
+% 
+% %% End part video
+% for mm=1:10
+%     img=zeros(screen_y,screen_x);
+%     img(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0.2; %gray
+%     writeVideo(writerObj,img);
+% end
+% img=zeros(screen_y,screen_x);
+% writeVideo(writerObj,img);
+% close(writerObj);
 
 cd(videoworkspace_folder)
-save([name,'.mat'],'newXarray','direction','theta')
+save([name,'.mat'],'newXarray','direction','theta','type','speed','reverse')
 cd(makemovie_folder)
 end
