@@ -7,9 +7,9 @@ elseif strcmp(monitor_type, 'OLED')
 end
 
 if strcmp(bar_direction,'UD')
-    newXpos =y;
+    newXpos = y;
 elseif  strcmp(bar_direction,'RL')
-    newXpos =x;
+    newXpos = x;
 elseif  strcmp(bar_direction,'UR_DL')
     newXpos =(-x+ y+meaCenter_x-meaCenter_y)/sqrt(2)+meaCenter_x;
 elseif  strcmp(bar_direction,'UL_DR')
