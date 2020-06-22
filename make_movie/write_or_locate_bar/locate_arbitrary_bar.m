@@ -38,8 +38,7 @@ for o = rotation
     else
         longest_dis = abs(mea_size_bm/cos(theta))+bar_interval;
     end
-    longest_dis = ceil(longest_dis/bar_interval)*bar_interval;
-    for X = seameaCenter_x-longest_dis + (0:longest_dis)
+    for X = floor(meaCenter_x-longest_dis/2-bar_wid) + (0:ceil(longest_dis/bar_interval)*bar_interval+1)
         barsShift = R_matrix*[X-meaCenter_x;0];
         a = logical(zeros(screen_y,screen_x));
         a = locate_Bar(a, Vertex, barsShift, theta,  mea_size_bm, calibration_date);%a = the bar
