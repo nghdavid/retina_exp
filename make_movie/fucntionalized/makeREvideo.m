@@ -13,7 +13,7 @@ num_trial = 12;
 fps =60;%freq of the screen flipping
 pre_exist = 4;%Time that bar stay still before moving
 post_exist = 2;%Time that bar stay still after moving
-T=(rest_T+pre_exist+post_exist+2*deltaT)*num_trial;%Total time(second)
+T=(rest_T+pre_exist+post_exist+2*deltaT)*1;%Total time(second)
 dt=1/fps;
 T=dt:dt:T;
 
@@ -39,7 +39,7 @@ end
 Xarray = zeros(1,length(T));
 Xarray(1,1)=0; % since the mean value of damped eq is zero
 if ~reverse
-    for i = 1:round(num_trial*(rest_T+pre_exist+post_exist+2*deltaT)*fps)
+    for i = 1:round(1*(rest_T+pre_exist+post_exist+2*deltaT)*fps)
         if mod(i , (rest_T+pre_exist+post_exist+2*deltaT)*fps) < pre_exist*fps
             Xarray(i) = 0;
         elseif mod(i , (rest_T+pre_exist+post_exist+2*deltaT)*fps) < pre_exist*fps+deltaT*fps
@@ -53,7 +53,7 @@ if ~reverse
         end
     end
 else
-    for i = 1:round(num_trial*(rest_T+pre_exist+post_exist+2*deltaT)*fps)
+    for i = 1:round(1*(rest_T+pre_exist+post_exist+2*deltaT)*fps)
         if mod(i , (rest_T+pre_exist+post_exist+2*deltaT)*fps) < pre_exist*fps
             Xarray(i) = 1;
         elseif mod(i , (rest_T+pre_exist+post_exist+2*deltaT)*fps) < pre_exist*fps+deltaT*fps
@@ -67,74 +67,80 @@ else
         end
     end
 end
+Xarray1 = repmat(Xarray,1,num_trial);
 
 %% Normalize to proper moving range
 max_x = floor(rightx_bar-bar_wid);
 min_x = ceil(leftx_bar+bar_wid);
-for i = 1:length(Xarray)
-    if Xarray(i) >= 0
-        newXarray(i)= ceil(Xarray(i)*(max_x-min_x)+min_x);
+for i = 1:length(Xarray1)
+    if Xarray1(i) >= 0
+        newXarray(i)= ceil(Xarray1(i)*(max_x-min_x)+min_x);
     else
         newXarray(i) = -1;
     end
 end
 newXarray(end) = -1;
-
+if mod(length(newXarray),3) == 1
+   newXarray(end) = []; 
+elseif mod(length(newXarray),3) == 2
+   newXarray = [newXarray,-1]; 
+end
 %% Video name
 if ~reverse
 name=[date,'_',type,'_Reversal_moving_',direction,'_',num2str(speed) ,'mm_Q100'];
 else
     if strcmp(direction,'RL') || strcmp(direction,'UD')
-        name=[date,'_',type,'_Reversal_moving_',flip(direction),'_',num2str(speed),'mm_Q100'];
+        direction = flip(direction);
+        name=[date,'_',type,'_Reversal_moving_',direction,'_',num2str(speed),'mm_Q100'];
     else
-        name=[date,'_',type,'_Reversal_moving_',direction(4:5),'_',direction(1:2),'_',num2str(speed) ,'mm_Q100'];
+        direction = [direction(4:5),'_',direction(1:2)];
+        name=[date,'_',type,'_Reversal_moving_',direction,'_',num2str(speed) ,'mm_Q100'];
     end
 end
 name
 
 cd (video_folder)
 %% Video setting
-% Time=T; %sec
-% video_fps=fps;
-% writerObj = VideoWriter([name,'.avi']);  %change video name here!
-% writerObj.FrameRate = video_fps;
-% writerObj.Quality = 100;
-% open(writerObj);
-% 
-% %% Start part:dark adaptation
-% 
-% for mm=1:fps*10
-%     img=zeros(1024,1280);
-%     writeVideo(writerObj,img);
-% end
-% 
-% %% Draw moving bar
-% for kk =1:length(T)
-%     cd(makemovie_folder)
-%     a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
-%     if mod(kk , fps*(rest_T+pre_exist+post_exist+2*deltaT))<(pre_exist+post_exist+2*deltaT)*fps && kk~=length(T)
-%         X=newXarray(kk);
-%         load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
-%     end
-%     if mod(kk,3)==1 %odd number
-%         a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=1; % white square
-%     elseif mod(kk,3)==2
-%         a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0.2; %gray
-%     else
-%         a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0; % dark
-%     end
-%     writeVideo(writerObj,a);
-% end
-% 
-% %% End part video
-% for mm=1:10
-%     img=zeros(screen_y,screen_x);
-%     img(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0.2; %gray
-%     writeVideo(writerObj,img);
-% end
-% img=zeros(screen_y,screen_x);
-% writeVideo(writerObj,img);
-% close(writerObj);
+video_fps=fps;
+writerObj = VideoWriter([name,'.avi']);  %change video name here!
+writerObj.FrameRate = video_fps;
+writerObj.Quality = 100;
+open(writerObj);
+
+%% Start part:dark adaptation
+
+for mm=1:fps*10
+    img=zeros(1024,1280);
+    writeVideo(writerObj,img);
+end
+
+%% Draw moving bar
+for kk =1:length(newXarray)
+    cd(makemovie_folder)
+    a=zeros(1024,1280);%full screen pixel matrix %it's the LED screen size
+    if newXarray(kk)>-1%mod(kk , fps*(rest_T+pre_exist+post_exist+2*deltaT))<(pre_exist+post_exist+2*deltaT)*fps && kk<length(T)
+        X=newXarray(kk);
+        load([matrix_folder,num2str(theta*4/pi),'\',num2str(X),'.mat']);% Load picture matrix
+    end
+    if mod(kk,3)==1 %odd number
+        a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=1; % white square
+    elseif mod(kk,3)==2
+        a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0.2; %gray
+    else
+        a(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0; % dark
+    end
+    writeVideo(writerObj,a);
+end
+
+%% End part video
+for mm=1:10
+    img=zeros(screen_y,screen_x);
+    img(flicker_loc(1):flicker_loc(2),flicker_loc(3):flicker_loc(4))=0.2; %gray
+    writeVideo(writerObj,img);
+end
+img=zeros(screen_y,screen_x);
+writeVideo(writerObj,img);
+close(writerObj);
 
 cd(videoworkspace_folder)
 save([name,'.mat'],'newXarray','direction','theta','type','speed','reverse')
