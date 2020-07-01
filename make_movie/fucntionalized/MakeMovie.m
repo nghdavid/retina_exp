@@ -9,7 +9,7 @@ date = '0224';
 seed_date = '0421';
 mean_lumin =6.5;
 movie_folder = '\\192.168.0.100\Experiment\Retina\2020Videos\0219v\videos\';
-movie_folder = 'Z:\';
+% movie_folder = 'D:\videos';
 cd(movie_folder)
 mkdir HMM
 mkdir OU
@@ -18,8 +18,8 @@ cd(makemovie_folder);
 
 % G_HMM = [4.5];
 % G_OU = [3,20];
-movie_folder = 'Z:\';
-videoworkspace_folder = 'Z:\';
+% movie_folder = 'D:\videos';
+% videoworkspace_folder = 'D:\videoworkspace';
 % HMM_time = 5;%Time length of HMM of movie
 % OU_time = 1;%Time length of OU of movie
 %% Intensity
@@ -185,7 +185,8 @@ makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], vi
 makeGratingvideo(makemovie_folder,movie_folder, '0616',calibration_date,mean_lumin)
 
 %% Reversal
-for speed = [0.5,1,1.5,2,2.5]%mm/s
+for speed = [1.5,2]%[0.5,1,1.5,2,2.5]%mm/s
+    speed
 makeREvideo(makemovie_folder, 0, 'RL', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,0)
 makeREvideo(makemovie_folder,pi/2, 'UD', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,0)
 makeREvideo(makemovie_folder, pi/4, 'UL_DR', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,0)
@@ -204,3 +205,8 @@ makeREvideo(makemovie_folder,pi/2, 'UD', movie_folder, videoworkspace_folder,'2n
 makeREvideo(makemovie_folder, pi/4, 'UL_DR', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,1)
 makeREvideo(makemovie_folder, 3*pi/4, 'UR_DL', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,1)
 end
+
+%% Natural scenenary
+mat_directory = '\\192.168.0.100\Experiment\Public\ToDavid\2020_02_24_stiimg';
+date = '20200224';
+make_OLED_scene(makemovie_folder, movie_folder, videoworkspace_folder,mat_directory,date,calibration_date)
