@@ -1,6 +1,5 @@
 close all;
 clear all;
-% set(0,'DefaultFigureVisible','off')
 code_folder = pwd;
 exp_folder = 'E:\20200418';
 % exp_folder = 'D:\Leo\0409';
@@ -20,7 +19,7 @@ forward = 90;%90 bins before spikes for calculating STA
 backward = 90;%90 bins after spikes for calculating STA
 roi = [p_channel,np_channel];
 %roi = 11;
-for z = 1:n_file
+for z = 25:n_file
     %choose file
     file = all_file(z).name ;
     [pathstr, name, ext] = fileparts(file);

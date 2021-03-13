@@ -1,5 +1,5 @@
 function isi2 = binning(bin_pos,type,StimuSN)
-    if strcmp(type,'pos')
+    if strcmp(type,'pos')||strcmp(type,'equal_pos')
         TheStimuli=bin_pos;
     elseif strcmp(type,'v')
         x=bin_pos;
@@ -22,9 +22,16 @@ function isi2 = binning(bin_pos,type,StimuSN)
         nX=sort(TheStimuli);
         abin=length(nX)/StimuSN;
         intervals=[nX(abin:abin:end) inf]; % inf: the last term: for all rested values
-        temp=0; isi2=[];
+        isi2=zeros(1,length(TheStimuli));
         for jj=1:length(TheStimuli)
             isi2(jj) = find(TheStimuli(jj)<=intervals,1);
+        end
+    elseif strcmp(type,'equal_pos')
+        [~,edges] = histcounts(TheStimuli,StimuSN);
+        intervals=edges;
+        isi2=zeros(1,length(TheStimuli));
+        for jj=1:length(TheStimuli)
+            isi2(jj) = find(TheStimuli(jj)<=intervals,1)-1;
         end
     elseif strcmp(type,'pos&v')
         TheStimuli = zeros(2, length(bin_pos));
