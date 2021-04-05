@@ -3,7 +3,7 @@ clear all;
 code_folder = pwd;
 exp_folder = 'E:\20200418';
 cd(exp_folder)
-mkdir STA\FIG
+mkdir STA\FIG\noRF
 load('oled_boundary_set.mat')
 load('different_G.mat')
 load('rr.mat')
@@ -11,7 +11,7 @@ load('RGC.mat')%Needed to run Receptive field.m first
 order = '1';%First or second experiment
 type = 'pos';
 sorted=1;
-save_photo = 0;
+save_photo = 1;
 RF = 0;
 OU_or_Not = 0;%Plot OU or not
 all_or_Not = 0;%Plot all channels or not
@@ -100,48 +100,22 @@ end
 %% Plot single channel
 for channelnumber= roi 
      figure(channelnumber)
-     if sum(RGCs{channelnumber}.center_RF) >0
-        channelnumber
-        newXpos = Monitor2DCoor2BarCoor(RGCs{channelnumber}.center_RF(1),RGCs{channelnumber}.center_RF(2),direction,'OLED')
-     end
      for G =1:length(HMM_different_G)
-         
         %Plot HMM with different line
-        if G >=4
-            if sum(RGCs{channelnumber}.center_RF) >0
-                plot(STA_time,(HMM_STA ((G-1)*60+channelnumber,:)-newXpos)*micro_per_pixel,'.'); hold on;
-            else
-                plot(STA_time,(HMM_STA ((G-1)*60+channelnumber,:)-meaCenter_x)*micro_per_pixel,'.'); hold on;
-            end
-%             plot(STA_time(2:end),diff(HMM_STA ((G-1)*60+channelnumber,:))); hold on;
+        if G >=4    
+                plot(STA_time,(HMM_STA ((G-1)*60+channelnumber,:)-meaCenter_x)*1,'.'); hold on;
         elseif G >2
-            if sum(RGCs{channelnumber}.center_RF) >0
-                plot(STA_time,(HMM_STA ((G-1)*60+channelnumber,:)-newXpos)*micro_per_pixel,'k:'); hold on;
-            else
-                plot(STA_time,(HMM_STA ((G-1)*60+channelnumber,:)-meaCenter_x)*micro_per_pixel,'k:'); hold on;
-            end
-%             plot(STA_time(2:end),diff(HMM_STA ((G-1)*60+channelnumber,:)),'k:'); hold on;
+                plot(STA_time,(HMM_STA ((G-1)*60+channelnumber,:)-meaCenter_x)*1,'k:'); hold on;
         else
-            if sum(RGCs{channelnumber}.center_RF) >0
-                plot(STA_time,(HMM_STA ((G-1)*60+channelnumber,:)-newXpos)*micro_per_pixel); hold on;  
-            else
-                plot(STA_time,(HMM_STA ((G-1)*60+channelnumber,:)-meaCenter_x)*micro_per_pixel); hold on;
-            end
-%             plot(time(2:end),diff(HMM_STA ((G-1)*60+channelnumber,:)),'.');hold on;
+                plot(STA_time,(HMM_STA ((G-1)*60+channelnumber,:)-meaCenter_x)*1); hold on;
         end
      end
      if OU_or_Not
          for   G =[1,5]%1:length(OU_different_G)
-            if sum(RGCs{channelnumber}.center_RF) >0
-                plot(STA_time,(OU_STA ((G-1)*60+channelnumber,:)-newXpos)*micro_per_pixel,'-.'); hold on;
-            else
-                plot(STA_time,(OU_STA ((G-1)*60+channelnumber,:)-meaCenter_x)*micro_per_pixel,'-.'); hold on;
-            end
-%             plot(time(2:end),diff(OU_STA ((G-1)*60+channelnumber,:)),'-.'); hold on;
+                plot(STA_time,(OU_STA ((G-1)*60+channelnumber,:)-meaCenter_x)*1,'-.'); hold on;
          end
      end
      grid on
-     
      if OU_or_Not
        all_t_legend = {all_corr_t_legend{1:6},all_corr_t_legend{10}};
        lgd =legend(all_t_legend,'Location','northwest');
@@ -157,12 +131,8 @@ for channelnumber= roi
          title(['np',int2str(channelnumber)])
      end
      xlabel('time relative to spike (second)')
-     if sum(RGCs{channelnumber}.center_RF) > 0%If has RF center, it will plot different color
-        set(gca,'Color',[0.9 0.9 0.9])
-        ylabel('Distance relative to RF center')
-     else%Does not have RF center
-        ylabel('Distance relative to electrode')
-     end
+     ylabel('Distance relative to electrode')
+     ylim([-(mea_size-1-bar_wid)/2*1 (mea_size-1-bar_wid)/2*1])
      hold off;
      %Save photo
      set(gcf,'units','normalized','outerposition',[0 0 1 1])
@@ -171,9 +141,9 @@ for channelnumber= roi
      fig.InvertHardcopy = 'off';
      if save_photo
         if OU_or_Not
-            saveas(fig,[exp_folder,'\STA\FIG\',OU_filename,int2str(channelnumber),'.tif'])
+            saveas(fig,[exp_folder,'\STA\FIG\noRF\',OU_filename,int2str(channelnumber),'.tif'])
         else
-            saveas(fig,[exp_folder,'\STA\FIG\',HMM_filename,int2str(channelnumber),'.tif'])
+            saveas(fig,[exp_folder,'\STA\FIG\noRF\',HMM_filename,int2str(channelnumber),'.tif'])
         end
      end
 end

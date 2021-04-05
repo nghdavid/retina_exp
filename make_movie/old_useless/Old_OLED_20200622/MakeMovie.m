@@ -4,22 +4,21 @@ G_OU = [2.5 3 4.3 4.5 5.3 6.3 6.5 7.5 9 12 20];%list of Gamma value
 calibration_date = '20200219';
 HMM_time =5;%Time length of HMM of movie
 OU_time = 5;%Time length of OU of movie
-makemovie_folder = 'C:\Users\david\Documents\GitHub\retina_exp\make_movie\fucntionalized'; %this approach sucks.
+makemovie_folder = 'C:\Users\hydro_leo\Documents\GitHub\retina_exp\make_movie\fucntionalized'; %this approach sucks.
 date = '0224';
 seed_date = '0421';
 mean_lumin =6.5;
 movie_folder = '\\192.168.0.100\Experiment\Retina\2020Videos\0219v\videos\';
-% movie_folder = 'D:\videos';
 cd(movie_folder)
 mkdir HMM
 mkdir OU
 videoworkspace_folder = '\\192.168.0.100\Experiment\Retina\2020Videos\0219v\videoworkspace\';
 cd(makemovie_folder);
 
-% G_HMM = [4.5];
-% G_OU = [3,20];
-% movie_folder = 'D:\videos';
-% videoworkspace_folder = 'D:\videoworkspace';
+% G_HMM = [4.3];
+% G_OU = [4.3];
+% movie_folder = 'Z:\';
+% videoworkspace_folder = 'Z:\';
 % HMM_time = 5;%Time length of HMM of movie
 % OU_time = 1;%Time length of OU of movie
 %% Intensity
@@ -72,39 +71,21 @@ makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], video
 makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,15);
 
 %% Smooth OU Dark part
-makeOLED_Bar_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,0.5);
-makeOLED_Bar_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,1);
 makeOLED_Bar_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,5);
 makeOLED_Bar_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,10);
 makeOLED_Bar_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,15);
 
-makeOLED_Bar_video(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,0.5);
-makeOLED_Bar_video(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,1);
 makeOLED_Bar_video(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,5);
 makeOLED_Bar_video(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,10);
 makeOLED_Bar_video(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,15);
 
-makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,0.5);
-makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,1);
 makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,5);
 makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,10);
 makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,15);
 
-makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,0.5);
-makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,1);
 makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,5);
 makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,10);
 makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,0,15);
-%% Smoothed OU; 2nd order motion
-makeOLED_Bar_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
-makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
-makeOLED_Bar_video(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
-makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
-%% OU; 2nd order motion
-makeOLED_Bar_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OU', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
-makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OU', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
-makeOLED_Bar_video(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OU', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
-makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OU', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
 %% HMM edge part
 makeOLED_Edge_video(makemovie_folder, 0, 'RL', [movie_folder,'HMM'], videoworkspace_folder,'HMM', seed_date,date,calibration_date,HMM_time,G_HMM,0,mean_lumin,0);
 makeOLED_Edge_video(makemovie_folder, pi/2, 'UD', [movie_folder,'HMM'], videoworkspace_folder,'HMM', seed_date,date,calibration_date,HMM_time,G_HMM,0,mean_lumin,0);
@@ -147,66 +128,89 @@ make_OLED_scene(makemovie_folder, movie_folder, videoworkspace_folder,mat_direct
 
 %% Smooth OU Bright bar added Spatial Noise 
 %contrast set to be 100%, cutoff frequence set to be 1
-makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,5);
-makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,10);
+makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,1);
+makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,3);
 %makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,15);
 
-makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,5);
-makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,10);
+makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,1);
+makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,3);
 %makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,15);
 
-makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,5);
-makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,10);
+makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,1);
+makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,3);
 %makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,15);
 
-makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,5);
-makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,10);
+makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,1);
+makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,3);
 %makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,15);
 
 %% Smooth OU Drak bar added Spatial Noise 
 %contrast set to be 100%, cutoff frequence set to be 1
-makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,5);
-makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,10);
+makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,1);
+makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,3);
 %makeOLED_Bar_video_sN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,15);
 
-makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,5);
-makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,10);
+makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,1);
+makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,3);
 %makeOLED_Bar_video_sN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,15);
 
-makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,5);
-makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,10);
+makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,1);
+makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,3);
 %makeOLED_Bar_video_sN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,15);
 
-makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,5);
-makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,10);
+makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,1);
+makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,3);
 %makeOLED_Bar_video_sN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,0,1,15);
 
-%% Grating
-makeGratingvideo(makemovie_folder,movie_folder, '0616',calibration_date,mean_lumin)
+%% Smooth OU Bright bar interrupt by homogenious gray
+%contrast set to be 100%, cutoff frequence set to be 1
+makeOLED_Bar_video_wfsN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,1);
+makeOLED_Bar_video_wfsN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,3);
+makeOLED_Bar_video_wfsN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,5);
 
-%% Reversal
-for speed = [1.5,2]%[0.5,1,1.5,2,2.5]%mm/s
-    speed
-makeREvideo(makemovie_folder, 0, 'RL', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,0)
-makeREvideo(makemovie_folder,pi/2, 'UD', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,0)
-makeREvideo(makemovie_folder, pi/4, 'UL_DR', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,0)
-makeREvideo(makemovie_folder, 3*pi/4, 'UR_DL', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,0)
-makeREvideo(makemovie_folder, 0, 'RL', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,0)
-makeREvideo(makemovie_folder,pi/2, 'UD', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,0)
-makeREvideo(makemovie_folder, pi/4, 'UL_DR', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,0)
-makeREvideo(makemovie_folder, 3*pi/4, 'UR_DL', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,0)
+makeOLED_Bar_video_wfsN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,1);
+makeOLED_Bar_video_wfsN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,3);
+makeOLED_Bar_video_wfsN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,5);
 
-makeREvideo(makemovie_folder, 0, 'RL', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,1)
-makeREvideo(makemovie_folder,pi/2, 'UD', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,1)
-makeREvideo(makemovie_folder, pi/4, 'UL_DR', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,1)
-makeREvideo(makemovie_folder, 3*pi/4, 'UR_DL', movie_folder, videoworkspace_folder,'1st',date,calibration_date,mean_lumin,speed,1)
-makeREvideo(makemovie_folder, 0, 'RL', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,1)
-makeREvideo(makemovie_folder,pi/2, 'UD', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,1)
-makeREvideo(makemovie_folder, pi/4, 'UL_DR', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,1)
-makeREvideo(makemovie_folder, 3*pi/4, 'UR_DL', movie_folder, videoworkspace_folder,'2nd',date,calibration_date,mean_lumin,speed,1)
-end
+makeOLED_Bar_video_wfsN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,1);
+makeOLED_Bar_video_wfsN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,3);
+makeOLED_Bar_video_wfsN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,5);
 
-%% Natural scenenary
-mat_directory = '\\192.168.0.100\Experiment\Public\ToDavid\2020_02_24_stiimg';
-date = '20200224';
-make_OLED_scene(makemovie_folder, movie_folder, videoworkspace_folder,mat_directory,date,calibration_date)
+makeOLED_Bar_video_wfsN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,1);
+makeOLED_Bar_video_wfsN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,3);
+makeOLED_Bar_video_wfsN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Bright',mean_lumin,1,5);
+
+%% Smooth OU Drak bar interrupt by homogenious gray
+%contrast set to be 100%, cutoff frequence set to be 1
+makeOLED_Bar_video_wfsN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,1);
+makeOLED_Bar_video_wfsN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,3);
+makeOLED_Bar_video_wfsN(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,5);
+
+makeOLED_Bar_video_wfsN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,1);
+makeOLED_Bar_video_wfsN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,3);
+makeOLED_Bar_video_wfsN(makemovie_folder,  pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,5);
+
+makeOLED_Bar_video_wfsN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,1);
+makeOLED_Bar_video_wfsN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,3);
+makeOLED_Bar_video_wfsN(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,5);
+
+makeOLED_Bar_video_wfsN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,1);
+makeOLED_Bar_video_wfsN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,3);
+makeOLED_Bar_video_wfsN(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'Dark',mean_lumin,1,5);
+
+%% Smoothed OU; 2nd order motion
+makeOLED_Bar_video(makemovie_folder, 0, 'RL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
+makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
+makeOLED_Bar_video(makemovie_folder, pi/2, 'UD', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
+makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', [movie_folder,'OU'], videoworkspace_folder,'OUsmooth', seed_date,date,calibration_date,OU_time,G_OU,'2nd',mean_lumin,0,1);
+
+%% Bar cSTA
+makeOLED_Bar_video(makemovie_folder, 0, 'RL', movie_folder, videoworkspace_folder,'cSTA', seed_date,date,calibration_date,5,[2.5],'Bright',mean_lumin,0,1);
+makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', movie_folder, videoworkspace_folder,'cSTA', seed_date,date,calibration_date,5,[2.5],'Bright',mean_lumin,0,1);
+makeOLED_Bar_video(makemovie_folder, pi/2, 'UD', movie_folder, videoworkspace_folder,'cSTA', seed_date,date,calibration_date,5,[2.5],'Bright',mean_lumin,0,1);
+makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', movie_folder, videoworkspace_folder,'cSTA', seed_date,date,calibration_date,5,[2.5],'Bright',mean_lumin,0,1);
+
+makeOLED_Bar_video(makemovie_folder, 0, 'RL', movie_folder, videoworkspace_folder,'cSTA', seed_date,date,calibration_date,5,[2.5],'Dark',mean_lumin,1,1);
+makeOLED_Bar_video(makemovie_folder, 3*pi/4, 'UR_DL', movie_folder, videoworkspace_folder,'cSTA', seed_date,date,calibration_date,5,[2.5],'Dark',mean_lumin,1,1);
+makeOLED_Bar_video(makemovie_folder, pi/2, 'UD', movie_folder, videoworkspace_folder,'cSTA', seed_date,date,calibration_date,5,[2.5],'Dark',mean_lumin,1,1);
+makeOLED_Bar_video(makemovie_folder, pi/4, 'UL_DR', movie_folder, videoworkspace_folder,'cSTA', seed_date,date,calibration_date,5,[2.5],'Dark',mean_lumin,1,1);

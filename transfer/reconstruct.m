@@ -17,16 +17,12 @@ lumin=[];
 lumin=a_data(3,:);   %Careful: cant subtract a value to the lumin series, or the correspondent  Spike time would be incorrect!
 plateau_n=200;  %least number of point for plateau
 last_gray = max(lumin)*0.25+min(lumin)*0.75;
-
 thre_up = max(lumin)*0.7+min(lumin)*0.3;
-
 thre_down = max(lumin)*0.2+min(lumin)*0.8;
-
 idealTime = length(idealStimuli)/60;
-plot(lumin)
+figure;plot(lumin)
 % Find when it starts
 for i = 1:length(lumin)
-    
     if (lumin(i+50)-lumin(i))/50 > 10 && (lumin(i+100)-lumin(i))/100 > 6 && (lumin(i+10)-lumin(i))/10 > 7
         diode_start = i;
         break
@@ -36,16 +32,12 @@ end
 % Find when it ends
 is_complete = 0;
 for i = 1:length(lumin)
-    
     if (lumin(i+30)-lumin(i))/30 > 2 && (lumin(i+100)-lumin(i))/100 < 2 && (lumin(i+70)-lumin(i))/70 > 2 && lumin(i+100) < thre_up
         diode_end = i;
         is_complete = 1;
         break
     end
-    
 end
-% diode_end = lumin(end);
-% is_complete = 1;
 if is_complete == 0
     disp('There are no normal signal')
     pass = 0;
@@ -54,8 +46,6 @@ end
 
 
 Samplingrate=20000; %fps of diode in A3
-
-
 TimeStamps=zeros(1,2);
 TimeStamps(1,1)=diode_start/Samplingrate - delay_correction;
 TimeStamps(1,2)=diode_end/Samplingrate- delay_correction;
@@ -358,7 +348,17 @@ if length(find(same_len_pos~=0)) ~=  0
 end
 if strcmp(type,'saccade')    
     disp('Saccade!!!!!!!!!!');
-    save([pwd,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','diode_BT','BinningInterval');
+    clearvars -except bin_pos TimeStamps diode_BT BinningInterval data_name pwd pass
+    save([pwd,'\merge','\merge_',data_name,'.mat']);
+
+elseif strcmp(type,'Checker') && strcmp(data_name(6:28),'Checkerboard_30Hz_27_30')  
+    disp('30mins checkerboard');
+    clearvars -except bin_pos TimeStamps diode_BT BinningInterval data_name pwd pass
+    save([pwd,'\merge','\merge_',data_name,'.mat']);
+
+elseif strcmp(type,'HMM') && strcmp(data_name(17:21),'30min') 
+    clearvars -except bin_pos TimeStamps diode_BT BinningInterval data_name pwd pass
+    save([pwd,'\merge','\merge_',data_name,'.mat']);
 else
     reconstruct_spikes=[];
     for j = 1:length(Spikes)    %running through each channel
@@ -371,7 +371,9 @@ else
         end
         reconstruct_spikes{j} = ss;
     end
-    save([pwd,'\merge','\merge_',data_name,'.mat'],'bin_pos','TimeStamps','reconstruct_spikes','diode_BT','BinningInterval');
+    
+    clearvars -except bin_pos TimeStamps diode_BT BinningInterval reconstruct_spikes direction theta type speed reverse Gvalue mean_lumin contrast type Dark data_name pwd pass
+    save([pwd,'\merge','\merge_',data_name,'.mat']);
 
 end
 

@@ -3,18 +3,20 @@ close all;
 clear all;
 code_folder = pwd;
 exp_folder = 'E:\20200418';
+exp_folder = 'D:\Leo\0409';
 cd(exp_folder);
-load('different_G.mat')
-load(['predictive_channel\bright_bar.mat'])
+%load('different_G.mat')
+%load(['predictive_channel\bright_bar.mat'])
 mkdir STA
-cd sort_merge_spike\MI
+cd sort_merge_spike
 all_file = subdir('*.mat');% change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file);
+sorted = 1;
 unit = 1;
 forward = 90;%90 bins before spikes for calculating STA
 backward = 90;%90 bins after spikes for calculating STA
-roi = [p_channel np_channel];
-%  roi = 15;
+%roi = [p_channel np_channel];
+roi = 11;
 for z = 1:n_file
     %choose file
     file = all_file(z).name ;
@@ -25,6 +27,11 @@ for z = 1:n_file
     name=[name];
     z
     name
+    if (strcmp(filename(12),'H') || strcmp(filename(12),'O')) && sorted == 0
+    elseif (strcmp(filename(17),'H') || strcmp(filename(17),'O')) && sorted
+    else
+        continue
+    end
 %     try
 %         load([exp_folder,'\STA\',name(12:end),'.mat'])
 %     catch

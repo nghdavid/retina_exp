@@ -8,15 +8,26 @@ filterLen = ceil(filterWindow*samplingRate);
 nBins = 15;
 StimuSN = 6;
 code_folder = pwd;
+sorted = 1;
 exp_folder = 'E:\20200418';
+exp_folder = 'D:\Leo\0409';
 cd(exp_folder);
+load('RGC.mat')
 mkdir linear_decoding
-load(['predictive_channel\bright_bar.mat'])
-cd ([exp_folder,'\sort_merge_spike\MI'])
+%load(['predictive_channel\bright_bar.mat'])
+%cd ([exp_folder,'\sort_merge_spike\MI'])
+cd ([exp_folder,'\sort_merge_spike'])
 all_file = subdir('*.mat'); % change the type of the files which you want to select, subdir or dir.
 n_file = length(all_file) ;
-roi = [p_channel,np_channel];
-for z =20%1:n_file %choose file
+%roi = [p_channel,np_channel];
+roi=[];
+for i = 1:60
+    if sum(RGCs{i}.center_RF) >0
+        roi = [roi i];
+    end
+end
+    
+for z =4%1:n_file %choose file
     file = all_file(z).name ;
     [pathstr, name, ext] = fileparts(file);
     directory = [pathstr,'\'];
@@ -30,9 +41,14 @@ for z =20%1:n_file %choose file
     stimFrames =bin_pos;
     spikeCounts = zeros(length(roi),length(BinningTime));
     nCells = 0;
+    if sorted
+        analyze_spikes = get_multi_unit(exp_folder,sorted_spikes,0);
+    else
+        analyze_spikes = reconstruct_spikes;
+    end
     for channel = roi
         nCells = nCells+1;
-        [n,~] = hist(sorted_spikes{channel},BinningTime) ;  %yk_spikes is the spike train made from"Merge_rePos_spikes"
+        [n,~] = hist(analyze_spikes{channel},BinningTime) ;  %yk_spikes is the spike train made from"Merge_rePos_spikes"
         spikeCounts(nCells,:) = n;
     end
     

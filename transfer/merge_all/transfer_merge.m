@@ -1,16 +1,16 @@
 clear all;
 code_folder = pwd;
-exp_folder =  'E:\0709';
+exp_folder = 'D:\Leo\0409';
 cd(exp_folder)
-load('data\merge\sorted_unita.mat')
+load('data\all_merge_all_unita.mat')
 channel = [12,13,14,15,16,17,21,22,23,24,25,26,27,28,31,32,33,34,35,36,37,38,41,42,43,44,45,46,47,48,51,52,53,54,55,56,57,58,61,62,63,64,65,66,67,68,71,72,73,74,75,76,77,78,82,83,84,85,86,87];
 merge_Spikes = cell(1,60);
 for h=1:60
     adch_channel = eval(['adch_',int2str(channel(h))]);
-    merge_Spikes{h} = adch_channel (:,2);
+    merge_Spikes{h} = adch_channel (:,1);
 end
 
-mkdir sort
+mkdir sort_unita
 fileID = fopen([exp_folder, '\playmovie\all_list.txt'],'r');
 formatSpec = '%c';
 txt = textscan(fileID,'%s','delimiter','\n'); 
@@ -30,7 +30,7 @@ for i = 1:num_files
         spike=find(merge_Spikes{j}>cutrange(i) & merge_Spikes{j}<cutrange(i+1));
         Spikes{j} = merge_Spikes{j}(spike)-cutrange(i);
     end
-    save([exp_folder,'\sort\',txt{1}{i},'.mat'],'Spikes')
+    save([exp_folder,'\sort_unita\',txt{1}{i},'.mat'],'Spikes')
 end
 
 
